@@ -1,0 +1,383 @@
+/* grscorp.us/blogs Stylesheet */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #0f3a5c;
+    --primary-light: #1e5a96;
+    --primary-lighter: #2d7aad;
+    --accent: #ff6b6b;
+    --text: #2d3436;
+    --text-light: #636e72;
+    --bg: #f5f6f7;
+    --white: #ffffff;
+    --border: #e8e8e8;
+}
+
+body {
+    font-family: 'Segoe UI', 'Trebuchet MS', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.8;
+    color: var(--text);
+    background: var(--bg);
+}
+
+a {
+    color: var(--primary-light);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--primary);
+    line-height: 1.3;
+    margin-bottom: 1rem;
+}
+
+h1 { font-size: 2.5em; }
+h2 { font-size: 2em; }
+h3 { font-size: 1.5em; }
+h4 { font-size: 1.25em; }
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+/* Header */
+header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: var(--white);
+    padding: 60px 20px;
+    text-align: center;
+    margin-bottom: 50px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    color: var(--white);
+    font-size: 2.8em;
+    margin-bottom: 10px;
+}
+
+header p {
+    font-size: 1.1em;
+    opacity: 0.95;
+}
+
+/* Navigation */
+.back-link {
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.back-link a {
+    color: var(--primary-light);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.back-link a:hover {
+    color: var(--primary);
+}
+
+/* Blog Grid */
+.blog-grid {
+    display: grid;
+    gap: 25px;
+    margin-bottom: 50px;
+}
+
+.blog-card {
+    background: var(--white);
+    padding: 30px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    border-left: 4px solid var(--primary-light);
+}
+
+.blog-card:hover {
+    box-shadow: 0 4px 16px rgba(30, 90, 150, 0.15);
+    transform: translateY(-2px);
+}
+
+.blog-card h2 {
+    color: var(--primary);
+    font-size: 1.6em;
+    margin-bottom: 12px;
+    line-height: 1.3;
+}
+
+.blog-card h2 a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.blog-card h2 a:hover {
+    color: var(--primary-light);
+}
+
+.blog-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 15px;
+    font-size: 0.95em;
+    color: var(--text-light);
+}
+
+.blog-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.blog-excerpt {
+    color: var(--text);
+    line-height: 1.7;
+    margin-bottom: 15px;
+}
+
+.read-more {
+    display: inline-block;
+    color: var(--primary-light);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.read-more:hover {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+/* No Posts Message */
+.no-posts {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-light);
+    background: var(--white);
+    border-radius: 6px;
+}
+
+/* Blog Post Page */
+.post-container {
+    background: var(--white);
+    padding: 40px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+}
+
+.post-header {
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 30px;
+    margin-bottom: 30px;
+}
+
+.post-title {
+    color: var(--primary);
+    font-size: 2.2em;
+    margin-bottom: 15px;
+}
+
+.post-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    font-size: 0.95em;
+    color: var(--text-light);
+}
+
+.post-content {
+    font-size: 1.05em;
+    line-height: 1.9;
+    color: var(--text);
+}
+
+.post-content p {
+    margin-bottom: 1.5em;
+}
+
+.post-content h2 {
+    margin-top: 2em;
+    margin-bottom: 1em;
+}
+
+.post-content h3 {
+    margin-top: 1.5em;
+    margin-bottom: 0.8em;
+}
+
+.post-content ul, .post-content ol {
+    margin-left: 2em;
+    margin-bottom: 1.5em;
+}
+
+.post-content li {
+    margin-bottom: 0.5em;
+}
+
+.post-content blockquote {
+    border-left: 4px solid var(--primary-light);
+    padding-left: 20px;
+    margin: 1.5em 0;
+    font-style: italic;
+    color: var(--text-light);
+}
+
+.post-content code {
+    background: var(--bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+}
+
+.post-content pre {
+    background: var(--primary);
+    color: var(--white);
+    padding: 15px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin-bottom: 1.5em;
+}
+
+.post-content pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+}
+
+/* Images */
+.post-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    margin: 1.5em 0;
+}
+
+/* Tables */
+.post-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+}
+
+.post-content th, .post-content td {
+    border: 1px solid var(--border);
+    padding: 12px;
+    text-align: left;
+}
+
+.post-content th {
+    background: var(--bg);
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* Sidebar */
+.sidebar {
+    margin-left: 40px;
+}
+
+.sidebar-box {
+    background: var(--bg);
+    padding: 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--primary-light);
+}
+
+.sidebar-box h4 {
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+
+.sidebar-box ul {
+    list-style: none;
+}
+
+.sidebar-box li {
+    margin-bottom: 8px;
+}
+
+.sidebar-box a {
+    color: var(--primary-light);
+    text-decoration: none;
+}
+
+.sidebar-box a:hover {
+    color: var(--primary);
+    text-decoration: underline;
+}
+
+/* Footer */
+footer {
+    background: var(--primary);
+    color: var(--white);
+    padding: 40px 20px;
+    text-align: center;
+    margin-top: 50px;
+}
+
+footer p {
+    margin-bottom: 10px;
+}
+
+footer a {
+    color: #b8d9f0;
+}
+
+footer a:hover {
+    color: var(--white);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2em;
+    }
+
+    .post-title {
+        font-size: 1.6em;
+    }
+
+    .post-container {
+        padding: 20px;
+    }
+
+    .post-meta {
+        font-size: 0.85em;
+        gap: 15px;
+    }
+
+    .blog-meta {
+        font-size: 0.85em;
+        gap: 10px;
+    }
+
+    .sidebar {
+        margin-left: 0;
+        margin-top: 30px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Global Relief And Support Corporation</title>
+    <link rel="stylesheet" href="/blogs/assets/css/style.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', 'Trebuchet MS', sans-serif;
+            line-height: 1.8;
+            color: #2d3436;
+            background: #f5f6f7;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        header {
+            background: linear-gradient(135deg, #0f3a5c 0%, #1e5a96 100%);
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        .back-link {
+            margin-bottom: 30px;
+        }
+        .back-link a {
+            color: #1e5a96;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+        .blog-grid {
+            display: grid;
+            gap: 25px;
+        }
+        .blog-card {
+            background: white;
+            padding: 30px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        .blog-card:hover {
+            box-shadow: 0 4px 16px rgba(30, 90, 150, 0.15);
+            transform: translateY(-2px);
+        }
+        .blog-card h2 {
+            color: #0f3a5c;
+            font-size: 1.6em;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+        .blog-card a {
+            color: #1e5a96;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .blog-card a:hover {
+            text-decoration: underline;
+        }
+        .blog-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            color: #666;
+        }
+        .blog-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .blog-excerpt {
+            color: #444;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+        .read-more {
+            display: inline-block;
+            color: #1e5a96;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .read-more:hover {
+            text-decoration: underline;
+        }
+        .no-posts {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Blog</h1>
+        <p class="subtitle">Insights and resources from GRSCorp</p>
+    </header>
+
+    <div class="container">
+        <div class="back-link">
+            <a href="https://grscorp.us">← Back to GRSCorp</a>
+        </div>
+
+        <div class="blog-grid" id="blog-list">
+            <div class="no-posts">
+                <p>Blog posts coming soon!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Blog posts data will be loaded here
+        // This is a placeholder - posts will be added via GitHub
+
+        // Sample structure for when posts are added:
+        /*
+        const posts = [
+            {
+                title: "Post Title",
+                date: "Month DD, YYYY",
+                author: "Author Name",
+                excerpt: "Brief description...",
+                url: "/blogs/posts/post-slug.html"
+            }
+        ];
+        */
+
+        function loadBlogsList() {
+            const listContainer = document.getElementById('blog-list');
+            // Posts will be dynamically loaded here
+            // For now, showing placeholder
+        }
+
+        loadBlogsList();
+    </script>
+</body>
+</html>
