@@ -783,6 +783,21 @@
         let scores = new Array(questions.length).fill(-1);
         let userState = {};
 
+        const SHEETS_ENDPOINT = ''; // Paste your Google Apps Script Web App URL here
+
+        function saveData(submission) {
+            const stored = JSON.parse(localStorage.getItem('grscorp_assessments') || '[]');
+            stored.push(submission);
+            localStorage.setItem('grscorp_assessments', JSON.stringify(stored));
+            if (SHEETS_ENDPOINT) {
+                fetch(SHEETS_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(submission)
+                }).catch(() => {});
+            }
+        }
+
         function startQuiz() {
             const age = document.getElementById('age')?.value;
             const state = document.getElementById('state')?.value;
@@ -864,6 +879,8 @@
                 category = 'high';
                 message = 'Your screening results suggest significant indications that professional evaluation would be beneficial. We strongly recommend scheduling an evaluation with a developmental pediatrician or psychologist who specializes in autism assessment.';
             }
+
+            saveData({ email: userState.email, age: userState.age, state: userState.state, score: totalScore, category, timestamp: new Date().toISOString() });
 
             document.querySelector('.quiz-section').classList.remove('active');
             document.querySelector('.results-section').classList.add('active');
