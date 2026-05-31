@@ -2,6 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-35SFS58FTY"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-35SFS58FTY');
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Take a free autism screening questionnaire to see if you should seek professional evaluation. Includes resources for finding local specialists.">
     <meta name="keywords" content="autism screening, autism test, am I autistic, autism self-assessment, autism evaluation, free autism test, autism quiz">
@@ -889,6 +897,9 @@
             }
 
             saveData({ email: userState.email, age: userState.age, state: userState.state, score: totalScore, category, timestamp: new Date().toISOString() });
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'screening_completed', { event_category: 'autism_screening', event_label: category, value: totalScore });
+            }
 
             document.querySelector('.quiz-section').classList.remove('active');
             document.querySelector('.results-section').classList.add('active');
