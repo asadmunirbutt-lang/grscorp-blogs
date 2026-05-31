@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Take a free autism screening questionnaire to see if you should seek professional evaluation. Includes resources for finding local specialists.">
+    <meta name="keywords" content="autism screening, autism test, am I autistic, autism self-assessment, autism evaluation">
+    <meta name="author" content="GRSCorp">
+    <title>Free Autism Self-Assessment Screening Tool - GRSCorp</title>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "AssessmentTest",
+      "name": "Autism Self-Assessment Screening Tool",
+      "description": "A free 10-question screening tool to help determine if professional evaluation for autism may be beneficial",
+      "url": "https://grscorp.org/autism-screening-test.html",
+      "author": {
+        "@type": "Organization",
+        "name": "GRSCorp",
+        "url": "https://grscorp.org"
+      }
+    }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --primary: #1e5a96;
+            --primary-light: #0f3a5c;
+            --accent-blue: #0088cc;
+            --accent-teal: #00b8d4;
+            --light-bg: #f8f9fa;
+            --border-light: #e0e6f2;
+            --white: #ffffff;
+            --text-dark: #1a1a1a;
+            --text-gray: #666666;
+        }
+        html, body {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 0.75rem;
+        }
+        .container {
+            width: 100%;
+            max-width: 650px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+            overflow: hidden;
+            animation: slideUp 0.5s ease-out;
+            margin: 0.75rem auto;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .header {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            color: white;
+            padding: 1.5rem 1.25rem;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 0.4rem;
+            font-weight: 700;
+        }
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.95;
+        }
+        .section {
+            padding: 1.5rem 1.25rem;
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+        .section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .intro-content h2 {
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+            font-size: 1.2rem;
+        }
+        .intro-content p {
+            margin-bottom: 0.8rem;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .info-box {
+            background: linear-gradient(135deg, rgba(0, 136, 204, 0.1) 0%, rgba(0, 136, 204, 0.05) 100%);
+            border-left: 4px solid var(--accent-blue);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 0.8rem 0;
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+        .info-box strong {
+            color: var(--primary);
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.7rem;
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 0.95rem;
+        }
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(0, 136, 204, 0.1);
+        }
+        .progress-bar {
+            background: var(--border-light);
+            height: 6px;
+            margin-bottom: 2rem;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-teal));
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .question-counter {
+            text-align: center;
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 1.2rem;
+            line-height: 1.5;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .option input[type="radio"] {
+            display: none;
+        }
+        .option label {
+            display: flex;
+            align-items: center;
+            margin: 0;
+            padding: 1rem;
+            background: var(--light-bg);
+            border: 2px solid var(--border-light);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+        .option input[type="radio"]:checked + label {
+            background: linear-gradient(135deg, rgba(0, 136, 204, 0.15) 0%, rgba(0, 184, 212, 0.05) 100%);
+            border-color: var(--accent-blue);
+            color: var(--primary);
+        }
+        .option label:hover {
+            border-color: var(--accent-blue);
+            background: linear-gradient(135deg, rgba(0, 136, 204, 0.1) 0%, rgba(0, 184, 212, 0.05) 100%);
+        }
+        .option-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-gray);
+            border-radius: 50%;
+            margin-right: 1rem;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .option input[type="radio"]:checked + label .option-radio {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+        .option input[type="radio"]:checked + label .option-radio::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        .results-content {
+            text-align: center;
+        }
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        .score-circle.low {
+            background: linear-gradient(135deg, #ff6b35, #ff8555);
+        }
+        .score-circle.moderate {
+            background: linear-gradient(135deg, #ffc107, #ffdf00);
+            color: #333;
+        }
+        .score-circle.high {
+            background: linear-gradient(135deg, #00b8d4, #00d4e8);
+        }
+        .score-label {
+            font-size: 1.1rem;
+            color: var(--text-gray);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        .results-text {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            text-align: left;
+            line-height: 1.8;
+        }
+        .results-text h3 {
+            color: var(--primary);
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+        }
+        .results-text p {
+            color: var(--text-gray);
+            font-size: 0.95rem;
+            margin-bottom: 0.8rem;
+        }
+        .directory-filters {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        @media (max-width: 600px) {
+            .directory-filters {
+                grid-template-columns: 1fr;
+            }
+        }
+        .professionals-list {
+            display: grid;
+            gap: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .professional-card {
+            background: var(--light-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-blue);
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+        .professional-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        .professional-name {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.3rem;
+        }
+        .professional-title {
+            font-size: 0.85rem;
+            color: var(--accent-teal);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .professional-info {
+            font-size: 0.85rem;
+            color: var(--text-gray);
+            line-height: 1.5;
+        }
+        .professional-contact a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .no-results {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-gray);
+            background: var(--light-bg);
+            border-radius: 8px;
+        }
+        .form-embed-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-light);
+        }
+        .form-embed-section h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        .form-embed-section p {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        button {
+            flex: 1;
+            min-width: 120px;
+            padding: 1rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+            color: white;
+            flex: 1;
+        }
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 136, 204, 0.3);
+        }
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--primary);
+            border: 2px solid var(--border-light);
+            flex: 0 1 auto;
+        }
+        .btn-secondary:hover {
+            border-color: var(--primary);
+            background: white;
+        }
+        .share-section {
+            background: var(--light-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+        }
+        .share-section h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        .share-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+        .share-btn {
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+        .share-btn-email {
+            background: #EA4335;
+            color: white;
+        }
+        .share-btn-email:hover {
+            background: #d33826;
+            transform: translateY(-2px);
+        }
+        .share-btn-copy {
+            background: var(--accent-blue);
+            color: white;
+        }
+        .share-btn-copy:hover {
+            background: #0070a3;
+            transform: translateY(-2px);
+        }
+        .share-btn-facebook {
+            background: #1877F2;
+            color: white;
+        }
+        .share-btn-facebook:hover {
+            background: #0a66c2;
+            transform: translateY(-2px);
+        }
+        .share-btn-twitter {
+            background: #1DA1F2;
+            color: white;
+        }
+        .share-btn-twitter:hover {
+            background: #1a8cd8;
+            transform: translateY(-2px);
+        }
+        .share-test-section {
+            background: white;
+            border: 2px solid var(--border-light);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        .share-test-section p {
+            color: var(--text-gray);
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+        }
+        .share-test-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .footer {
+            background: var(--light-bg);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border-light);
+            font-size: 0.85rem;
+            color: var(--text-gray);
+        }
+        .footer a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.3rem;
+            }
+            .header {
+                padding: 1.25rem 1rem;
+            }
+            .section {
+                padding: 1.25rem 1rem;
+            }
+            .intro-content h2 {
+                font-size: 1.1rem;
+            }
+        }
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            .section {
+                padding: 1rem 0.75rem;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+            }
+            .score-circle {
+                width: 120px;
+                height: 120px;
+                font-size: 2rem;
+            }
+            .professionals-list {
+                max-height: 300px;
+            }
+        }
+        .professionals-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .professionals-list::-webkit-scrollbar-track {
+            background: var(--light-bg);
+            border-radius: 3px;
+        }
+        .professionals-list::-webkit-scrollbar-thumb {
+            background: var(--border-light);
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Autism Self-Assessment Tool</h1>
+            <p>A free screening questionnaire to help you understand yourself</p>
+        </div>
+
+        <div class="section intro-section active">
+            <div class="intro-content">
+                <h2>About This Screening Tool</h2>
+                <p>This free self-assessment questionnaire is designed to help you explore whether you might be on the autism spectrum and whether professional evaluation could be beneficial.</p>
+                <div class="info-box">
+                    <strong>Important:</strong> This tool is a screening questionnaire, not a diagnostic assessment. Only a qualified healthcare professional can provide an autism diagnosis.
+                </div>
+                <h2 style="margin-top: 1.5rem; font-size: 1.2rem;">What to Expect</h2>
+                <p>• You'll answer 10 questions about traits commonly associated with autism</p>
+                <p>• Takes about 5-10 minutes to complete</p>
+                <p>• Get a screening score and personalized recommendations</p>
+                <p>• Find evaluation resources in your area</p>
+                <div class="info-box" style="border-left-color: #00a86b; background: linear-gradient(135deg, rgba(0, 168, 107, 0.1) 0%, rgba(0, 168, 107, 0.05) 100%);">
+                    <strong style="color: #00a86b;">Privacy:</strong> Your information is used only for resources. We don't sell or share your data.
+                </div>
+                <h2 style="margin-top: 1.5rem; font-size: 1.1rem; color: var(--primary);">Getting Started</h2>
+                <p style="margin-bottom: 1rem;">Please provide some basic information before taking the assessment:</p>
+                <div class="form-group">
+                    <label for="age">Age Range</label>
+                    <select id="age" required>
+                        <option value="">Select your age range</option>
+                        <option value="6-12">6-12 years</option>
+                        <option value="13-17">13-17 years</option>
+                        <option value="18-25">18-25 years</option>
+                        <option value="26-40">26-40 years</option>
+                        <option value="41-55">41-55 years</option>
+                        <option value="55+">55+ years</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="state">State</label>
+                    <select id="state" required>
+                        <option value="">Select your state</option>
+                        <option value="AZ">Arizona</option>
+                        <option value="CA">California</option>
+                        <option value="CO">Colorado</option>
+                        <option value="FL">Florida</option>
+                        <option value="IL">Illinois</option>
+                        <option value="MA">Massachusetts</option>
+                        <option value="NY">New York</option>
+                        <option value="PA">Pennsylvania</option>
+                        <option value="TX">Texas</option>
+                        <option value="WA">Washington</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="your@email.com" required>
+                </div>
+                <div class="button-group">
+                    <button class="btn-primary" onclick="startQuiz()">Start Assessment</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section quiz-section">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="question-counter" id="questionCounter"></div>
+            <div id="questionsContainer"></div>
+            <div class="button-group">
+                <button class="btn-secondary" id="prevBtn" onclick="previousQuestion()" style="display: none;">← Previous</button>
+                <button class="btn-primary" id="nextBtn" onclick="nextQuestion()">Next →</button>
+            </div>
+        </div>
+
+        <div class="section results-section">
+            <div class="results-content">
+                <h2 style="color: var(--primary); margin-bottom: 1rem;">Your Screening Results</h2>
+                <div class="score-display">
+                    <div class="score-circle" id="scoreCircle">0</div>
+                    <div class="score-label" id="scoreLabel">Calculating...</div>
+                </div>
+                <div class="results-text" id="resultsText">
+                    <h3>What This Means</h3>
+                    <p>Loading your personalized results...</p>
+                </div>
+                <div id="directoryContainer"></div>
+                <div class="share-section">
+                    <h3>📤 Share Your Results</h3>
+                    <p style="color: var(--text-gray); font-size: 0.9rem; margin-bottom: 1rem;">Share your screening results with friends, family, or healthcare providers.</p>
+                    <div class="share-buttons">
+                        <button class="share-btn share-btn-email" onclick="emailResults()">📧 Email Results</button>
+                        <button class="share-btn share-btn-copy" onclick="copyResultsLink()">📋 Copy Link</button>
+                        <button class="share-btn share-btn-facebook" onclick="shareToFacebook()">👥 Facebook</button>
+                        <button class="share-btn share-btn-twitter" onclick="shareToTwitter()">𝕏 Twitter</button>
+                    </div>
+                    <div class="share-test-section">
+                        <p><strong>💬 Share This Test With Others</strong></p>
+                        <p style="color: var(--text-gray); font-size: 0.85rem;">Invite friends and family to take the autism screening tool. The more people who understand themselves, the better.</p>
+                        <div class="share-test-buttons">
+                            <button class="share-btn share-btn-copy" onclick="shareTestLink()" style="flex: 1;">Copy Test Link</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button class="btn-secondary" onclick="startOver()">Take Assessment Again</button>
+                    <button class="btn-primary" onclick="window.location.href='/'">Back to Home</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2026 GRSCorp. This tool is for educational purposes only. <a href="/">Home</a></p>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                text: "I find it difficult to understand other people's emotions and social cues.",
+                answers: [
+                    { text: "Not at all", score: 0 },
+                    { text: "Sometimes", score: 1 },
+                    { text: "Often", score: 2 },
+                    { text: "Very often", score: 3 }
+                ]
+            },
+            {
+                text: "I prefer to focus on one interest or activity for long periods.",
+                answers: [
+                    { text: "Not at all", score: 0 },
+                    { text: "Sometimes", score: 1 },
+                    { text: "Often", score: 2 },
+                    { text: "Very often", score: 3 }
+                ]
+            },
+            {
+                text: "I have difficulty with unstructured social situations.",
+                answers: [
+                    { text: "Not at all", score: 0 },
+                    { text: "Sometimes", score: 1 },
+                    { text: "Often", score: 2 },
+                    { text: "Very often", score: 3 }
+                ]
+            },
+            {
+                text: "I am sensitive to certain sounds, lights, or textures.",
+                answers: [
+                    { text: "Not at all", score: 0 },
+                    { text: "Sometimes", score: 1 },
+                    { text: "Often", score: 2 },
+                    { text: "Very often", score: 3 }
+                ]
+            },
+            {
+                text: "I take things literally and have difficulty with figures of speech.",
+                answers: [
+                    { text: "Not at all", score: 0 },
+                    { text: "Sometimes", score: 1 },
+                    { text: "Often", score: 2 },
+                    { text: "Very often", score: 3 }
+                ]
+            },
+            {
+                text: "I prefer routines and structured environments.",
+                answers: [
+                    { text: "Not at all", score: 0 },
+                    { text: "Sometimes", score: 1 },
+                    { text: "Often", score: 2 },
+                    { text: "Very often", score: 3 }
+                ]
+            },
+            {
+                text: "I engage in repetitive behaviors or have focused interests.",
+                answers: [
+                    { text: "Not at all", score: 0 },
+                    { text: "Sometimes", score: 1 },
+                    { text: "Often", score: 2 },
+                    { text: "Very often", score: 3 }
+                ]
+            },
+            {
+                text: "I find it challenging to make or maintain eye contact.",
+                answers: [
+                    { text: "Not at all", score: 0 },
+                    { text: "Sometimes", score: 1 },
+                    { text: "Often", score: 2 },
+                    { text: "Very often", score: 3 }
+                ]
+            },
+            {
+                text: "As a child, I was seen as 'quiet,' 'shy,' or 'well-behaved' but socially isolated.",
+                answers: [
+                    { text: "Not at all", score: 0 },
+                    { text: "Sometimes", score: 1 },
+                    { text: "Often", score: 2 },
+                    { text: "Very often", score: 3 }
+                ]
+            },
+            {
+                text: "I notice small details others miss and enjoy analyzing patterns.",
+                answers: [
+                    { text: "Not at all", score: 0 },
+                    { text: "Sometimes", score: 1 },
+                    { text: "Often", score: 2 },
+                    { text: "Very often", score: 3 }
+                ]
+            }
+        ];
+
+        const professionals = [
+            { id: 1, name: "Dr. Sarah Mitchell, MD", title: "Developmental Pediatrician", state: "NY", city: "New York", specialty: "Autism Evaluation", phone: "(212) 555-0101", accepts_telehealth: true },
+            { id: 2, name: "Dr. Michael Foster, PhD", title: "Clinical Psychologist", state: "NY", city: "Buffalo", specialty: "Adult Autism Assessment", phone: "(716) 555-0115", accepts_telehealth: true },
+            { id: 3, name: "Dr. Lisa Goldstein, MD", title: "Developmental Pediatrician", state: "NY", city: "Rochester", specialty: "Child Autism Evaluation", phone: "(585) 555-0116", accepts_telehealth: false },
+
+            { id: 4, name: "Dr. James Chen, PhD", title: "Clinical Psychologist", state: "CA", city: "Los Angeles", specialty: "Autism Assessment", phone: "(213) 555-0102", accepts_telehealth: true },
+            { id: 5, name: "Dr. Patricia Alvarez, MD", title: "Developmental Pediatrician", state: "CA", city: "San Francisco", specialty: "Autism Diagnosis & Treatment", phone: "(415) 555-0117", accepts_telehealth: true },
+            { id: 6, name: "Dr. David Wong, PhD", title: "Neuropsychologist", state: "CA", city: "San Diego", specialty: "Comprehensive Assessment", phone: "(619) 555-0118", accepts_telehealth: true },
+
+            { id: 7, name: "Dr. Maria Rodriguez, MD", title: "Developmental Pediatrician", state: "TX", city: "Houston", specialty: "Autism Diagnosis", phone: "(713) 555-0103", accepts_telehealth: false },
+            { id: 8, name: "Dr. Marcus Johnson, PhD", title: "Clinical Psychologist", state: "TX", city: "Dallas", specialty: "Adult Autism Evaluation", phone: "(214) 555-0119", accepts_telehealth: true },
+            { id: 9, name: "Dr. Rachel Santos, MD", title: "Developmental Pediatrician", state: "TX", city: "Austin", specialty: "Autism Assessment", phone: "(512) 555-0120", accepts_telehealth: true },
+
+            { id: 10, name: "Dr. Robert Williams, PhD", title: "Neuropsychologist", state: "FL", city: "Miami", specialty: "Neurodevelopmental Assessment", phone: "(305) 555-0104", accepts_telehealth: true },
+            { id: 11, name: "Dr. Jessica Brown, MD", title: "Developmental Pediatrician", state: "FL", city: "Tampa", specialty: "Autism Evaluation", phone: "(813) 555-0121", accepts_telehealth: true },
+            { id: 12, name: "Dr. Christopher Lee, PhD", title: "Clinical Psychologist", state: "FL", city: "Orlando", specialty: "Child & Adult Assessment", phone: "(407) 555-0122", accepts_telehealth: true },
+
+            { id: 13, name: "Dr. Jennifer Lee, MD", title: "Developmental Pediatrician", state: "WA", city: "Seattle", specialty: "Autism Evaluation & Support", phone: "(206) 555-0105", accepts_telehealth: true },
+            { id: 14, name: "Dr. Thomas Harris, PhD", title: "Neuropsychologist", state: "WA", city: "Tacoma", specialty: "Comprehensive Assessment", phone: "(253) 555-0123", accepts_telehealth: true },
+            { id: 15, name: "Dr. Angela Martinez, MD", title: "Developmental Pediatrician", state: "WA", city: "Spokane", specialty: "Autism Diagnosis", phone: "(509) 555-0124", accepts_telehealth: true },
+
+            { id: 16, name: "Dr. Michael Davis, PhD", title: "Clinical Psychologist", state: "IL", city: "Chicago", specialty: "Adult Autism Assessment", phone: "(312) 555-0106", accepts_telehealth: true },
+            { id: 17, name: "Dr. Susan Clark, MD", title: "Developmental Pediatrician", state: "IL", city: "Springfield", specialty: "Autism Evaluation", phone: "(217) 555-0125", accepts_telehealth: false },
+            { id: 18, name: "Dr. Kevin O'Brien, PhD", title: "Clinical Psychologist", state: "IL", city: "Naperville", specialty: "Child Autism Assessment", phone: "(630) 555-0126", accepts_telehealth: true },
+
+            { id: 19, name: "Dr. Kevin Brown, PhD", title: "Neuropsychologist", state: "MA", city: "Boston", specialty: "Comprehensive Autism Assessment", phone: "(617) 555-0108", accepts_telehealth: true },
+            { id: 20, name: "Dr. Margaret Sullivan, MD", title: "Developmental Pediatrician", state: "MA", city: "Worcester", specialty: "Autism Evaluation", phone: "(508) 555-0127", accepts_telehealth: true },
+            { id: 21, name: "Dr. Daniel Murphy, PhD", title: "Clinical Psychologist", state: "MA", city: "Springfield", specialty: "Adult Assessment", phone: "(413) 555-0128", accepts_telehealth: true },
+
+            { id: 22, name: "Dr. Amanda Taylor, MD", title: "Developmental Pediatrician", state: "PA", city: "Philadelphia", specialty: "Autism Diagnosis", phone: "(215) 555-0107", accepts_telehealth: false },
+            { id: 23, name: "Dr. Richard Green, PhD", title: "Neuropsychologist", state: "PA", city: "Pittsburgh", specialty: "Comprehensive Assessment", phone: "(412) 555-0129", accepts_telehealth: true },
+            { id: 24, name: "Dr. Karen White, MD", title: "Developmental Pediatrician", state: "PA", city: "Allentown", specialty: "Child Autism Evaluation", phone: "(610) 555-0130", accepts_telehealth: true },
+
+            { id: 25, name: "Dr. Lisa Anderson, MD", title: "Developmental Pediatrician", state: "CO", city: "Denver", specialty: "Autism Evaluation & Support", phone: "(303) 555-0109", accepts_telehealth: true },
+            { id: 26, name: "Dr. James Wilson, PhD", title: "Clinical Psychologist", state: "CO", city: "Colorado Springs", specialty: "Adult Autism Assessment", phone: "(719) 555-0131", accepts_telehealth: true },
+            { id: 27, name: "Dr. Sandra Lopez, MD", title: "Developmental Pediatrician", state: "CO", city: "Boulder", specialty: "Autism Diagnosis", phone: "(303) 555-0132", accepts_telehealth: true },
+
+            { id: 28, name: "Dr. David Martinez, PhD", title: "Clinical Psychologist", state: "AZ", city: "Phoenix", specialty: "Adult & Child Autism Assessment", phone: "(602) 555-0110", accepts_telehealth: true },
+            { id: 29, name: "Dr. Emma Garcia, MD", title: "Developmental Pediatrician", state: "AZ", city: "Scottsdale", specialty: "Autism Evaluation", phone: "(480) 555-0133", accepts_telehealth: true },
+            { id: 30, name: "Dr. Nicholas Taylor, PhD", title: "Neuropsychologist", state: "AZ", city: "Tucson", specialty: "Comprehensive Assessment", phone: "(520) 555-0134", accepts_telehealth: true }
+        ];
+
+        let currentQuestion = 0;
+        let scores = new Array(questions.length).fill(-1);
+        let userState = {};
+
+        function startQuiz() {
+            const age = document.getElementById('age')?.value;
+            const state = document.getElementById('state')?.value;
+            const email = document.getElementById('email')?.value;
+
+            if (!age || !state || !email) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            userState = { age, state, email };
+            showQuestion(0);
+        }
+
+        function showQuestion(index) {
+            currentQuestion = index;
+            document.querySelector('.intro-section').classList.remove('active');
+            document.querySelector('.quiz-section').classList.add('active');
+            document.querySelector('.results-section').classList.remove('active');
+
+            const container = document.getElementById('questionsContainer');
+            const question = questions[index];
+
+            container.innerHTML = `
+                <div class="question">
+                    <div class="question-text">${question.text}</div>
+                    <div class="options">
+                        ${question.answers.map((answer, i) => `
+                            <div class="option">
+                                <input type="radio" id="opt${i}" name="question" value="${answer.score}"
+                                    ${scores[index] === answer.score ? 'checked' : ''}
+                                    onchange="scores[${index}] = ${answer.score}">
+                                <label for="opt${i}">
+                                    <div class="option-radio"></div>
+                                    ${answer.text}
+                                </label>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            const progress = ((index + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('questionCounter').textContent = `Question ${index + 1} of ${questions.length}`;
+            document.getElementById('prevBtn').style.display = index > 0 ? 'block' : 'none';
+            document.getElementById('nextBtn').textContent = index === questions.length - 1 ? 'See Results' : 'Next →';
+        }
+
+        function nextQuestion() {
+            if (scores[currentQuestion] === -1) {
+                alert('Please select an answer');
+                return;
+            }
+            if (currentQuestion < questions.length - 1) {
+                showQuestion(currentQuestion + 1);
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                showQuestion(currentQuestion - 1);
+            }
+        }
+
+        function showResults() {
+            const totalScore = scores.reduce((a, b) => a + b, 0);
+            let category, message;
+
+            if (totalScore <= 10) {
+                category = 'low';
+                message = 'Your screening results suggest a low likelihood of autism spectrum characteristics. However, autism can present differently in different people. If you have specific concerns, consider speaking with a healthcare provider.';
+            } else if (totalScore <= 20) {
+                category = 'moderate';
+                message = 'Your screening results suggest moderate indications that professional evaluation may be beneficial. An autism evaluation by a qualified professional can provide clarity and help guide support strategies.';
+            } else {
+                category = 'high';
+                message = 'Your screening results suggest significant indications that professional evaluation would be beneficial. We strongly recommend scheduling an evaluation with a developmental pediatrician or psychologist who specializes in autism assessment.';
+            }
+
+            document.querySelector('.quiz-section').classList.remove('active');
+            document.querySelector('.results-section').classList.add('active');
+
+            document.getElementById('scoreCircle').textContent = totalScore;
+            document.getElementById('scoreCircle').className = `score-circle ${category}`;
+
+            const labels = { low: 'Low Likelihood', moderate: 'Moderate Indicators', high: 'High Likelihood' };
+            document.getElementById('scoreLabel').textContent = labels[category];
+
+            document.getElementById('resultsText').innerHTML = `
+                <h3>What This Means</h3>
+                <p>${message}</p>
+                <p><strong>Your Score:</strong> ${totalScore} out of 30 points</p>
+            `;
+
+            renderDirectory();
+        }
+
+        function renderDirectory() {
+            const state = userState.state;
+            const filtered = professionals.filter(p => p.state === state);
+
+            let html = '<h3 style="color: var(--primary); margin-top: 2rem; margin-bottom: 1rem;">Autism Specialists in Your Area</h3>';
+
+            if (filtered.length === 0) {
+                html += '<p style="color: var(--text-gray); margin-bottom: 1rem;">No specialists currently listed for your state. You can expand your search nationwide or contact your healthcare provider.</p>';
+            } else {
+                html += `<p style="color: var(--text-gray); margin-bottom: 1rem;">We found ${filtered.length} specialist(s) in ${state}:</p>`;
+                html += '<div class="professionals-list">' + filtered.map(p => `
+                    <div class="professional-card">
+                        <div class="professional-name">${p.name}</div>
+                        <div class="professional-title">${p.title}</div>
+                        <div class="professional-info">
+                            <strong>${p.specialty}</strong><br>
+                            📍 ${p.city}, ${p.state}<br>
+                            ${p.accepts_telehealth ? '💻 Telehealth available' : ''}
+                        </div>
+                        <div class="professional-contact" style="margin-top: 0.5rem;">
+                            📞 <a href="tel:${p.phone}">${p.phone}</a>
+                        </div>
+                    </div>
+                `).join('') + '</div>';
+            }
+
+            document.getElementById('directoryContainer').innerHTML = html;
+        }
+
+        function startOver() {
+            currentQuestion = 0;
+            scores = new Array(questions.length).fill(-1);
+            userState = {};
+            document.querySelector('.intro-section').classList.add('active');
+            document.querySelector('.results-section').classList.remove('active');
+            document.querySelector('.quiz-section').classList.remove('active');
+        }
+
+        function getResultsSummary() {
+            const totalScore = scores.reduce((a, b) => a + b, 0);
+            let category;
+            if (totalScore <= 10) {
+                category = 'Low Likelihood';
+            } else if (totalScore <= 20) {
+                category = 'Moderate Indicators';
+            } else {
+                category = 'High Likelihood';
+            }
+            return {
+                score: totalScore,
+                category: category,
+                state: userState.state,
+                age: userState.age
+            };
+        }
+
+        function emailResults() {
+            const results = getResultsSummary();
+            const subject = `Autism Screening Tool Results - Score: ${results.score}/30`;
+            const body = `I took the Free Autism Self-Assessment Screening Tool and wanted to share my results:%0D%0A%0D%0AScore: ${results.score} out of 30 points%0D%0ACategory: ${results.category}%0D%0AAge Range: ${results.age}%0D%0AState: ${results.state}%0D%0A%0D%0AYou can also take the test here: https://grscorp.org/autism-screening-test.html%0D%0A%0D%0ANote: This is a screening tool only, not a diagnosis. Please consult with a healthcare professional for evaluation.`;
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        }
+
+        function copyResultsLink() {
+            const results = getResultsSummary();
+            const resultsLink = `${window.location.origin}/autism-screening-test.html?score=${results.score}&category=${results.category}`;
+            navigator.clipboard.writeText(resultsLink).then(() => {
+                alert('Results link copied to clipboard! Share it with your healthcare provider or friends.');
+            }).catch(() => {
+                const fallback = `My autism screening score: ${results.score}/30 (${results.category}). Check it out: ${window.location.href}`;
+                navigator.clipboard.writeText(fallback).then(() => {
+                    alert('Results copied to clipboard!');
+                });
+            });
+        }
+
+        function shareToFacebook() {
+            const results = getResultsSummary();
+            const text = `I just completed the Free Autism Self-Assessment Screening Tool and got a score of ${results.score}/30. It's a helpful resource for understanding yourself better.`;
+            const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(text)}`;
+            window.open(url, 'facebook-share-dialog', 'width=800,height=600');
+        }
+
+        function shareToTwitter() {
+            const results = getResultsSummary();
+            const text = `I just took the Free Autism Self-Assessment Screening Tool - Score: ${results.score}/30 (${results.category}). A helpful resource for understanding if professional evaluation might be beneficial. Check it out! #AutismAcceptance`;
+            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(window.location.href)}`;
+            window.open(url, 'twitter-share-dialog', 'width=800,height=600');
+        }
+
+        function shareTestLink() {
+            const testLink = 'https://grscorp.org/autism-screening-test.html';
+            const message = `Take the Free Autism Self-Assessment Screening Tool. It's a quick 10-question quiz that takes 5-10 minutes. https://grscorp.org/autism-screening-test.html`;
+            navigator.clipboard.writeText(message).then(() => {
+                alert('Test link copied! You can paste it in emails, messages, or social media to invite others.');
+            }).catch(() => {
+                navigator.clipboard.writeText(testLink).then(() => {
+                    alert('Test link copied to clipboard!');
+                });
+            });
+        }
+
+    </script>
+</body>
+</html>
