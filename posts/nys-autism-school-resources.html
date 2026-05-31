@@ -7,6 +7,520 @@
     <meta name="author" content="GRSCorp">
     <title>NYS Autism Education Resources: Parent Rights & School Options | GRSCorp Blog</title>
     <link rel="stylesheet" href="/blogs/assets/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1e5a96;
+            --primary-light: #0f3a5c;
+            --secondary: #00a86b;
+            --accent-blue: #0088cc;
+            --accent-purple: #8b5fbf;
+            --accent-orange: #ff6b35;
+            --accent-teal: #00b8d4;
+            --light-bg: #f8f9fa;
+            --border-light: #e0e6f2;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .back-link {
+            margin-bottom: 2rem;
+        }
+
+        .back-link a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            background: rgba(30, 90, 150, 0.1);
+        }
+
+        .back-link a:hover {
+            background: rgba(30, 90, 150, 0.2);
+            transform: translateX(-4px);
+        }
+
+        .post-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .post-header {
+            background: linear-gradient(135deg, rgba(30, 90, 150, 0.05) 0%, rgba(0, 168, 107, 0.05) 100%);
+            padding: 3rem 2rem;
+            border-bottom: 3px solid var(--border-light);
+        }
+
+        .post-title {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+        }
+
+        .post-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            font-size: 0.95rem;
+            color: #555;
+        }
+
+        .post-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .post-meta-item strong {
+            color: var(--primary);
+        }
+
+        .post-content {
+            padding: 3rem 2rem;
+        }
+
+        .post-content > p:first-of-type {
+            font-size: 1.1rem;
+            color: #444;
+            background: linear-gradient(135deg, rgba(0, 168, 107, 0.1) 0%, rgba(0, 136, 204, 0.1) 100%);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--secondary);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin: 2.5rem 0 1.5rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        h2::before {
+            content: '▸';
+            color: var(--accent-orange);
+            font-size: 1.5rem;
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            color: var(--accent-blue);
+            margin: 1.8rem 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h3::before {
+            content: '◆';
+            color: var(--accent-teal);
+            font-size: 0.8rem;
+        }
+
+        h4 {
+            color: var(--primary);
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        ul, ol {
+            margin: 1.2rem 0 1.2rem 1.5rem;
+        }
+
+        li {
+            margin: 0.5rem 0;
+            line-height: 1.8;
+        }
+
+        a {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid transparent;
+        }
+
+        a:hover {
+            color: var(--accent-purple);
+            border-bottom: 1px solid var(--accent-purple);
+        }
+
+        /* Info Boxes */
+        .info-box {
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            border-left: 5px solid;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .info-box-blue {
+            background: linear-gradient(135deg, rgba(0, 136, 204, 0.15) 0%, rgba(0, 136, 204, 0.05) 100%);
+            border-left-color: var(--accent-blue);
+        }
+
+        .info-box-blue h4 {
+            color: var(--accent-blue);
+        }
+
+        .info-box-yellow {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.15) 0%, rgba(255, 193, 7, 0.05) 100%);
+            border-left-color: var(--accent-orange);
+        }
+
+        .info-box-yellow h4 {
+            color: var(--accent-orange);
+        }
+
+        .info-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Placement Options Cards */
+        .placement-options {
+            display: grid;
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .placement-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border-left: 5px solid;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .placement-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 0 0 0 50px;
+        }
+
+        .placement-card-1 {
+            border-left-color: var(--secondary);
+            background: linear-gradient(135deg, rgba(0, 168, 107, 0.05) 0%, white 100%);
+        }
+
+        .placement-card-2 {
+            border-left-color: var(--accent-blue);
+            background: linear-gradient(135deg, rgba(0, 136, 204, 0.05) 0%, white 100%);
+        }
+
+        .placement-card-3 {
+            border-left-color: var(--accent-purple);
+            background: linear-gradient(135deg, rgba(139, 95, 191, 0.05) 0%, white 100%);
+        }
+
+        .placement-card-4 {
+            border-left-color: var(--accent-teal);
+            background: linear-gradient(135deg, rgba(0, 184, 212, 0.05) 0%, white 100%);
+        }
+
+        .placement-card-5 {
+            border-left-color: var(--accent-orange);
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.05) 0%, white 100%);
+        }
+
+        .placement-card-6 {
+            border-left-color: #ff6b9d;
+            background: linear-gradient(135deg, rgba(255, 107, 157, 0.05) 0%, white 100%);
+        }
+
+        .placement-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+        }
+
+        .placement-card h3 {
+            margin-top: 0;
+        }
+
+        .cost-badge {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 0.5rem 0;
+            background: linear-gradient(135deg, rgba(0, 168, 107, 0.2) 0%, rgba(0, 168, 107, 0.1) 100%);
+            color: var(--secondary);
+            border: 1px solid var(--secondary);
+        }
+
+        .cost-badge.paid {
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.2) 0%, rgba(255, 107, 53, 0.1) 100%);
+            color: var(--accent-orange);
+            border-color: var(--accent-orange);
+        }
+
+        /* Stats Box */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-top: 4px solid var(--accent-blue);
+        }
+
+        .stat-card:nth-child(2) {
+            border-top-color: var(--secondary);
+        }
+
+        .stat-card:nth-child(3) {
+            border-top-color: var(--accent-purple);
+        }
+
+        .stat-card:nth-child(4) {
+            border-top-color: var(--accent-orange);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Rights Section */
+        .rights-list {
+            display: grid;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .right-item {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-blue);
+            transition: all 0.3s ease;
+        }
+
+        .right-item:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .right-icon {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-teal));
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .right-item:nth-child(even) .right-icon {
+            background: linear-gradient(135deg, var(--secondary), var(--accent-teal));
+        }
+
+        .right-item:nth-child(3n) .right-icon {
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+        }
+
+        /* Call to Action */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent-blue) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 12px;
+            margin-top: 3rem;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(30, 90, 150, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .cta-section:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 35px rgba(30, 90, 150, 0.4);
+        }
+
+        .cta-section h3 {
+            color: white;
+            margin-top: 0;
+            font-size: 1.5rem;
+        }
+
+        .cta-section a {
+            color: #fff;
+            font-weight: 600;
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 6px;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+            border-bottom: none;
+        }
+
+        .cta-section a:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+
+        .back-to-blog {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-light);
+        }
+
+        .back-to-blog a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-to-blog a:hover {
+            gap: 1rem;
+        }
+
+        footer {
+            background: var(--primary-light);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        footer a {
+            color: rgba(255,255,255,0.9);
+            border-bottom-color: rgba(255,255,255,0.3);
+        }
+
+        footer a:hover {
+            color: white;
+            border-bottom-color: white;
+        }
+
+        /* Closing Message */
+        .closing-message {
+            margin-top: 2.5rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, rgba(139, 95, 191, 0.1) 0%, rgba(0, 184, 212, 0.1) 100%);
+            border-radius: 10px;
+            border-left: 5px solid var(--accent-purple);
+            font-style: italic;
+            font-weight: 500;
+            color: var(--primary);
+            text-align: center;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .post-title {
+                font-size: 1.5rem;
+            }
+
+            .post-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .post-header, .post-content {
+                padding: 1.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -80,60 +594,105 @@
 
                 <p>Many parents mistakenly believe homeschooling is their only option when their child struggles in traditional school settings. <strong>New York State law requires schools to explore a range of placement options before homeschooling is recommended.</strong></p>
 
-                <h3>1. In-District Specialized Placements</h3>
-                <p><strong>What it is:</strong> Your child remains in your home school district but attends a specialized classroom designed for students with autism or similar disabilities.</p>
-                <p><strong>Advantages:</strong> Smaller class sizes (12 students or fewer), teachers trained in special education, supports tailored to autism-specific learning needs, maintains connections to same-district peers, regular interaction with general education students</p>
-                <p><strong>Cost to family:</strong> $0</p>
+                <div class="placement-options">
+                    <div class="placement-card placement-card-1">
+                        <h3>1. In-District Specialized Placements</h3>
+                        <p><strong>Your child remains in your home school district but attends a specialized classroom designed for students with autism or similar disabilities.</strong></p>
+                        <p><strong>What you get:</strong> Smaller class sizes (12 students or fewer), teachers trained in special education, supports tailored to autism-specific learning needs, maintains connections to same-district peers, regular interaction with general education students</p>
+                        <span class="cost-badge">FREE</span>
+                    </div>
 
-                <h3>2. Out-of-District Placement (BOCES Programs)</h3>
-                <p><strong>What it is:</strong> Your school district funds attendance at a specialized program in another district, typically through BOCES (Board of Cooperative Educational Services).</p>
-                <p><strong>BOCES programs provide:</strong></p>
-                <ul>
-                    <li>Highly specialized autism programs</li>
-                    <li>Staff trained with advanced expertise in autism education</li>
-                    <li>Curriculum tailored to autism spectrum needs</li>
-                    <li>Smaller class ratios (often 6-8 students)</li>
-                    <li>Transition and vocational training programs</li>
-                </ul>
-                <p><strong>Cost to family:</strong> $0 - Your home district pays the tuition</p>
-                <p><strong>Average cost:</strong> $15,000-$45,000 per year (paid by school district)</p>
-                <p><strong>Find BOCES programs near you:</strong> <a href="https://www.nysboces.org/" target="_blank">New York State BOCES Association</a></p>
+                    <div class="placement-card placement-card-2">
+                        <h3>2. Out-of-District Placement (BOCES Programs)</h3>
+                        <p><strong>Your school district funds attendance at a specialized program in another district through BOCES (Board of Cooperative Educational Services).</strong></p>
+                        <ul>
+                            <li>Highly specialized autism programs</li>
+                            <li>Staff trained with advanced expertise in autism education</li>
+                            <li>Curriculum tailored to autism spectrum needs</li>
+                            <li>Smaller class ratios (often 6-8 students)</li>
+                            <li>Transition and vocational training programs</li>
+                        </ul>
+                        <span class="cost-badge">FREE - District pays $15,000-$45,000/year</span>
+                        <p><a href="https://www.nysboces.org/" target="_blank">Find BOCES programs near you →</a></p>
+                    </div>
 
-                <h3>3. Private School Placement at District Expense</h3>
-                <p><strong>What it is:</strong> Your school district places and pays for your child to attend an approved private school.</p>
-                <p><strong>When this happens:</strong> When the district cannot meet your child's needs in public schools, and a private school has the required services and expertise.</p>
-                <p><strong>Cost to family:</strong> $0 - The district pays all tuition</p>
+                    <div class="placement-card placement-card-3">
+                        <h3>3. Private School Placement at District Expense</h3>
+                        <p><strong>Your school district places and pays for your child to attend an approved private school.</strong></p>
+                        <p>This happens when the district cannot meet your child's needs in public schools, and a private school has the required services and expertise.</p>
+                        <span class="cost-badge">FREE - District pays tuition</span>
+                    </div>
 
-                <h3>4. Charter Schools with Special Education Programs</h3>
-                <p><strong>What it is:</strong> Publicly funded but independently operated schools that often have specialized autism programs.</p>
-                <p><strong>Advantages:</strong> Public funding (free to attend), must provide IEP services, some have excellent autism programs, smaller school communities</p>
-                <p><strong>Cost to family:</strong> $0</p>
+                    <div class="placement-card placement-card-4">
+                        <h3>4. Charter Schools with Special Education Programs</h3>
+                        <p><strong>Publicly funded but independently operated schools that often have specialized autism programs.</strong></p>
+                        <p><strong>Benefits:</strong> Public funding (free to attend), must provide IEP services, excellent autism programs available, smaller school communities</p>
+                        <span class="cost-badge">FREE</span>
+                    </div>
 
-                <h3>5. Private School at Family Expense (Unilateral Placement)</h3>
-                <p><strong>What it is:</strong> Parents place child at private school at their own cost, but can seek reimbursement from the district if it can be proven the district failed to provide appropriate education.</p>
-                <p><strong>Important:</strong> Reimbursement disputes often require due process hearings. Success depends on proving the district's failure and the appropriateness of the private placement.</p>
+                    <div class="placement-card placement-card-5">
+                        <h3>5. Private School at Family Expense (Unilateral Placement)</h3>
+                        <p><strong>Parents place child at private school at their own cost, but can seek reimbursement from the district if they can prove the district failed to provide appropriate education.</strong></p>
+                        <p>Reimbursement disputes often require due process hearings. Success depends on proving the district's failure and the appropriateness of the private placement.</p>
+                        <span class="cost-badge paid">FAMILY PAYS</span>
+                    </div>
 
-                <h3>6. Home Tutoring (As a Supplement)</h3>
-                <p><strong>Important distinction:</strong> Home tutoring by itself is not a school placement. However, schools must provide up to 1 hour of tutoring per school day if mandated by IEP. This is provided IN ADDITION to, not instead of, school placement.</p>
+                    <div class="placement-card placement-card-6">
+                        <h3>6. Home Tutoring (As a Supplement)</h3>
+                        <p><strong>Important distinction:</strong> Home tutoring by itself is not a school placement. However, schools must provide up to 1 hour of tutoring per school day if mandated by IEP.</p>
+                        <p>This is provided <strong>IN ADDITION to</strong>, not instead of, school placement.</p>
+                        <span class="cost-badge">FREE</span>
+                    </div>
+                </div>
 
                 <h2>Your Legal Rights as a Parent</h2>
 
                 <p><strong>New York State and Federal law provide specific protections to parents of children with disabilities.</strong> These include:</p>
 
-                <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; border-radius: 6px; margin: 20px 0;">
-                    <h4 style="color: #856404; margin-top: 0;">Core Parental Rights Under the Law</h4>
-                    <ul style="color: #333;">
-                        <li><strong>Free Appropriate Public Education (FAPE)</strong> - Your child is entitled to a free education designed to meet their individual needs</li>
-                        <li><strong>Least Restrictive Environment (LRE)</strong> - Education should occur in the most integrated setting possible</li>
-                        <li><strong>Individualized Education Plan (IEP)</strong> - A written plan tailored to your child's specific needs</li>
-                        <li><strong>Consent Before Evaluation</strong> - School cannot evaluate your child without your permission</li>
-                        <li><strong>Consent Before Placement</strong> - You must agree to your child's initial special education placement</li>
-                        <li><strong>Access to Records</strong> - You can request and review all educational records</li>
-                        <li><strong>Parent Participation</strong> - You must be invited to all CSE/CPSE meetings</li>
-                        <li><strong>Independent Evaluation</strong> - You can obtain evaluations at district expense if you disagree with school's evaluation</li>
-                        <li><strong>Due Process Hearing</strong> - You can challenge school district decisions through formal hearing</li>
-                        <li><strong>Stay-Put Provision</strong> - Child remains in current placement during disputes (with exceptions)</li>
-                    </ul>
+                <div class="info-box info-box-yellow" style="border-left: 5px solid var(--accent-orange); background: linear-gradient(135deg, rgba(255, 193, 7, 0.15) 0%, rgba(255, 193, 7, 0.05) 100%);">
+                    <h4 style="color: var(--accent-orange); margin-top: 0;">Core Parental Rights Under the Law</h4>
+                    <div class="rights-list">
+                        <div class="right-item">
+                            <div class="right-icon">✓</div>
+                            <div><strong>Free Appropriate Public Education (FAPE)</strong> — Your child is entitled to a free education designed to meet their individual needs</div>
+                        </div>
+                        <div class="right-item">
+                            <div class="right-icon">✓</div>
+                            <div><strong>Least Restrictive Environment (LRE)</strong> — Education should occur in the most integrated setting possible</div>
+                        </div>
+                        <div class="right-item">
+                            <div class="right-icon">✓</div>
+                            <div><strong>Individualized Education Plan (IEP)</strong> — A written plan tailored to your child's specific needs</div>
+                        </div>
+                        <div class="right-item">
+                            <div class="right-icon">✓</div>
+                            <div><strong>Consent Before Evaluation</strong> — School cannot evaluate your child without your permission</div>
+                        </div>
+                        <div class="right-item">
+                            <div class="right-icon">✓</div>
+                            <div><strong>Consent Before Placement</strong> — You must agree to your child's initial special education placement</div>
+                        </div>
+                        <div class="right-item">
+                            <div class="right-icon">✓</div>
+                            <div><strong>Access to Records</strong> — You can request and review all educational records</div>
+                        </div>
+                        <div class="right-item">
+                            <div class="right-icon">✓</div>
+                            <div><strong>Parent Participation</strong> — You must be invited to all CSE/CPSE meetings</div>
+                        </div>
+                        <div class="right-item">
+                            <div class="right-icon">✓</div>
+                            <div><strong>Independent Evaluation</strong> — You can obtain evaluations at district expense if you disagree with school's evaluation</div>
+                        </div>
+                        <div class="right-item">
+                            <div class="right-icon">✓</div>
+                            <div><strong>Due Process Hearing</strong> — You can challenge school district decisions through formal hearing</div>
+                        </div>
+                        <div class="right-item">
+                            <div class="right-icon">✓</div>
+                            <div><strong>Stay-Put Provision</strong> — Child remains in current placement during disputes (with exceptions)</div>
+                        </div>
+                    </div>
                 </div>
 
                 <h3>Legal Foundation for These Rights</h3>
@@ -203,11 +762,11 @@
                     <li>Results can be powerful evidence in your favor during disputes</li>
                 </ul>
 
-                <div style="background: #f0f7ff; border-left: 4px solid #0066cc; padding: 20px; border-radius: 6px; margin: 20px 0;">
-                    <h4 style="color: #0066cc; margin-top: 0;">How to Request an IEE in Writing</h4>
+                <div class="info-box info-box-blue">
+                    <h4>How to Request an IEE in Writing</h4>
                     <p>Send a formal letter to your CSE chairperson:</p>
                     <p><em>"I disagree with the evaluation(s) completed by [school name]. I am requesting an Independent Educational Evaluation at district expense. Please provide me with the names and contact information of qualified evaluators who are not employed by the district."</em></p>
-                    <p>Keep a copy for your records. Send via certified mail to protect your timeline.</p>
+                    <p><strong>Keep a copy for your records. Send via certified mail to protect your timeline.</strong></p>
                 </div>
 
                 <h3>Step 3: Request a CSE Reconvene</h3>
@@ -243,9 +802,9 @@
 
                 <p><strong>Good news:</strong> 65% of due process cases are resolved before formal hearing through settlement.</p>
 
-                <div style="background: #f0f7ff; border-left: 4px solid #0066cc; padding: 20px; border-radius: 6px; margin: 20px 0;">
-                    <h4 style="color: #0066cc; margin-top: 0;">Due Process Resources</h4>
-                    <ul style="color: #0066cc;">
+                <div class="info-box info-box-blue">
+                    <h4>Due Process Resources</h4>
+                    <ul>
                         <li><a href="https://www.nysed.gov/special-education/impartial-hearing-process" target="_blank">New York State Impartial Hearing Process</a></li>
                         <li><a href="https://www.p12.nysed.gov/sss/ssae/" target="_blank">NYSED - Impartial Hearing Office</a></li>
                     </ul>
@@ -258,9 +817,9 @@
                     <li><strong>U.S. Department of Education (OCR)</strong> - Investigates civil rights violations and Section 504 complaints</li>
                 </ul>
 
-                <div style="background: #f0f7ff; border-left: 4px solid #0066cc; padding: 20px; border-radius: 6px; margin: 20px 0;">
-                    <h4 style="color: #0066cc; margin-top: 0;">File Complaints With Agencies</h4>
-                    <ul style="color: #0066cc;">
+                <div class="info-box info-box-blue">
+                    <h4>File Complaints With Agencies</h4>
+                    <ul>
                         <li><a href="https://www.nysed.gov/special-education/complaints" target="_blank">File a Special Education Complaint with NYSED</a></li>
                         <li><a href="https://www2.ed.gov/about/offices/list/ocr/complaintintro.html" target="_blank">File a Civil Rights Complaint with U.S. Dept of Education OCR</a></li>
                     </ul>
@@ -305,20 +864,45 @@
                 <h2>Data and Statistics on Autism in New York Schools</h2>
 
                 <p><strong>Understanding the landscape of autism education in New York can help you advocate for your child:</strong></p>
-                <ul>
-                    <li><strong>1 in 34</strong> children in New York have autism (CDC 2023 data)</li>
-                    <li><strong>85,000+</strong> students with autism currently enrolled in New York public schools</li>
-                    <li><strong>4:1</strong> male to female ratio (though girls are increasingly being diagnosed)</li>
-                    <li><strong>30%</strong> of autistic students graduate with a regular diploma (many get IEP diplomas instead)</li>
-                </ul>
 
-                <p><strong>Placement Distribution in New York:</strong></p>
-                <ul>
-                    <li>General education classroom with supports: 45%</li>
-                    <li>Special education classroom (in-district): 35%</li>
-                    <li>Out-of-district/BOCES placement: 15%</li>
-                    <li>Private school or other placement: 5%</li>
-                </ul>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">1 in 34</div>
+                        <div class="stat-label">children in New York have autism<br><small>(CDC 2023 data)</small></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">85,000+</div>
+                        <div class="stat-label">students with autism currently enrolled in NY public schools</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">4:1</div>
+                        <div class="stat-label">male to female ratio<br><small>(girls increasingly diagnosed)</small></div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">30%</div>
+                        <div class="stat-label">graduate with regular diploma<br><small>(many receive IEP diplomas)</small></div>
+                    </div>
+                </div>
+
+                <h3>Placement Distribution in New York</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">45%</div>
+                        <div class="stat-label">General education with supports</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">35%</div>
+                        <div class="stat-label">Special education classroom (in-district)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">15%</div>
+                        <div class="stat-label">Out-of-district/BOCES</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">5%</div>
+                        <div class="stat-label">Private school or other</div>
+                    </div>
+                </div>
 
                 <h2>Next Steps for You</h2>
 
@@ -335,20 +919,21 @@
                     <li>Keep detailed records of all communications with the school</li>
                 </ul>
 
-                <p style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #1e5a96; font-style: italic; font-weight: bold;">
+                <div class="closing-message">
                     Your child deserves an education that meets their unique needs. You have the right to advocate for them. Don't settle for less.
-                </p>
+                </div>
             </div>
         </article>
 
         <!-- Call to Action -->
-        <div style="background: #f0f7ff; padding: 20px; border-radius: 6px; margin-top: 40px; border-left: 4px solid #1e5a96;">
-            <h3 style="color: #0f3a5c; margin-top: 0;">Support Autism Advocacy</h3>
-            <p>GRSCorp is dedicated to supporting families navigating autism and education. For more resources and information about our work, visit <a href="https://grscorp.us">GRSCorp.us</a>.</p>
+        <div class="cta-section">
+            <h3>Support Autism Advocacy</h3>
+            <p>GRSCorp is dedicated to supporting families navigating autism and education. For more resources and information about our work, visit us.</p>
+            <a href="https://grscorp.us" target="_blank">Learn More About GRSCorp →</a>
         </div>
 
-        <div style="text-align: center; margin-top: 40px;">
-            <a href="/blogs/" style="color: #1e5a96; font-weight: 600;">← Back to all blog posts</a>
+        <div class="back-to-blog">
+            <a href="/blogs/">← Back to all blog posts</a>
         </div>
     </div>
 
