@@ -16,6 +16,90 @@
       gtag('config', 'G-542W6ZTYH8');
     </script>
     <link rel="stylesheet" href="/blogs/assets/css/style.css">
+    <style>
+        .stat-box {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 15px 0;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 0.95em;
+            opacity: 0.95;
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .info-card {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid #ff6b6b;
+            margin: 20px 0;
+        }
+        .info-card ul {
+            color: white;
+        }
+        .highlight-section {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 25px;
+            border-radius: 8px;
+            margin: 25px 0;
+        }
+        .rights-box {
+            background: linear-gradient(135deg, #fff9e6 0%, #ffe66d 100%);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid #ff6b6b;
+            margin: 15px 0;
+        }
+        .accommodation-card {
+            background: #f0f9ff;
+            border-left: 4px solid #ff6b6b;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        h2 {
+            color: #c92a2a;
+            border-bottom: 3px solid #ff6b6b;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        .benefit-list {
+            list-style: none;
+            padding: 0;
+        }
+        .benefit-list li {
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #ff6b6b;
+            border-radius: 4px;
+        }
+        .info-card .benefit-list li {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .benefit-list li:before {
+            content: "→ ";
+            color: #ff6b6b;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -30,7 +114,7 @@
 
         <article class="post-container">
             <div class="post-header">
-                <h1 class="post-title">Autism & IEPs: A Parent's Guide to School Rights & Advocacy</h1>
+                <h1 class="post-title" style="color: #c92a2a;">Autism & IEPs: A Parent's Guide to School Rights & Advocacy</h1>
                 <div class="post-meta">
                     <div class="post-meta-item">
                         <strong>Published:</strong> May 31, 2026
@@ -44,85 +128,124 @@
                 </div>
             </div>
 
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <span class="stat-number">14%</span>
+                    <span class="stat-label">Of school-age children receive IEP services</span>
+                </div>
+                <div class="stat-box" style="background: linear-gradient(135deg, #f6ad55 0%, #f78e69 100%); box-shadow: 0 4px 15px rgba(247, 142, 105, 0.3);">
+                    <span class="stat-number">Annual</span>
+                    <span class="stat-label">IEP review requirement</span>
+                </div>
+                <div class="stat-box" style="background: linear-gradient(135deg, #37b7c3 0%, #009fdf 100%); box-shadow: 0 4px 15px rgba(55, 183, 195, 0.3);">
+                    <span class="stat-number">You + Team</span>
+                    <span class="stat-label">Equal partners in IEP decisions</span>
+                </div>
+            </div>
+
             <div class="post-content">
                 <p>An Individualized Education Program (IEP) is a legally binding document that outlines the special education services and accommodations your autistic child will receive at school. Understanding your rights as a parent is crucial to advocating effectively for your child's educational success.</p>
 
                 <h2>What is an IEP?</h2>
-                <p>An IEP is a personalized education plan developed collaboratively between parents, teachers, special educators, and school administrators. It specifies:</p>
-                <ul>
-                    <li>Your child's current academic and developmental levels</li>
-                    <li>Annual goals and short-term objectives</li>
-                    <li>Specific services and accommodations needed</li>
-                    <li>How progress will be measured</li>
-                    <li>Transition planning (for older students)</li>
-                </ul>
+                <div class="highlight-section">
+                    <p style="margin-top: 0;">An IEP is a personalized education plan developed collaboratively between parents, teachers, special educators, and school administrators. It specifies:</p>
+                    <ul class="benefit-list" style="color: #333;">
+                        <li>Your child's current academic and developmental levels</li>
+                        <li>Annual goals and short-term objectives</li>
+                        <li>Specific services and accommodations needed</li>
+                        <li>How progress will be measured</li>
+                        <li>Transition planning (for older students)</li>
+                    </ul>
+                </div>
 
                 <h2>Your Rights as a Parent</h2>
-                <p><strong>You have the right to:</strong></p>
-                <ul>
-                    <li>Be fully informed about your child's evaluation and IEP process</li>
-                    <li>Participate equally in all IEP meetings and decisions</li>
-                    <li>Request independent evaluations if you disagree with school findings</li>
-                    <li>Bring an advocate or support person to meetings</li>
-                    <li>Request amendments to the IEP at any time</li>
-                    <li>Access all school records about your child</li>
-                    <li>Dispute school decisions through due process</li>
-                </ul>
+                <div class="info-card">
+                    <p style="margin-top: 0;"><strong>You have the right to:</strong></p>
+                    <ul class="benefit-list">
+                        <li>Be fully informed about your child's evaluation and IEP process</li>
+                        <li>Participate equally in all IEP meetings and decisions</li>
+                        <li>Request independent evaluations if you disagree with school findings</li>
+                        <li>Bring an advocate or support person to meetings</li>
+                        <li>Request amendments to the IEP at any time</li>
+                        <li>Access all school records about your child</li>
+                        <li>Dispute school decisions through due process</li>
+                    </ul>
+                </div>
 
                 <h2>Key IEP Components for Autistic Students</h2>
-                <p><strong>Academic Goals:</strong> Realistic, measurable goals addressing reading, math, writing, and other core academics appropriate for your child's abilities.</p>
-                <p><strong>Social-Emotional Goals:</strong> Goals supporting communication, social skills, self-regulation, and emotional well-being.</p>
-                <p><strong>Accommodations:</strong> Changes to how your child accesses the curriculum (extended time, quiet workspace, visual supports, etc.)</p>
-                <p><strong>Modifications:</strong> Changes to what your child is expected to learn (different assignments, simplified content).</p>
-                <p><strong>Services:</strong> Specialized instruction in areas like speech therapy, occupational therapy, or autism-specific support.</p>
+                <div class="accommodation-card">
+                    <strong style="color: #c92a2a;">Academic Goals:</strong> Realistic, measurable goals addressing reading, math, writing, and other core academics appropriate for your child's abilities.
+                </div>
+                <div class="accommodation-card">
+                    <strong style="color: #c92a2a;">Social-Emotional Goals:</strong> Goals supporting communication, social skills, self-regulation, and emotional well-being.
+                </div>
+                <div class="accommodation-card">
+                    <strong style="color: #c92a2a;">Accommodations:</strong> Changes to how your child accesses the curriculum (extended time, quiet workspace, visual supports, etc.)
+                </div>
+                <div class="accommodation-card">
+                    <strong style="color: #c92a2a;">Modifications:</strong> Changes to what your child is expected to learn (different assignments, simplified content).
+                </div>
+                <div class="accommodation-card">
+                    <strong style="color: #c92a2a;">Services:</strong> Specialized instruction in areas like speech therapy, occupational therapy, or autism-specific support.
+                </div>
 
                 <h2>Effective Advocacy Strategies</h2>
-                <p><strong>Come prepared:</strong> Gather recent assessments, samples of your child's work, and notes about strengths and challenges before meetings.</p>
-                <p><strong>Ask clarifying questions:</strong> Don't hesitate to ask what acronyms mean or request explanations in plain language.</p>
-                <p><strong>Advocate for your child's needs:</strong> Focus on specific, measurable goals rather than vague targets.</p>
-                <p><strong>Request documentation:</strong> Ask for written copies of everything discussed and decided in IEP meetings.</p>
-                <p><strong>Follow up in writing:</strong> Send emails summarizing agreements made in meetings for documentation.</p>
+                <div class="rights-box">
+                    <ul class="benefit-list" style="color: #333;">
+                        <li><strong>Come prepared:</strong> Gather recent assessments, samples of your child's work, and notes about strengths and challenges before meetings.</li>
+                        <li><strong>Ask clarifying questions:</strong> Don't hesitate to ask what acronyms mean or request explanations in plain language.</li>
+                        <li><strong>Advocate for your child's needs:</strong> Focus on specific, measurable goals rather than vague targets.</li>
+                        <li><strong>Request documentation:</strong> Ask for written copies of everything discussed and decided in IEP meetings.</li>
+                        <li><strong>Follow up in writing:</strong> Send emails summarizing agreements made in meetings for documentation.</li>
+                    </ul>
+                </div>
 
                 <h2>Common Accommodations</h2>
-                <p>Effective accommodations for autistic students may include:</p>
-                <ul>
-                    <li>Extended time on tests and assignments</li>
-                    <li>Quiet or separate space for work</li>
-                    <li>Visual schedules and supports</li>
-                    <li>Sensory breaks</li>
-                    <li>Preferential seating</li>
-                    <li>Modified social situations (small group instead of whole class)</li>
-                    <li>Advance notice of changes</li>
-                    <li>Communication supports (visual, written, simplified language)</li>
-                </ul>
+                <p style="color: #333;">Effective accommodations for autistic students may include:</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;">
+                    <div class="accommodation-card">Extended time on tests and assignments</div>
+                    <div class="accommodation-card">Quiet or separate space for work</div>
+                    <div class="accommodation-card">Visual schedules and supports</div>
+                    <div class="accommodation-card">Sensory breaks</div>
+                    <div class="accommodation-card">Preferential seating</div>
+                    <div class="accommodation-card">Modified social situations</div>
+                    <div class="accommodation-card">Advance notice of changes</div>
+                    <div class="accommodation-card">Communication supports</div>
+                </div>
 
                 <h2>Annual Reviews and Updates</h2>
-                <p>IEPs must be reviewed at least annually. You can request more frequent reviews if your child's needs change. Regular updates ensure the IEP continues to meet your child's evolving needs.</p>
+                <div class="highlight-section" style="background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);">
+                    <p style="margin-top: 0;">IEPs must be reviewed at least annually. You can request more frequent reviews if your child's needs change. <strong>Regular updates ensure the IEP continues to meet your child's evolving needs.</strong></p>
+                </div>
 
                 <h2>Transition Planning</h2>
-                <p>By age 16 (or as required in your state), IEPs must include transition planning focused on post-secondary goals in education, employment, and independent living. This is critical for preparing your child for life after high school.</p>
+                <div class="info-card">
+                    <p style="margin-top: 0;">By age 16 (or as required in your state), IEPs must include transition planning focused on post-secondary goals in education, employment, and independent living. <strong>This is critical for preparing your child for life after high school.</strong></p>
+                </div>
 
                 <h2>When to Seek Additional Support</h2>
-                <p>If you feel your child's needs aren't being met, consider:</p>
-                <ul>
-                    <li>Meeting with the school's special education coordinator</li>
-                    <li>Requesting an independent evaluation</li>
-                    <li>Consulting with an educational advocate or attorney</li>
-                    <li>Using your school district's dispute resolution process</li>
-                </ul>
+                <div class="rights-box">
+                    <p style="margin-top: 0;"><strong>If you feel your child's needs aren't being met, consider:</strong></p>
+                    <ul class="benefit-list" style="color: #333;">
+                        <li>Meeting with the school's special education coordinator</li>
+                        <li>Requesting an independent evaluation</li>
+                        <li>Consulting with an educational advocate or attorney</li>
+                        <li>Using your school district's dispute resolution process</li>
+                    </ul>
+                </div>
 
                 <p><strong>Remember:</strong> The IEP exists to support your child's success. You are a crucial partner in this process, and your insights about your child are invaluable.</p>
             </div>
         </article>
 
         <!-- Call to Action -->
-        <div style="background: #f0f7ff; padding: 20px; border-radius: 6px; margin-top: 40px; border-left: 4px solid #1e5a96;">
-            <h3 style="color: #0f3a5c; margin-top: 0;">Learn More</h3>
-            <p>For additional resources on autism education and advocacy, visit <a href="https://grscorp.us">GRSCorp.us</a>.</p>
+        <div style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%); padding: 30px; border-radius: 8px; margin-top: 40px; color: white; text-align: center;">
+            <h3 style="color: white; margin-top: 0;">Need IEP Support?</h3>
+            <p>For advocacy resources and education guidance, visit <a href="https://grscorp.us" style="color: #ffff00; font-weight: bold;">GRSCorp.us</a>.</p>
         </div>
 
         <div style="text-align: center; margin-top: 40px;">
-            <a href="/blogs/" style="color: #1e5a96; font-weight: 600;">← Back to all blog posts</a>
+            <a href="/blogs/" style="color: #c92a2a; font-weight: 600;">← Back to all blog posts</a>
         </div>
     </div>
 
