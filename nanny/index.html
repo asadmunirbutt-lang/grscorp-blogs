@@ -11,474 +11,817 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:          #0d0820;
-      --surface:     #160f31;
-      --card:        #1e1445;
-      --card2:       #281b58;
-      --teal:        #ff7043;
-      --teal-dk:     #e64a19;
-      --red:         #e91e8c;
-      --red-dk:      #c2185b;
-      --carry-bg:    #2d0d28;
-      --carry-bdr:   #9c27b0;
-      --text:        #f0ebff;
-      --muted:       #9580c4;
-      --border:      #3b2468;
+      --bg:        #0f0a1e;
+      --surface:   #17103a;
+      --card:      #1e1648;
+      --card2:     #261d58;
+      --card3:     #2f2468;
+      --coral:     #ff6b6b;
+      --orange:    #ff9f43;
+      --yellow:    #ffd32a;
+      --mint:      #1dd1a1;
+      --blue:      #54a0ff;
+      --pink:      #ff6b9d;
+      --lavender:  #c084fc;
+      --text:      #f5f0ff;
+      --muted:     #9580c4;
+      --dim:       #6b5e8a;
+      --border:    rgba(255,255,255,0.07);
+      --border2:   rgba(255,255,255,0.14);
     }
 
     html, body {
       background: var(--bg);
+      background-image:
+        radial-gradient(ellipse at 15% 40%, rgba(192,132,252,0.07) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 15%, rgba(255,107,107,0.06) 0%, transparent 55%),
+        radial-gradient(ellipse at 60% 85%, rgba(84,160,255,0.05) 0%, transparent 55%);
       color: var(--text);
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       min-height: 100vh;
       font-size: 15px;
       -webkit-text-size-adjust: 100%;
     }
-
     input, select, textarea, button { font-family: inherit; font-size: inherit; }
 
-    /* ── LOGIN ── */
+    /* ═══════════════ LOGIN ═══════════════ */
     #login-screen {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      padding: 20px;
-      background: linear-gradient(135deg, #0d0820 0%, #1a0a3a 50%, #0d1a2e 100%);
+      padding: 24px;
     }
 
     .login-box {
-      background: var(--surface);
-      border: 1px solid #5b2d8a;
-      border-radius: 16px;
-      padding: 36px 28px;
+      background: rgba(23,16,58,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(192,132,252,0.2);
+      border-radius: 20px;
+      padding: 40px 32px;
       width: 100%;
-      max-width: 380px;
-      box-shadow: 0 0 40px rgba(171,71,188,0.2), 0 0 80px rgba(255,112,67,0.08);
+      max-width: 390px;
+      box-shadow: 0 8px 60px rgba(192,132,252,0.12), 0 0 0 1px rgba(255,255,255,0.04);
     }
 
-    .login-logo { text-align: center; margin-bottom: 28px; }
+    .login-logo { text-align: center; margin-bottom: 32px; }
+
+    .login-logo .logo-icon {
+      font-size: 3rem;
+      line-height: 1;
+      margin-bottom: 10px;
+      display: block;
+      filter: drop-shadow(0 0 16px rgba(255,107,107,0.5));
+    }
+
     .login-logo .app-name {
-      font-size: 2rem;
+      font-size: 1.75rem;
       font-weight: 800;
-      letter-spacing: 1px;
-      background: linear-gradient(90deg, #ff7043, #ff4081, #ab47bc, #ff7043);
+      background: linear-gradient(135deg, #ff6b6b 0%, #ff9f43 35%, #ff6b9d 65%, #c084fc 100%);
       background-size: 200% auto;
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      animation: shimmer 3s linear infinite;
+      animation: shimmer 4s linear infinite;
+      letter-spacing: -0.5px;
     }
-    @keyframes shimmer { to { background-position: 200% center; } }
-    .login-logo .app-sub  { color: var(--muted); font-size: 0.75rem; margin-top: 5px; letter-spacing: 0.5px; }
 
-    .fg { margin-bottom: 13px; }
-    .fg label { display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 5px; }
+    @keyframes shimmer { to { background-position: 200% center; } }
+
+    .login-logo .app-sub {
+      color: var(--muted);
+      font-size: 0.72rem;
+      margin-top: 6px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* Form elements */
+    .fg { margin-bottom: 14px; }
+    .fg label { display: block; color: var(--muted); font-size: 0.78rem; margin-bottom: 6px; font-weight: 500; letter-spacing: 0.3px; }
+
     .fg input, .fg select, .fg textarea {
       width: 100%;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 6px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
       color: var(--text);
-      padding: 9px 11px;
+      padding: 11px 14px;
       outline: none;
-      transition: border-color 0.2s;
+      transition: border-color 0.2s, background 0.2s;
       -webkit-appearance: none;
     }
-    .fg input:focus, .fg select:focus, .fg textarea:focus { border-color: var(--teal); }
-    .fg select option { background: var(--card); }
-    .fg textarea { resize: vertical; min-height: 70px; }
-
-    .btn {
-      border: none; border-radius: 6px; cursor: pointer;
-      font-weight: 600; padding: 10px 18px;
-      transition: all 0.15s; display: inline-block; text-align: center;
+    .fg input:focus, .fg select:focus, .fg textarea:focus {
+      border-color: var(--lavender);
+      background: rgba(255,255,255,0.09);
     }
-    .btn-teal  { background: linear-gradient(90deg, #ff7043, #e91e8c); color: #fff; border: none; }
-    .btn-teal:hover { background: linear-gradient(90deg, #e64a19, #c2185b); }
-    .btn-red   { background: var(--red); color: #fff; }
-    .btn-red:hover { background: var(--red-dk); }
-    .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
-    .btn-ghost:hover { border-color: var(--teal); color: var(--teal); }
+    .fg select option { background: #1e1648; }
+    .fg textarea { resize: vertical; min-height: 72px; }
+    ::placeholder { color: var(--dim); }
+
+    /* Buttons */
+    .btn {
+      border: none; border-radius: 10px; cursor: pointer;
+      font-weight: 700; padding: 12px 20px;
+      transition: all 0.18s; display: inline-block;
+      text-align: center; letter-spacing: 0.2px;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ff9f43 100%);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(255,107,107,0.35);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(255,107,107,0.45); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-ghost {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border2);
+      color: var(--text);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.11); border-color: var(--lavender); }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ff6b9d, #e91e8c);
+      color: #fff;
+      box-shadow: 0 3px 14px rgba(233,30,140,0.3);
+    }
+    .btn-danger:hover { box-shadow: 0 5px 18px rgba(233,30,140,0.4); }
+
     .btn-block { width: 100%; }
-    .btn-sm    { padding: 6px 12px; font-size: 0.82rem; }
+    .btn-sm { padding: 7px 14px; font-size: 0.82rem; border-radius: 8px; }
 
-    .err-msg { color: #ef4444; font-size: 0.8rem; margin-bottom: 10px; display: none; }
-    .link-btn { background: none; border: none; color: var(--teal); cursor: pointer; font-size: 0.82rem; padding: 0; text-decoration: underline; }
+    .err-msg { color: #ff6b6b; font-size: 0.8rem; margin-bottom: 10px; display: none; }
+    .link-btn {
+      background: none; border: none;
+      color: var(--lavender); cursor: pointer;
+      font-size: 0.82rem; padding: 0; text-decoration: underline;
+    }
 
-    /* ── APP SHELL ── */
+    /* ═══════════════ APP SHELL ═══════════════ */
     #app-screen { display: none; flex-direction: column; min-height: 100vh; }
 
+    /* Tab bar */
     .tab-bar {
-      background: linear-gradient(90deg, #160f31, #1a0a3a, #160f31);
+      background: rgba(23,16,58,0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      padding: 8px 10px;
+      padding: 8px 12px;
       gap: 4px;
       overflow-x: auto;
       position: sticky;
       top: 0;
       z-index: 100;
       scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
     }
     .tab-bar::-webkit-scrollbar { display: none; }
 
     .tab-btn {
       background: transparent;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       color: var(--muted);
       cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: 500;
-      padding: 7px 13px;
-      transition: all 0.15s;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 8px 14px;
+      transition: all 0.2s;
       white-space: nowrap;
       flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
-    .tab-btn:hover { color: var(--text); }
-    .tab-btn.active { background: var(--teal); color: #000; font-weight: 600; }
+    .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.06); }
+    .tab-btn.active {
+      background: linear-gradient(135deg, #ff6b6b, #ff9f43);
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(255,107,107,0.3);
+    }
+    .tab-btn .ti { font-size: 0.95rem; }
 
     .tab-spacer { flex: 1; }
 
     .logout-tab {
-      background: var(--red);
-      border: none;
-      border-radius: 6px;
-      color: #fff;
+      background: rgba(233,30,140,0.15);
+      border: 1px solid rgba(233,30,140,0.3);
+      border-radius: 8px;
+      color: #ff6b9d;
       cursor: pointer;
       font-size: 0.82rem;
       font-weight: 600;
       padding: 7px 13px;
       flex-shrink: 0;
       white-space: nowrap;
+      transition: all 0.15s;
     }
+    .logout-tab:hover { background: rgba(233,30,140,0.25); }
 
-    .app-content {
-      flex: 1;
-      max-width: 600px;
-      margin: 0 auto;
-      width: 100%;
-    }
+    .app-content { flex: 1; max-width: 600px; margin: 0 auto; width: 100%; }
 
-    .view { display: none; padding: 14px 14px 60px; }
+    .view { display: none; padding: 0 0 70px; }
     .view.active { display: block; }
 
-    /* ── CHECKLIST ── */
+    /* ═══════════════ CHECKLIST HEADER ═══════════════ */
+    .checklist-hero {
+      background: linear-gradient(135deg, #1e1648 0%, #17103a 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 16px 20px;
+    }
+
     .user-header {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 14px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid var(--border);
+      gap: 12px;
+      margin-bottom: 18px;
     }
 
     .user-avatar {
-      width: 46px; height: 46px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #ff7043, #e91e8c);
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #ff6b6b, #ff6b9d, #c084fc);
       color: #fff;
-      font-weight: 700;
-      font-size: 1rem;
+      font-weight: 800;
+      font-size: 1.05rem;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      letter-spacing: 0.5px;
-      box-shadow: 0 2px 12px rgba(255,112,67,0.4);
+      box-shadow: 0 4px 16px rgba(255,107,107,0.4);
     }
 
     .user-info { flex: 1; min-width: 0; }
     .user-app-name {
-      font-weight: 800;
-      font-size: 1.05rem;
-      letter-spacing: 0.5px;
-      background: linear-gradient(90deg, #ff7043, #ff4081, #ab47bc);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      font-weight: 800; font-size: 1rem;
+      background: linear-gradient(90deg, #ff6b6b, #ff9f43, #ff6b9d);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
-    .user-welcome  { color: var(--muted); font-size: 0.78rem; margin-top: 2px; }
+    .user-welcome { color: var(--muted); font-size: 0.78rem; margin-top: 2px; }
 
     .sign-out-btn {
-      background: var(--red);
-      border: none;
-      border-radius: 6px;
-      color: #fff;
+      background: rgba(233,30,140,0.15);
+      border: 1px solid rgba(233,30,140,0.35);
+      border-radius: 8px;
+      color: #ff6b9d;
       cursor: pointer;
-      font-size: 0.78rem;
-      font-weight: 600;
-      padding: 6px 11px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 7px 12px;
       line-height: 1.3;
       text-align: center;
       flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .sign-out-btn:hover { background: rgba(233,30,140,0.25); }
+
+    /* Shift cards */
+    .shift-label-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .field-label { color: var(--muted); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+    .shift-locked-badge {
+      background: rgba(29,209,161,0.15);
+      border: 1px solid rgba(29,209,161,0.3);
+      border-radius: 20px;
+      color: #1dd1a1;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      display: none;
     }
 
-    .field-label { color: var(--muted); font-size: 0.8rem; margin-bottom: 5px; margin-top: 12px; }
-    .field-note  { color: var(--muted); font-size: 0.73rem; margin-top: 4px; font-style: italic; }
+    .shift-cards {
+      display: flex;
+      gap: 8px;
+    }
 
-    .room-title { font-size: 1.2rem; font-weight: 700; margin: 16px 0 10px; }
+    .shift-card {
+      flex: 1;
+      background: var(--card);
+      border: 1.5px solid var(--border2);
+      border-radius: 12px;
+      cursor: pointer;
+      padding: 10px 6px;
+      text-align: center;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .shift-card:hover { border-color: var(--lavender); background: var(--card2); }
+    .shift-card.selected.s-morning {
+      background: rgba(255,211,42,0.12);
+      border-color: #ffd32a;
+      box-shadow: 0 0 16px rgba(255,211,42,0.15);
+    }
+    .shift-card.selected.s-midday {
+      background: rgba(255,159,67,0.12);
+      border-color: #ff9f43;
+      box-shadow: 0 0 16px rgba(255,159,67,0.15);
+    }
+    .shift-card.selected.s-night {
+      background: rgba(192,132,252,0.12);
+      border-color: #c084fc;
+      box-shadow: 0 0 16px rgba(192,132,252,0.15);
+    }
+    .shift-card:disabled { cursor: not-allowed; opacity: 0.7; }
+    .shift-emoji { font-size: 1.4rem; line-height: 1; }
+    .shift-name { font-size: 0.78rem; font-weight: 700; color: var(--text); }
+    .shift-time { font-size: 0.65rem; color: var(--muted); }
 
+    /* Room selector */
+    .room-section { padding: 14px 16px 0; }
+    .room-select-wrap { position: relative; }
+    .room-select-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--lavender);
+      pointer-events: none;
+      font-size: 1rem;
+    }
+    .room-select-wrap select {
+      width: 100%;
+      background: var(--card);
+      border: 1.5px solid var(--border2);
+      border-radius: 12px;
+      color: var(--text);
+      padding: 12px 40px 12px 14px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      -webkit-appearance: none;
+      appearance: none;
+      transition: border-color 0.2s;
+    }
+    .room-select-wrap select:focus { border-color: var(--lavender); }
+    .room-select-wrap select option { background: #1e1648; }
+
+    /* Room content */
+    .room-content-wrap { padding: 0 16px; }
+
+    .room-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 18px 0 8px;
+    }
+    .room-emoji-badge {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--card2), var(--card3));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+      border: 1px solid var(--border2);
+    }
+    .room-title { font-size: 1.2rem; font-weight: 800; }
+
+    /* Progress bar */
+    .progress-wrap { margin-bottom: 14px; }
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .progress-text { font-size: 0.75rem; color: var(--muted); font-weight: 600; }
+    .progress-pct { font-size: 0.75rem; font-weight: 700; color: var(--mint); }
+    .progress-bar {
+      background: var(--card2);
+      border-radius: 20px;
+      height: 6px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 20px;
+      background: linear-gradient(90deg, #1dd1a1, #54a0ff);
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      width: 0%;
+    }
+
+    /* Task cards */
     .task-card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      margin-bottom: 7px;
-      padding: 11px 10px;
+      border-left: 3px solid transparent;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      padding: 13px 12px;
+      transition: all 0.2s;
+    }
+    .task-card:hover { border-color: var(--border2); border-left-color: var(--lavender); }
+    .task-card.done-yes   { border-left-color: #1dd1a1; background: rgba(29,209,161,0.04); }
+    .task-card.done-no    { border-left-color: #ff6b6b; background: rgba(255,107,107,0.04); }
+    .task-card.done-carry { border-left-color: #ff9f43; background: rgba(255,159,67,0.04); }
+    .task-card.is-carry   { border-left-color: #c084fc; background: rgba(192,132,252,0.06); }
+
+    .task-top {
       display: flex;
       align-items: center;
       gap: 8px;
-      flex-wrap: wrap;
+      margin-bottom: 10px;
     }
-    .task-card.is-carry { background: var(--carry-bg); border-color: var(--carry-bdr); }
-
-    .task-name {
-      flex: 1;
-      font-weight: 600;
-      font-size: 0.88rem;
-      min-width: 90px;
-      line-height: 1.3;
-    }
-
+    .task-name { font-weight: 600; font-size: 0.9rem; flex: 1; line-height: 1.35; }
     .carry-badge {
-      background: var(--red);
+      background: linear-gradient(135deg, #7b1fa2, #c084fc);
       color: #fff;
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       font-weight: 700;
-      padding: 2px 5px;
-      border-radius: 3px;
+      padding: 3px 7px;
+      border-radius: 20px;
       letter-spacing: 0.5px;
       flex-shrink: 0;
     }
 
-    .task-actions { display: flex; gap: 5px; flex-shrink: 0; }
-
-    .tact {
-      background: var(--card2);
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      color: var(--muted);
+    .task-btns { display: flex; gap: 7px; }
+    .tbtn {
+      flex: 1;
+      border-radius: 9px;
+      border: 1.5px solid var(--border2);
+      background: transparent;
+      color: var(--dim);
       cursor: pointer;
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 5px 8px;
-      transition: all 0.12s;
-      white-space: nowrap;
-    }
-    .tact:hover           { border-color: var(--teal); color: var(--text); }
-    .tact.sel-yes         { background: #064e3b; border-color: #10b981; color: #10b981; }
-    .tact.sel-no          { background: #7f1d1d; border-color: #ef4444; color: #fca5a5; }
-    .tact.sel-carry       { background: #1e293b; border-color: #64748b; color: #94a3b8; }
-
-    .submit-row { margin-top: 16px; }
-
-    /* ── NOTES / SUPPLIES ── */
-    .sec-heading {
-      font-size: 1rem;
+      font-size: 0.8rem;
       font-weight: 700;
-      margin: 22px 0 10px;
-      background: linear-gradient(90deg, #ff7043, #e91e8c);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      padding: 8px 4px;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      line-height: 1;
     }
+    .tbtn:hover { background: var(--card2); color: var(--text); }
+
+    .tbtn.sel-yes   { background: rgba(29,209,161,0.18); border-color: #1dd1a1; color: #1dd1a1; }
+    .tbtn.sel-no    { background: rgba(255,107,107,0.18); border-color: #ff6b6b; color: #ff6b6b; }
+    .tbtn.sel-carry { background: rgba(255,159,67,0.18);  border-color: #ff9f43; color: #ff9f43; }
+
+    .tbtn-icon { font-size: 0.85rem; }
+
+    /* Submit */
+    .submit-section {
+      padding: 18px 16px 8px;
+    }
+    .submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #1dd1a1 0%, #54a0ff 100%);
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 800;
+      padding: 16px;
+      text-align: center;
+      transition: all 0.2s;
+      box-shadow: 0 4px 24px rgba(29,209,161,0.3);
+      letter-spacing: 0.3px;
+    }
+    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(29,209,161,0.4); }
+    .submit-btn:active { transform: translateY(0); }
+
+    /* ═══════════════ NOTES / SUPPLIES ═══════════════ */
+    .section-block { padding: 0 16px; }
+
+    .sec-heading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      margin: 22px 0 10px;
+      letter-spacing: 0.3px;
+    }
+    .sec-heading.notes-head { color: #54a0ff; }
+    .sec-heading.supplies-head { color: #ff9f43; }
+    .sec-icon { font-size: 1rem; }
 
     .note-item {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 7px;
-      margin-bottom: 5px;
+      border-left: 3px solid #54a0ff;
+      border-radius: 10px;
+      margin-bottom: 6px;
       overflow: hidden;
+      transition: border-color 0.15s;
     }
+    .note-item:hover { border-color: rgba(84,160,255,0.4); }
     .note-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 9px 11px;
+      padding: 10px 12px;
       cursor: pointer;
       user-select: none;
     }
     .note-header-left {
       display: flex;
       align-items: center;
-      gap: 6px;
-      color: var(--teal);
+      gap: 7px;
+      color: #54a0ff;
       font-size: 0.82rem;
       min-width: 0;
+      font-weight: 600;
     }
-    .note-arrow { font-size: 0.65rem; flex-shrink: 0; transition: transform 0.15s; }
+    .note-arrow { font-size: 0.62rem; flex-shrink: 0; transition: transform 0.15s; }
     .note-arrow.open { transform: rotate(90deg); }
     .note-author { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .note-body { display: none; padding: 0 11px 10px; color: var(--muted); font-size: 0.83rem; line-height: 1.5; }
+    .note-body { display: none; padding: 0 12px 10px; color: var(--muted); font-size: 0.84rem; line-height: 1.55; }
     .note-body.open { display: block; }
 
-    .x-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 1rem; padding: 3px 5px; line-height: 1; flex-shrink: 0; }
+    .x-btn {
+      background: none; border: none; color: var(--dim);
+      cursor: pointer; font-size: 1rem; padding: 3px 5px; line-height: 1;
+      flex-shrink: 0; transition: color 0.15s; border-radius: 4px;
+    }
+    .x-btn:hover { color: #ff6b6b; background: rgba(255,107,107,0.1); }
 
     .supply-item {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 7px;
-      padding: 9px 11px;
-      margin-bottom: 5px;
+      border-left: 3px solid #ff9f43;
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 6px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
     .supply-info { flex: 1; min-width: 0; }
-    .supply-name { font-weight: 600; font-size: 0.88rem; }
+    .supply-name { font-weight: 700; font-size: 0.88rem; }
     .supply-meta { color: var(--muted); font-size: 0.72rem; margin-top: 2px; }
-    .supply-qty  { background: var(--card2); border-radius: 4px; font-weight: 700; padding: 3px 9px; font-size: 0.9rem; }
-
-    .input-row { display: flex; gap: 7px; margin-bottom: 7px; }
-    .input-row .fg { flex: 1; margin-bottom: 0; }
-    .input-row .fg.qty-f { flex: 0 0 72px; }
-
-    /* ── ADMIN ── */
-    .admin-heading {
-      font-size: 1.4rem;
+    .supply-qty {
+      background: linear-gradient(135deg, rgba(255,159,67,0.2), rgba(255,211,42,0.15));
+      border: 1px solid rgba(255,159,67,0.35);
+      border-radius: 8px;
+      color: #ff9f43;
       font-weight: 800;
-      margin-bottom: 14px;
-      background: linear-gradient(90deg, #ff7043, #e91e8c, #ab47bc);
+      padding: 4px 12px;
+      font-size: 0.9rem;
+      min-width: 36px;
+      text-align: center;
+    }
+
+    .input-row { display: flex; gap: 8px; margin-bottom: 8px; }
+    .input-row .fg { flex: 1; margin-bottom: 0; }
+    .input-row .fg.qty-f { flex: 0 0 76px; }
+
+    /* ═══════════════ ADMIN ═══════════════ */
+    .admin-top {
+      padding: 20px 16px 0;
+    }
+    .admin-heading {
+      font-size: 1.5rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, #ff6b6b, #ff9f43, #ff6b9d);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      margin-bottom: 16px;
     }
 
-    .admin-sub-tabs { display: flex; gap: 7px; margin-bottom: 16px; }
+    .admin-sub-tabs { display: flex; gap: 8px; margin-bottom: 18px; }
     .asub-btn {
+      flex: 1;
       background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 6px;
+      border: 1.5px solid var(--border2);
+      border-radius: 10px;
       color: var(--muted);
       cursor: pointer;
       font-size: 0.88rem;
-      font-weight: 600;
-      padding: 8px 18px;
+      font-weight: 700;
+      padding: 10px;
       transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
-    .asub-btn.active { background: var(--teal); border-color: var(--teal); color: #000; }
+    .asub-btn.active {
+      background: linear-gradient(135deg, #ff6b6b, #ff9f43);
+      border-color: transparent;
+      color: #fff;
+      box-shadow: 0 3px 14px rgba(255,107,107,0.3);
+    }
 
-    .admin-panel { display: none; }
+    .admin-panel { display: none; padding: 0 16px; }
     .admin-panel.active { display: block; }
 
     .panel-card {
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 10px;
+      border-radius: 14px;
       padding: 18px;
       margin-bottom: 14px;
     }
-    .panel-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 14px; }
+    .panel-card h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--lavender);
+    }
 
     .staff-card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 7px;
-      padding: 11px;
-      margin-bottom: 6px;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 7px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
+      gap: 10px;
+      transition: border-color 0.15s;
     }
+    .staff-card:hover { border-color: var(--border2); }
     .staff-details { flex: 1; min-width: 0; }
     .staff-name { font-weight: 700; font-size: 0.92rem; }
-    .staff-meta { color: var(--muted); font-size: 0.75rem; margin-top: 2px; }
-    .staff-role { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
+    .staff-meta { color: var(--muted); font-size: 0.74rem; margin-top: 2px; }
+    .staff-role-badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+    .role-admin    { background: rgba(192,132,252,0.2); color: var(--lavender); border: 1px solid rgba(192,132,252,0.3); }
+    .role-caretaker { background: rgba(84,160,255,0.15); color: #54a0ff; border: 1px solid rgba(84,160,255,0.25); }
 
-    /* ── REPORTS ── */
-    .report-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 14px; }
+    /* ═══════════════ REPORTS ═══════════════ */
+    .report-top { padding: 20px 16px 0; }
+    .report-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
     .date-row { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
     .date-row input[type="date"] {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text);
-      padding: 8px 10px;
-      font-size: 0.88rem;
       flex: 1;
+      background: var(--card);
+      border: 1.5px solid var(--border2);
+      border-radius: 10px;
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 0.88rem;
       outline: none;
+      transition: border-color 0.2s;
+    }
+    .date-row input[type="date"]:focus { border-color: var(--lavender); }
+
+    .report-content { padding: 0 16px; }
+
+    .sub-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .sub-header {
+      background: var(--card);
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sub-name { font-weight: 800; font-size: 0.92rem; }
+    .sub-meta { color: var(--muted); font-size: 0.74rem; margin-top: 2px; }
+    .sub-pill {
+      background: var(--card2);
+      border-radius: 20px;
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      white-space: nowrap;
     }
 
-    .sub-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
-    .sub-header { background: var(--card); padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; }
-    .sub-name   { font-weight: 700; font-size: 0.92rem; }
-    .sub-meta   { color: var(--muted); font-size: 0.75rem; margin-top: 2px; }
-    .sub-pill   { background: var(--card2); border-radius: 12px; color: var(--muted); font-size: 0.72rem; font-weight: 600; padding: 3px 10px; white-space: nowrap; }
-    .sub-tasks  { padding: 6px 14px 12px; }
-
-    .task-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 0.83rem; gap: 8px; }
+    .sub-tasks { padding: 6px 14px 12px; }
+    .task-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.83rem;
+      gap: 8px;
+    }
     .task-row:last-child { border-bottom: none; }
     .task-row-name { flex: 1; }
-    .s-yes   { color: #10b981; font-weight: 600; }
-    .s-no    { color: #ef4444; font-weight: 600; }
-    .s-carry { color: #94a3b8; font-weight: 600; }
 
-    .week-wrap  { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .s-yes   { color: #1dd1a1; font-weight: 700; }
+    .s-no    { color: #ff6b6b; font-weight: 700; }
+    .s-carry { color: #ff9f43; font-weight: 700; }
+
+    .week-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .week-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 320px; }
-    .week-table th, .week-table td { border: 1px solid var(--border); padding: 6px 8px; text-align: center; }
-    .week-table th { background: var(--card); color: var(--muted); font-weight: 600; }
+    .week-table th, .week-table td {
+      border: 1px solid var(--border);
+      padding: 7px 10px;
+      text-align: center;
+    }
+    .week-table th { background: var(--card); color: var(--muted); font-weight: 700; }
     .week-table td:first-child { text-align: left; }
     .week-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
 
-    /* ── TOAST ── */
+    /* ═══════════════ TOAST ═══════════════ */
     #toast {
-      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-      padding: 11px 22px; border-radius: 8px; font-size: 0.88rem; font-weight: 600;
-      z-index: 9999; display: none; max-width: 88vw; text-align: center; pointer-events: none;
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      z-index: 9999;
+      display: none;
+      max-width: 88vw;
+      text-align: center;
+      pointer-events: none;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.3);
     }
-    .t-ok  { background: var(--teal); color: #000; }
-    .t-err { background: var(--red);  color: #fff; }
+    .t-ok  { background: linear-gradient(135deg, #1dd1a1, #54a0ff); color: #fff; }
+    .t-err { background: linear-gradient(135deg, #ff6b6b, #ff6b9d); color: #fff; }
 
-    /* ── SETUP BANNER ── */
+    /* ═══════════════ SETUP BANNER ═══════════════ */
     .setup-banner {
-      background: #1a1200; border: 1px solid #f59e0b; border-radius: 10px;
-      color: #fbbf24; font-size: 0.82rem; margin-bottom: 20px; padding: 16px; line-height: 1.6;
+      background: rgba(255,159,67,0.1);
+      border: 1px solid rgba(255,159,67,0.3);
+      border-radius: 12px;
+      color: #ff9f43;
+      font-size: 0.82rem;
+      margin-bottom: 20px;
+      padding: 16px;
+      line-height: 1.6;
     }
-    .setup-banner strong { display: block; margin-bottom: 8px; font-size: 0.92rem; color: #f59e0b; }
-    .setup-banner code  { background: rgba(0,0,0,0.4); border-radius: 3px; font-family: monospace; font-size: 0.8rem; padding: 1px 4px; }
+    .setup-banner strong { display: block; margin-bottom: 8px; font-size: 0.92rem; }
+    .setup-banner code {
+      background: rgba(0,0,0,0.3);
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.8rem;
+      padding: 1px 5px;
+    }
 
-    .empty-state { color: var(--muted); font-size: 0.88rem; padding: 10px 0; }
-    .muted       { color: var(--muted); }
+    .empty-state { color: var(--muted); font-size: 0.88rem; padding: 12px 0; }
+    .muted { color: var(--muted); }
   </style>
 </head>
 <body>
 
-<!-- ═══════════════════ LOGIN ═══════════════════ -->
+<!-- ═══════════════════════ LOGIN ═══════════════════════ -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">
+      <span class="logo-icon">🏡</span>
       <div class="app-name">Happy Nannying</div>
-      <div class="app-sub">GRSCORP HOUSEHOLD MANAGEMENT</div>
+      <div class="app-sub">GRSCORP Household Management</div>
     </div>
 
     <div id="setup-banner-wrap"></div>
 
-    <!-- Sign-in -->
     <div id="login-form">
       <div class="fg"><label>Email</label><input type="email" id="li-email" placeholder="you@example.com" autocomplete="email"></div>
       <div class="fg"><label>Password</label><input type="password" id="li-pwd" placeholder="••••••••" autocomplete="current-password"></div>
       <div class="err-msg" id="li-err"></div>
-      <button class="btn btn-teal btn-block" onclick="doLogin()">Sign In</button>
-      <div style="text-align:center;margin-top:12px;font-size:0.82rem;color:var(--muted)">
+      <button class="btn btn-primary btn-block" onclick="doLogin()">Sign In →</button>
+      <div style="text-align:center;margin-top:14px;font-size:0.82rem;color:var(--muted)">
         <button class="link-btn" onclick="showForgot()">Forgot password?</button>
         &nbsp;·&nbsp;
-        <button class="link-btn" onclick="showRegForm()">New staff? Set password</button>
+        <button class="link-btn" onclick="showRegForm()">New here? Set password</button>
       </div>
     </div>
 
-    <!-- First-time register -->
     <div id="reg-form" style="display:none">
-      <p style="color:var(--muted);font-size:0.82rem;margin-bottom:14px">Your admin must have added your email. Create a password to activate your account.</p>
+      <p style="color:var(--muted);font-size:0.82rem;margin-bottom:14px;line-height:1.5">Your admin must have added your email first. Then create a password to activate your account.</p>
       <div class="fg"><label>Email</label><input type="email" id="rg-email" placeholder="you@example.com"></div>
       <div class="fg"><label>New Password (min 6 chars)</label><input type="password" id="rg-pwd" placeholder="Choose a password"></div>
       <div class="err-msg" id="rg-err"></div>
-      <button class="btn btn-teal btn-block" onclick="doRegister()">Create Password &amp; Sign In</button>
+      <button class="btn btn-primary btn-block" onclick="doRegister()">Activate Account →</button>
       <div style="text-align:center;margin-top:10px">
         <button class="link-btn" onclick="showLoginForm()">← Back to Sign In</button>
       </div>
@@ -486,80 +829,119 @@
   </div>
 </div>
 
-<!-- ═══════════════════ APP ═══════════════════ -->
+<!-- ═══════════════════════ APP ═══════════════════════ -->
 <div id="app-screen">
+
   <!-- Tab bar -->
   <div class="tab-bar">
-    <button class="tab-btn active" data-tab="checklist" onclick="switchTab('checklist')">Checklist</button>
-    <button class="tab-btn" data-tab="admin" onclick="switchTab('admin')" id="admin-tab" style="display:none">Admin</button>
-    <button class="tab-btn" data-tab="daily"  onclick="switchTab('daily')">Daily</button>
-    <button class="tab-btn" data-tab="weekly" onclick="switchTab('weekly')">Weekly</button>
+    <button class="tab-btn active" data-tab="checklist" onclick="switchTab('checklist')">
+      <span class="ti">✅</span> Checklist
+    </button>
+    <button class="tab-btn" data-tab="admin" onclick="switchTab('admin')" id="admin-tab" style="display:none">
+      <span class="ti">⚙️</span> Admin
+    </button>
+    <button class="tab-btn" data-tab="daily" onclick="switchTab('daily')">
+      <span class="ti">📅</span> Daily
+    </button>
+    <button class="tab-btn" data-tab="weekly" onclick="switchTab('weekly')">
+      <span class="ti">📊</span> Weekly
+    </button>
     <div class="tab-spacer"></div>
-    <button class="logout-tab" onclick="doLogout()">Logout</button>
+    <button class="logout-tab" onclick="doLogout()">↩ Logout</button>
   </div>
 
   <div class="app-content">
 
     <!-- ── CHECKLIST ── -->
     <div class="view active" id="view-checklist">
-      <div class="user-header">
-        <div class="user-avatar" id="user-avatar">GR</div>
-        <div class="user-info">
-          <div class="user-app-name">Happy Nannying</div>
-          <div class="user-welcome" id="user-welcome">Welcome</div>
+
+      <!-- Hero header -->
+      <div class="checklist-hero">
+        <div class="user-header">
+          <div class="user-avatar" id="user-avatar">HN</div>
+          <div class="user-info">
+            <div class="user-app-name">Happy Nannying</div>
+            <div class="user-welcome" id="user-welcome">Welcome back!</div>
+          </div>
+          <button class="sign-out-btn" onclick="doLogout()">Sign Out</button>
         </div>
-        <button class="sign-out-btn" onclick="doLogout()">Sign<br>Out</button>
+
+        <!-- Shift cards -->
+        <div class="shift-label-row">
+          <span class="field-label">Select Your Shift</span>
+          <span class="shift-locked-badge" id="shift-locked-badge">🔒 Locked</span>
+        </div>
+        <div class="shift-cards" id="shift-cards">
+          <button class="shift-card s-morning" onclick="selectShift('1st', this)">
+            <span class="shift-emoji">🌅</span>
+            <span class="shift-name">Morning</span>
+            <span class="shift-time">6AM–2PM</span>
+          </button>
+          <button class="shift-card s-midday" onclick="selectShift('2nd', this)">
+            <span class="shift-emoji">☀️</span>
+            <span class="shift-name">Midday</span>
+            <span class="shift-time">2PM–10PM</span>
+          </button>
+          <button class="shift-card s-night" onclick="selectShift('3rd', this)">
+            <span class="shift-emoji">🌙</span>
+            <span class="shift-name">Night</span>
+            <span class="shift-time">10PM–6AM</span>
+          </button>
+        </div>
       </div>
 
-      <div class="field-label">Select Shift</div>
-      <div class="fg" style="margin-bottom:4px">
-        <select id="shift-sel" onchange="onShiftChange()">
-          <option value="">-- Select your shift --</option>
-          <option value="1st">1st Shift (Morning) (6:00 AM – 2:00 PM)</option>
-          <option value="2nd">2nd Shift (Midday) (2:00 PM – 10:00 PM)</option>
-          <option value="3rd">3rd Shift (Night) (10:00 PM – 6:00 AM)</option>
-        </select>
-      </div>
-      <div class="field-note" id="shift-note" style="display:none">Your shift is locked to your login selection</div>
-
-      <div class="field-label">Select Room/Area</div>
-      <div class="fg">
-        <select id="room-sel" onchange="onRoomChange()">
-          <option value="">-- Select a room --</option>
-        </select>
+      <!-- Room selector -->
+      <div class="room-section">
+        <div class="field-label" style="margin:14px 0 8px">Select Room / Area</div>
+        <div class="room-select-wrap">
+          <select id="room-sel" onchange="onRoomChange()">
+            <option value="">— Choose a room —</option>
+          </select>
+        </div>
       </div>
 
-      <div id="room-content"></div>
+      <!-- Tasks area -->
+      <div class="room-content-wrap" id="room-content"></div>
 
       <!-- Notes -->
-      <div class="sec-heading">Notes</div>
-      <div class="fg"><textarea id="note-txt" placeholder="Add a note..."></textarea></div>
-      <button class="btn btn-ghost btn-sm" onclick="submitNote()" style="margin-bottom:14px">Submit Note</button>
-      <div id="notes-list"></div>
+      <div class="section-block">
+        <div class="sec-heading notes-head">
+          <span class="sec-icon">📝</span> Notes
+        </div>
+        <div class="fg"><textarea id="note-txt" placeholder="Add a note for the team..."></textarea></div>
+        <button class="btn btn-ghost btn-sm" onclick="submitNote()" style="margin-bottom:14px">Post Note</button>
+        <div id="notes-list"></div>
+      </div>
 
       <!-- Supplies -->
-      <div class="sec-heading">Supplies</div>
-      <div class="input-row">
-        <div class="fg"><input type="text" id="sup-name" placeholder="Supply name"></div>
-        <div class="fg qty-f"><input type="number" id="sup-qty" placeholder="Qty" min="1" value="1"></div>
+      <div class="section-block">
+        <div class="sec-heading supplies-head">
+          <span class="sec-icon">🛒</span> Supplies Needed
+        </div>
+        <div class="input-row">
+          <div class="fg"><input type="text" id="sup-name" placeholder="Supply name"></div>
+          <div class="fg qty-f"><input type="number" id="sup-qty" placeholder="Qty" min="1" value="1"></div>
+        </div>
+        <button class="btn btn-ghost btn-sm btn-block" onclick="submitSupply()" style="margin-bottom:14px">Add Supply Request</button>
+        <div id="supplies-list"></div>
+        <div style="height:20px"></div>
       </div>
-      <button class="btn btn-teal btn-block btn-sm" onclick="submitSupply()" style="margin-bottom:14px">Submit Supply</button>
-      <div id="supplies-list"></div>
-      <div style="height:30px"></div>
     </div>
 
     <!-- ── ADMIN ── -->
     <div class="view" id="view-admin">
-      <div class="admin-heading">Admin Dashboard</div>
-      <div class="admin-sub-tabs">
-        <button class="asub-btn active" onclick="switchAdminTab('staff')">Staff</button>
-        <button class="asub-btn"        onclick="switchAdminTab('tasks')">Tasks</button>
+      <div class="admin-top">
+        <div class="admin-heading">Admin Dashboard</div>
+        <div class="admin-sub-tabs">
+          <button class="asub-btn active" onclick="switchAdminTab('staff')">👥 Staff</button>
+          <button class="asub-btn" onclick="switchAdminTab('tasks')">📋 Tasks</button>
+        </div>
       </div>
 
-      <!-- Staff panel -->
+      <!-- Staff -->
       <div class="admin-panel active" id="ap-staff">
         <div class="panel-card">
-          <h3>Create Staff Account</h3>
+          <h3>➕ Create Staff Account</h3>
           <div class="fg"><label>Email</label><input type="email" id="ns-email" placeholder="staff@example.com"></div>
           <div class="fg"><label>Full Name</label><input type="text" id="ns-name" placeholder="Full Name"></div>
           <div class="fg">
@@ -577,31 +959,31 @@
             <label>Facility</label>
             <select id="ns-facility"><option value="grscorp">GRSCORP Household</option></select>
           </div>
-          <button class="btn btn-teal btn-block" onclick="createStaff()">Create Staff</button>
-          <div id="ns-msg" style="margin-top:8px;font-size:0.82rem;display:none"></div>
+          <button class="btn btn-primary btn-block" onclick="createStaff()">Create Staff Account</button>
+          <div id="ns-msg" style="margin-top:10px;font-size:0.82rem;display:none"></div>
         </div>
         <div class="panel-card">
-          <h3>Staff List</h3>
+          <h3>👥 Staff Members</h3>
           <div id="staff-list"><div class="empty-state">Loading…</div></div>
         </div>
       </div>
 
-      <!-- Tasks panel -->
+      <!-- Tasks -->
       <div class="admin-panel" id="ap-tasks">
         <div class="panel-card">
-          <h3>Manage Tasks by Room</h3>
+          <h3>🏠 Manage Room Tasks</h3>
           <div class="fg">
             <label>Select Room</label>
             <select id="ar-room-sel" onchange="loadAdminTasks()">
-              <option value="">-- Select Room --</option>
+              <option value="">— Select Room —</option>
             </select>
           </div>
           <div id="add-task-form" style="display:none">
-            <div class="fg" style="margin-top:8px">
+            <div class="fg" style="margin-top:10px">
               <label>New Task Name</label>
               <input type="text" id="new-task-name" placeholder="e.g. Bed made">
             </div>
-            <button class="btn btn-teal btn-sm" onclick="addTask()">+ Add Task</button>
+            <button class="btn btn-primary btn-sm" onclick="addTask()">+ Add Task</button>
           </div>
         </div>
         <div class="panel-card">
@@ -613,23 +995,31 @@
 
     <!-- ── DAILY ── -->
     <div class="view" id="view-daily">
-      <div class="report-title">Daily Report</div>
-      <div class="date-row">
-        <input type="date" id="daily-date" onchange="loadDailyReport()">
-        <button class="btn btn-ghost btn-sm" onclick="loadDailyReport()">Load</button>
+      <div class="report-top">
+        <div class="report-title">📅 Daily Report</div>
+        <div class="date-row">
+          <input type="date" id="daily-date" onchange="loadDailyReport()">
+          <button class="btn btn-ghost btn-sm" onclick="loadDailyReport()">Load</button>
+        </div>
       </div>
-      <div id="daily-content"><div class="empty-state">Select a date to view submissions.</div></div>
+      <div class="report-content">
+        <div id="daily-content"><div class="empty-state">Select a date to view submissions.</div></div>
+      </div>
     </div>
 
     <!-- ── WEEKLY ── -->
     <div class="view" id="view-weekly">
-      <div class="report-title">Weekly Overview</div>
-      <div class="date-row">
-        <span style="color:var(--muted);font-size:0.82rem;white-space:nowrap">Week of:</span>
-        <input type="date" id="weekly-date" onchange="loadWeeklyReport()">
-        <button class="btn btn-ghost btn-sm" onclick="loadWeeklyReport()">Load</button>
+      <div class="report-top">
+        <div class="report-title">📊 Weekly Overview</div>
+        <div class="date-row">
+          <span style="color:var(--muted);font-size:0.82rem;white-space:nowrap">Week of</span>
+          <input type="date" id="weekly-date" onchange="loadWeeklyReport()">
+          <button class="btn btn-ghost btn-sm" onclick="loadWeeklyReport()">Load</button>
+        </div>
       </div>
-      <div id="weekly-content"><div class="empty-state">Select a week start date.</div></div>
+      <div class="report-content">
+        <div id="weekly-content"><div class="empty-state">Select a week start date.</div></div>
+      </div>
     </div>
 
   </div><!-- app-content -->
@@ -640,20 +1030,6 @@
 <script>
 // ================================================================
 //  FIREBASE CONFIGURATION
-//  ----------------------------------------------------------------
-//  1. Go to https://console.firebase.google.com
-//  2. Create a project → Enable Authentication (Email/Password)
-//  3. Enable Firestore Database (start in test mode for now)
-//  4. Project Settings → Your apps → Add Web App → copy config below
-//  5. Ask Claude to paste the values here, then push to GitHub
-//
-//  Firestore security rules to add after testing:
-//  rules_version = '2';
-//  service cloud.firestore {
-//    match /databases/{db}/documents {
-//      match /{doc=**} { allow read, write: if request.auth != null; }
-//    }
-//  }
 // ================================================================
 const FIREBASE_CONFIG = {
   apiKey:            "AIzaSyDpe1XWs4eZDm7FbID2mBRPKoV76Fiyv6c",
@@ -664,13 +1040,14 @@ const FIREBASE_CONFIG = {
   appId:             "1:1074639853147:web:86968de12c2f3f20e5517e"
 };
 
-// Emails always granted admin role (no Firestore lookup required)
 const ADMIN_EMAILS = ['amb@grscorp.us'];
+const FACILITY     = 'grscorp';
 
-const FACILITY = 'grscorp';
-
+// ================================================================
+//  DEFAULT DATA  (rooms with emojis)
+// ================================================================
 const DEFAULT_ROOMS = [
-  { id: 'azlans-room', name: "Azlan's Room", tasks: [
+  { id: 'azlans-room',          emoji: '🛏️', name: "Azlan's Room",      tasks: [
     { id: 'ar1', name: 'Bed made' },
     { id: 'ar2', name: 'Toys organized' },
     { id: 'ar3', name: 'Sheets changed (Mon/Wed/Fri)' },
@@ -679,13 +1056,13 @@ const DEFAULT_ROOMS = [
     { id: 'ar6', name: 'Surfaces wiped' },
     { id: 'ar7', name: 'Laundry basket checked' },
   ]},
-  { id: 'dining-area', name: 'Dining Area', tasks: [
+  { id: 'dining-area',          emoji: '🍽️', name: 'Dining Area',        tasks: [
     { id: 'da1', name: 'Table wiped' },
     { id: 'da2', name: 'Chairs cleaned' },
-    { id: 'da3', name: 'Floor swept/vacuumed' },
+    { id: 'da3', name: 'Floor swept / vacuumed' },
     { id: 'da4', name: 'Trash emptied' },
   ]},
-  { id: 'downstairs-bathroom', name: 'Downstairs Bathroom', tasks: [
+  { id: 'downstairs-bathroom',  emoji: '🚿', name: 'Downstairs Bathroom',tasks: [
     { id: 'db1', name: 'Toilet cleaned' },
     { id: 'db2', name: 'Sink wiped' },
     { id: 'db3', name: 'Mirror cleaned' },
@@ -693,60 +1070,60 @@ const DEFAULT_ROOMS = [
     { id: 'db5', name: 'Towels changed' },
     { id: 'db6', name: 'Supplies restocked' },
   ]},
-  { id: 'final-checks', name: 'Final Checks', tasks: [
+  { id: 'final-checks',         emoji: '✅', name: 'Final Checks',        tasks: [
     { id: 'fc1', name: 'All lights off' },
     { id: 'fc2', name: 'Doors locked' },
     { id: 'fc3', name: 'Windows closed' },
     { id: 'fc4', name: 'Appliances off' },
   ]},
-  { id: 'general-final-checks', name: 'General/Final Checks', tasks: [
+  { id: 'general-final-checks', emoji: '📋', name: 'General/Final Checks',tasks: [
     { id: 'gfc1', name: 'Handover completed' },
     { id: 'gfc2', name: 'Notes updated' },
     { id: 'gfc3', name: 'Supplies reported' },
   ]},
-  { id: 'hallways', name: 'Hallways', tasks: [
-    { id: 'hw1', name: 'Floor vacuumed/swept' },
+  { id: 'hallways',             emoji: '🚪', name: 'Hallways',            tasks: [
+    { id: 'hw1', name: 'Floor vacuumed / swept' },
     { id: 'hw2', name: 'Surfaces dusted' },
     { id: 'hw3', name: 'Items put away' },
   ]},
-  { id: 'kitchen', name: 'Kitchen', tasks: [
+  { id: 'kitchen',              emoji: '🍳', name: 'Kitchen',             tasks: [
     { id: 'k1', name: 'Dishes done' },
     { id: 'k2', name: 'Counters wiped' },
     { id: 'k3', name: 'Sink cleaned' },
     { id: 'k4', name: 'Stovetop cleaned' },
     { id: 'k5', name: 'Fridge exterior wiped' },
-    { id: 'k6', name: 'Floor swept/mopped' },
+    { id: 'k6', name: 'Floor swept / mopped' },
     { id: 'k7', name: 'Trash emptied' },
   ]},
-  { id: 'laundry', name: 'Laundry', tasks: [
-    { id: 'l1', name: 'Washer loaded/started' },
+  { id: 'laundry',              emoji: '👕', name: 'Laundry',             tasks: [
+    { id: 'l1', name: 'Washer loaded / started' },
     { id: 'l2', name: 'Dryer emptied' },
     { id: 'l3', name: 'Clothes folded' },
     { id: 'l4', name: 'Clothes put away' },
   ]},
-  { id: 'office', name: 'Office', tasks: [
+  { id: 'office',               emoji: '💼', name: 'Office',              tasks: [
     { id: 'o1', name: 'Desk wiped' },
     { id: 'o2', name: 'Floor vacuumed' },
     { id: 'o3', name: 'Trash emptied' },
   ]},
-  { id: 'pet-care', name: 'Pet Care', tasks: [
+  { id: 'pet-care',             emoji: '🐾', name: 'Pet Care',            tasks: [
     { id: 'pc1', name: 'Pets fed' },
     { id: 'pc2', name: 'Water bowls filled' },
-    { id: 'pc3', name: 'Litter/area cleaned' },
+    { id: 'pc3', name: 'Litter / area cleaned' },
   ]},
-  { id: 'pets', name: 'Pets', tasks: [
-    { id: 'p1', name: 'Morning walk/exercise' },
+  { id: 'pets',                 emoji: '🐕', name: 'Pets',                tasks: [
+    { id: 'p1', name: 'Morning walk / exercise' },
     { id: 'p2', name: 'Grooming checked' },
     { id: 'p3', name: 'Medications given' },
   ]},
-  { id: 'sitting-area', name: 'Sitting Area', tasks: [
+  { id: 'sitting-area',         emoji: '🛋️', name: 'Sitting Area',        tasks: [
     { id: 'sa1', name: 'Cushions arranged' },
     { id: 'sa2', name: 'Surfaces dusted' },
     { id: 'sa3', name: 'Floor vacuumed' },
     { id: 'sa4', name: 'Items tidied' },
   ]},
-  { id: 'stairs', name: 'Stairs', tasks: [
-    { id: 'st1', name: 'Vacuumed/swept' },
+  { id: 'stairs',               emoji: '🪜', name: 'Stairs',              tasks: [
+    { id: 'st1', name: 'Vacuumed / swept' },
     { id: 'st2', name: 'Handrail wiped' },
   ]},
 ];
@@ -758,11 +1135,11 @@ let auth, db, secondaryApp;
 let currentUser   = null;
 let currentData   = null;
 let rooms         = [];
-let carryOvers    = {};   // { roomId: { taskName: true } }
+let carryOvers    = {};
 let selectedShift = null;
 let shiftLocked   = false;
 let selectedRoom  = null;
-let taskStatuses  = {};   // { taskId: 'yes'|'no'|'carry-over' }
+let taskStatuses  = {};
 
 // ================================================================
 //  INIT
@@ -776,38 +1153,23 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('daily-date').value  = today;
   document.getElementById('weekly-date').value = today;
 
-  if (!isConfigured()) {
-    renderSetupBanner();
-    return;
-  }
+  if (!isConfigured()) { renderSetupBanner(); return; }
 
   try {
     firebase.initializeApp(FIREBASE_CONFIG);
     auth = firebase.auth();
     db   = firebase.firestore();
-  } catch (e) {
-    showToast('Firebase init error: ' + e.message, true);
-    return;
-  }
+  } catch (e) { showToast('Firebase init error: ' + e.message, true); return; }
 
-  auth.onAuthStateChanged(user => {
-    if (user) onUserLogin(user);
-    else      showLoginScreen();
-  });
+  auth.onAuthStateChanged(user => { if (user) onUserLogin(user); else showLoginScreen(); });
 });
 
 function renderSetupBanner() {
   document.getElementById('setup-banner-wrap').innerHTML = `
     <div class="setup-banner">
       <strong>⚙️ Firebase Setup Required</strong>
-      This app needs a Firebase project to store data and handle logins.<br><br>
-      <strong>Quick setup:</strong><br>
-      1. Go to <strong>console.firebase.google.com</strong> → create a project.<br>
-      2. Enable <strong>Authentication → Email/Password</strong>.<br>
-      3. Enable <strong>Firestore Database</strong> (test mode is fine to start).<br>
-      4. Project Settings → Your apps → Web app → copy the config values.<br>
-      5. Share the values with Claude and ask to update <code>nanny/index.html</code>.<br><br>
-      Once done, <strong>amb@grscorp.us</strong> will automatically be admin.
+      Update the FIREBASE_CONFIG values in this file with your Firebase project credentials,
+      then push to GitHub via Claude.
     </div>`;
 }
 
@@ -819,72 +1181,59 @@ async function doLogin() {
   const pwd   = document.getElementById('li-pwd').value;
   hideErr('li-err');
   if (!email || !pwd) { showErr('li-err', 'Enter your email and password.'); return; }
-  try {
-    await auth.signInWithEmailAndPassword(email, pwd);
-  } catch (e) {
-    showErr('li-err', friendlyError(e));
-  }
+  try { await auth.signInWithEmailAndPassword(email, pwd); }
+  catch (e) { showErr('li-err', friendlyError(e)); }
 }
 
 async function doRegister() {
   const email = document.getElementById('rg-email').value.trim();
   const pwd   = document.getElementById('rg-pwd').value;
   hideErr('rg-err');
-  if (!email || pwd.length < 6) { showErr('rg-err', 'Valid email and password (min 6 chars) required.'); return; }
-
+  if (!email || pwd.length < 6) { showErr('rg-err', 'Valid email and min 6-char password required.'); return; }
   if (!ADMIN_EMAILS.includes(email)) {
     try {
       const q = await db.collection('staff').where('email', '==', email).limit(1).get();
       if (q.empty) { showErr('rg-err', 'Email not on staff list. Contact your admin.'); return; }
     } catch (e) { showErr('rg-err', e.message); return; }
   }
-
-  try {
-    await auth.createUserWithEmailAndPassword(email, pwd);
-  } catch (e) {
-    showErr('rg-err', friendlyError(e));
-  }
+  try { await auth.createUserWithEmailAndPassword(email, pwd); }
+  catch (e) { showErr('rg-err', friendlyError(e)); }
 }
 
 async function doLogout() {
   selectedShift = null; shiftLocked = false;
   currentUser   = null; currentData  = null;
   taskStatuses  = {}; selectedRoom   = null;
-  if (auth) await auth.signOut();
-  else showLoginScreen();
+  if (auth) await auth.signOut(); else showLoginScreen();
 }
 
 async function showForgot() {
-  const email = prompt('Enter your email to receive a password reset link:');
+  const email = prompt('Enter your email to receive a reset link:');
   if (!email) return;
-  try {
-    await auth.sendPasswordResetEmail(email);
-    showToast('Password reset email sent!');
-  } catch (e) { showToast(e.message, true); }
+  try { await auth.sendPasswordResetEmail(email); showToast('Reset email sent! Check your inbox.'); }
+  catch (e) { showToast(e.message, true); }
 }
 
 async function onUserLogin(user) {
   currentUser = user;
   const isAdmin = ADMIN_EMAILS.includes(user.email);
-
   try {
     const snap = await db.collection('users').doc(user.uid).get();
     if (snap.exists) {
       currentData = snap.data();
     } else {
-      let staffData = { email: user.email, name: user.email.split('@')[0], role: isAdmin ? 'admin' : 'caretaker', facility: FACILITY };
+      let sd = { email: user.email, name: user.email.split('@')[0], role: isAdmin ? 'admin' : 'caretaker', facility: FACILITY };
       if (!isAdmin) {
         const q = await db.collection('staff').where('email', '==', user.email).limit(1).get();
-        if (!q.empty) staffData = { ...q.docs[0].data(), email: user.email };
+        if (!q.empty) sd = { ...q.docs[0].data(), email: user.email };
       }
-      await db.collection('users').doc(user.uid).set({ ...staffData, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-      currentData = staffData;
+      await db.collection('users').doc(user.uid).set({ ...sd, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+      currentData = sd;
     }
     if (isAdmin) currentData.role = 'admin';
   } catch (e) {
     currentData = { name: user.email, role: isAdmin ? 'admin' : 'caretaker', facility: FACILITY };
   }
-
   showAppScreen();
 }
 
@@ -895,12 +1244,10 @@ function showLoginScreen() {
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app-screen').style.display   = 'none';
 }
-
 function showLoginForm() {
   document.getElementById('login-form').style.display = 'block';
   document.getElementById('reg-form').style.display   = 'none';
 }
-
 function showRegForm() {
   document.getElementById('login-form').style.display = 'none';
   document.getElementById('reg-form').style.display   = 'block';
@@ -910,22 +1257,19 @@ async function showAppScreen() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-screen').style.display   = 'flex';
 
-  const isAdmin = currentData?.role === 'admin';
-  document.getElementById('admin-tab').style.display = isAdmin ? 'block' : 'none';
+  const isAdmin  = currentData?.role === 'admin';
+  document.getElementById('admin-tab').style.display = isAdmin ? 'flex' : 'none';
 
   const name     = currentData?.name || currentUser?.email || '';
-  const initials = name.split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'GR';
+  const initials = name.split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'HN';
   document.getElementById('user-avatar').textContent  = initials;
-  document.getElementById('user-welcome').textContent = 'Welcome, ' + name;
+  document.getElementById('user-welcome').textContent = 'Welcome back, ' + name.split(' ')[0] + '! 👋';
 
   await loadRooms();
   loadNotes();
   loadSupplies();
 
-  if (isAdmin) {
-    loadStaffList();
-    populateAdminRoomSel();
-  }
+  if (isAdmin) { loadStaffList(); populateAdminRoomSel(); }
 }
 
 function switchTab(tab) {
@@ -937,7 +1281,7 @@ function switchTab(tab) {
 
 function switchAdminTab(tab) {
   document.querySelectorAll('.asub-btn').forEach((b, i) =>
-    b.classList.toggle('active', (tab === 'staff' && i === 0) || (tab === 'tasks' && i === 1)));
+    b.classList.toggle('active', (tab==='staff'&&i===0)||(tab==='tasks'&&i===1)));
   document.getElementById('ap-staff').classList.toggle('active', tab === 'staff');
   document.getElementById('ap-tasks').classList.toggle('active', tab === 'tasks');
 }
@@ -955,29 +1299,28 @@ async function loadRooms() {
       rooms = DEFAULT_ROOMS;
       await db.collection('facilities').doc(FACILITY).set({ rooms, carryOvers: {} }, { merge: true });
     }
-  } catch (e) {
-    rooms = DEFAULT_ROOMS;
-  }
+  } catch (e) { rooms = DEFAULT_ROOMS; }
   populateRoomSel();
 }
 
 function populateRoomSel() {
   const sel = document.getElementById('room-sel');
-  sel.innerHTML = '<option value="">-- Select a room --</option>';
+  sel.innerHTML = '<option value="">— Choose a room —</option>';
   rooms.forEach(r => {
     const o = document.createElement('option');
-    o.value = r.id; o.textContent = r.name;
+    o.value = r.id;
+    o.textContent = (r.emoji ? r.emoji + ' ' : '') + r.name;
     sel.appendChild(o);
   });
 }
 
-function onShiftChange() {
-  const v = document.getElementById('shift-sel').value;
-  if (v && !shiftLocked) {
-    selectedShift = v; shiftLocked = true;
-    document.getElementById('shift-sel').disabled = true;
-    document.getElementById('shift-note').style.display = 'block';
-  }
+function selectShift(shiftId, el) {
+  if (shiftLocked) return;
+  selectedShift = shiftId;
+  shiftLocked   = true;
+  document.querySelectorAll('.shift-card').forEach(c => { c.classList.remove('selected'); c.disabled = true; });
+  el.classList.add('selected');
+  document.getElementById('shift-locked-badge').style.display = 'block';
 }
 
 function onRoomChange() {
@@ -992,62 +1335,98 @@ function renderTasks() {
   const wrap = document.getElementById('room-content');
   if (!selectedRoom) { wrap.innerHTML = ''; return; }
   const roomCarry = carryOvers[selectedRoom.id] || {};
-  let html = `<div class="room-title">${selectedRoom.name}</div>`;
+
+  // Room header
+  let html = `
+    <div class="room-header">
+      <div class="room-emoji-badge">${selectedRoom.emoji || '🏠'}</div>
+      <div class="room-title">${selectedRoom.name}</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-header">
+        <span class="progress-text" id="progress-text">0 of ${selectedRoom.tasks.length} tasks marked</span>
+        <span class="progress-pct" id="progress-pct">0%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>`;
 
   (selectedRoom.tasks || []).forEach(task => {
     const isCarry  = !!roomCarry[task.name];
     const status   = taskStatuses[task.id] || '';
-    const cardCls  = isCarry ? ' is-carry' : '';
-    const badge    = isCarry ? '<span class="carry-badge">CARRY-OVER</span>' : '';
-    const yesCls   = status === 'yes'          ? ' sel-yes'   : '';
-    const noCls    = status === 'no'           ? ' sel-no'    : '';
-    const carryCls = status === 'carry-over'   ? ' sel-carry' : '';
+    const cardCls  = isCarry ? ' is-carry' : (status ? ' done-' + status : '');
+    const badge    = isCarry ? '<span class="carry-badge">↻ CARRY-OVER</span>' : '';
+    const yesCls   = status === 'yes'        ? ' sel-yes'   : '';
+    const noCls    = status === 'no'         ? ' sel-no'    : '';
+    const carryCls = status === 'carry-over' ? ' sel-carry' : '';
 
     html += `
       <div class="task-card${cardCls}" id="tc-${task.id}">
-        <div class="task-name">${task.name}</div>
-        ${badge}
-        <div class="task-actions">
-          <button class="tact${yesCls}"   onclick="setStatus('${task.id}','yes')">✓ Yes</button>
-          <button class="tact${noCls}"    onclick="setStatus('${task.id}','no')">✗ No</button>
-          <button class="tact${carryCls}" onclick="setStatus('${task.id}','carry-over')">→ Carry Over</button>
+        <div class="task-top">
+          <div class="task-name">${task.name}</div>
+          ${badge}
+        </div>
+        <div class="task-btns">
+          <button class="tbtn${yesCls}" onclick="setStatus('${task.id}','yes')">
+            <span class="tbtn-icon">✓</span> Yes
+          </button>
+          <button class="tbtn${noCls}" onclick="setStatus('${task.id}','no')">
+            <span class="tbtn-icon">✗</span> No
+          </button>
+          <button class="tbtn${carryCls}" onclick="setStatus('${task.id}','carry-over')">
+            <span class="tbtn-icon">↻</span> Later
+          </button>
         </div>
       </div>`;
   });
 
-  html += `<div class="submit-row"><button class="btn btn-teal btn-block" onclick="submitRoomTasks()">Submit Room Tasks</button></div>`;
   wrap.innerHTML = html;
+
+  // Submit button rendered outside wrap as its own section
+  const submitEl = document.createElement('div');
+  submitEl.className = 'submit-section';
+  submitEl.innerHTML = `<button class="submit-btn" onclick="submitRoomTasks()">✅ Submit Room Tasks</button>`;
+  wrap.appendChild(submitEl);
 }
 
 function setStatus(taskId, status) {
   taskStatuses[taskId] = status;
   const card = document.getElementById('tc-' + taskId);
   if (!card) return;
-  const btns = card.querySelectorAll('.tact');
-  btns[0].className = 'tact' + (status === 'yes'          ? ' sel-yes'   : '');
-  btns[1].className = 'tact' + (status === 'no'           ? ' sel-no'    : '');
-  btns[2].className = 'tact' + (status === 'carry-over'   ? ' sel-carry' : '');
+  card.classList.remove('done-yes','done-no','done-carry-over','done-carry');
+  if (status) card.classList.add('done-' + status.replace('-over',''));
+  const btns = card.querySelectorAll('.tbtn');
+  btns[0].className = 'tbtn' + (status === 'yes'        ? ' sel-yes'   : '');
+  btns[1].className = 'tbtn' + (status === 'no'         ? ' sel-no'    : '');
+  btns[2].className = 'tbtn' + (status === 'carry-over' ? ' sel-carry' : '');
+  updateProgress();
+}
+
+function updateProgress() {
+  if (!selectedRoom) return;
+  const total = selectedRoom.tasks.length;
+  const done  = Object.values(taskStatuses).filter(s => !!s).length;
+  const pct   = total ? Math.round(done / total * 100) : 0;
+
+  const fill  = document.getElementById('progress-fill');
+  const txt   = document.getElementById('progress-text');
+  const pctEl = document.getElementById('progress-pct');
+  if (fill)  fill.style.width  = pct + '%';
+  if (txt)   txt.textContent   = `${done} of ${total} tasks marked`;
+  if (pctEl) pctEl.textContent = pct + '%';
 }
 
 async function submitRoomTasks() {
-  if (!selectedRoom)  { showToast('Select a room first', true); return; }
-  if (!selectedShift) { showToast('Select a shift first', true); return; }
+  if (!selectedRoom)  { showToast('Please select a room first', true); return; }
+  if (!selectedShift) { showToast('Please select your shift first', true); return; }
 
-  const tasks = (selectedRoom.tasks || []).map(t => ({
-    name: t.name, status: taskStatuses[t.id] || 'no-response'
-  }));
+  const tasks = (selectedRoom.tasks || []).map(t => ({ name: t.name, status: taskStatuses[t.id] || 'no-response' }));
 
-  // Update carry-over map
   const roomCarry = { ...(carryOvers[selectedRoom.id] || {}) };
-  tasks.forEach(t => {
-    if (t.status === 'carry-over') roomCarry[t.name] = true;
-    else delete roomCarry[t.name];
-  });
+  tasks.forEach(t => { if (t.status === 'carry-over') roomCarry[t.name] = true; else delete roomCarry[t.name]; });
   carryOvers[selectedRoom.id] = roomCarry;
 
   try {
     const batch = db.batch();
-
     batch.set(db.collection('submissions').doc(), {
       userId:    currentUser.uid,
       userName:  currentData?.name || currentUser.email,
@@ -1060,11 +1439,9 @@ async function submitRoomTasks() {
       tasks,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
-
     batch.set(db.collection('facilities').doc(FACILITY), { carryOvers }, { merge: true });
-
     await batch.commit();
-    showToast('Room tasks submitted!');
+    showToast('🎉 Room tasks submitted!');
     taskStatuses = {};
     renderTasks();
   } catch (e) { showToast('Error: ' + e.message, true); }
@@ -1081,7 +1458,7 @@ async function loadNotes() {
       .where('facility', '==', currentData?.facility || FACILITY)
       .orderBy('timestamp', 'desc').limit(30).get();
     snap.docs.forEach(doc => {
-      const d  = doc.data();
+      const d = doc.data();
       const ts = d.timestamp?.toDate?.() || new Date();
       list.appendChild(buildNoteEl(doc.id, d.userName, ts, d.text));
     });
@@ -1091,7 +1468,7 @@ async function loadNotes() {
 function buildNoteEl(id, author, ts, text) {
   const el    = document.createElement('div');
   el.className = 'note-item';
-  const tsStr  = ts.toLocaleDateString('en-US') + ', ' + ts.toLocaleTimeString();
+  const tsStr  = ts.toLocaleDateString('en-US') + ', ' + ts.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'});
   el.innerHTML = `
     <div class="note-header" onclick="toggleNote(this)">
       <div class="note-header-left">
@@ -1116,14 +1493,13 @@ async function submitNote() {
   if (!txt) return;
   try {
     await db.collection('notes').add({
-      text: txt,
-      userId:    currentUser.uid,
-      userName:  currentData?.name || currentUser.email,
-      facility:  currentData?.facility || FACILITY,
+      text: txt, userId: currentUser.uid,
+      userName: currentData?.name || currentUser.email,
+      facility: currentData?.facility || FACILITY,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
     document.getElementById('note-txt').value = '';
-    showToast('Note saved');
+    showToast('📝 Note posted');
     loadNotes();
   } catch (e) { showToast(e.message, true); }
 }
@@ -1153,7 +1529,7 @@ async function loadSupplies() {
       el.innerHTML = `
         <div class="supply-info">
           <div class="supply-name">${d.name}</div>
-          <div class="supply-meta">${d.userName} – ${ts.toLocaleDateString('en-US')}</div>
+          <div class="supply-meta">${d.userName} · ${ts.toLocaleDateString('en-US')}</div>
         </div>
         <span class="supply-qty">${d.quantity}</span>
         <button class="x-btn" onclick="deleteSupply('${doc.id}')">✕</button>`;
@@ -1168,15 +1544,14 @@ async function submitSupply() {
   if (!name) return;
   try {
     await db.collection('supplies').add({
-      name, quantity: qty,
-      userId:    currentUser.uid,
-      userName:  currentData?.name || currentUser.email,
-      facility:  currentData?.facility || FACILITY,
+      name, quantity: qty, userId: currentUser.uid,
+      userName: currentData?.name || currentUser.email,
+      facility: currentData?.facility || FACILITY,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
     document.getElementById('sup-name').value = '';
     document.getElementById('sup-qty').value  = '1';
-    showToast('Supply added');
+    showToast('🛒 Supply request added');
     loadSupplies();
   } catch (e) { showToast(e.message, true); }
 }
@@ -1197,22 +1572,23 @@ async function loadStaffList() {
     const snap = await db.collection('staff')
       .where('facility', '==', currentData?.facility || FACILITY).get();
     list.innerHTML = '';
-    if (snap.empty) { list.innerHTML = '<div class="empty-state">No staff yet.</div>'; return; }
+    if (snap.empty) { list.innerHTML = '<div class="empty-state">No staff added yet.</div>'; return; }
     snap.docs.forEach(doc => {
       const d  = doc.data();
       const el = document.createElement('div');
       el.className = 'staff-card';
+      const roleCls = d.role === 'admin' ? 'role-admin' : 'role-caretaker';
       el.innerHTML = `
         <div class="staff-details">
           <div class="staff-name">${d.name}</div>
           <div class="staff-meta">${d.email}</div>
-          <div class="staff-role">${(d.role || '').toUpperCase()} · ${(d.facility || '').toUpperCase()}</div>
+          <span class="staff-role-badge ${roleCls}">${(d.role||'').toUpperCase()}</span>
         </div>
-        <button class="btn btn-red btn-sm" onclick="deleteStaff('${doc.id}','${d.name}')">Delete</button>`;
+        <button class="btn btn-danger btn-sm" onclick="deleteStaff('${doc.id}','${d.name}')">Remove</button>`;
       list.appendChild(el);
     });
   } catch (e) {
-    list.innerHTML = `<div style="color:var(--red);font-size:0.82rem">${e.message}</div>`;
+    list.innerHTML = `<div style="color:#ff6b6b;font-size:0.82rem">${e.message}</div>`;
   }
 }
 
@@ -1224,17 +1600,11 @@ async function createStaff() {
   const facility = document.getElementById('ns-facility').value;
   const msgEl    = document.getElementById('ns-msg');
 
-  if (!email || !name || !tmpPwd) {
-    showMsg(msgEl, 'Fill in email, name, and temporary password.', true); return;
-  }
-
+  if (!email || !name || !tmpPwd) { showMsg(msgEl, 'Fill in email, name, and temporary password.', true); return; }
   showMsg(msgEl, 'Creating account…', false);
 
   try {
-    // Secondary app instance keeps admin session active while creating new user
-    if (!secondaryApp) {
-      secondaryApp = firebase.initializeApp(FIREBASE_CONFIG, 'secondary');
-    }
+    if (!secondaryApp) secondaryApp = firebase.initializeApp(FIREBASE_CONFIG, 'secondary');
     const secAuth = firebase.app('secondary').auth();
     const cred    = await secAuth.createUserWithEmailAndPassword(email, tmpPwd);
     const uid     = cred.user.uid;
@@ -1245,30 +1615,22 @@ async function createStaff() {
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       createdBy: currentUser.uid
     });
-    batch.set(db.collection('staff').doc(), {
-      email, name, role, facility, uid,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
+    batch.set(db.collection('staff').doc(), { email, name, role, facility, uid, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
     await batch.commit();
     await secAuth.signOut();
 
-    showMsg(msgEl, `✓ Account created. Share temp password: ${tmpPwd}`, false);
+    showMsg(msgEl, `✅ Created! Share temp password: ${tmpPwd}`, false);
     document.getElementById('ns-email').value = '';
     document.getElementById('ns-name').value  = '';
     document.getElementById('ns-pwd').value   = '';
     loadStaffList();
-  } catch (e) {
-    showMsg(msgEl, 'Error: ' + e.message, true);
-  }
+  } catch (e) { showMsg(msgEl, 'Error: ' + e.message, true); }
 }
 
 async function deleteStaff(docId, name) {
   if (!confirm(`Remove ${name} from staff?`)) return;
-  try {
-    await db.collection('staff').doc(docId).delete();
-    showToast('Staff removed');
-    loadStaffList();
-  } catch (e) { showToast('Error: ' + e.message, true); }
+  try { await db.collection('staff').doc(docId).delete(); showToast('Staff removed'); loadStaffList(); }
+  catch (e) { showToast('Error: ' + e.message, true); }
 }
 
 // ================================================================
@@ -1276,10 +1638,10 @@ async function deleteStaff(docId, name) {
 // ================================================================
 function populateAdminRoomSel() {
   const sel = document.getElementById('ar-room-sel');
-  sel.innerHTML = '<option value="">-- Select Room --</option>';
+  sel.innerHTML = '<option value="">— Select Room —</option>';
   rooms.forEach(r => {
     const o = document.createElement('option');
-    o.value = r.id; o.textContent = r.name;
+    o.value = r.id; o.textContent = (r.emoji ? r.emoji + ' ' : '') + r.name;
     sel.appendChild(o);
   });
 }
@@ -1288,45 +1650,33 @@ function loadAdminTasks() {
   const rid  = document.getElementById('ar-room-sel').value;
   const list = document.getElementById('ar-tasks-list');
   const form = document.getElementById('add-task-form');
-
-  if (!rid) {
-    list.innerHTML = '<div class="empty-state">Select a room above</div>';
-    form.style.display = 'none'; return;
-  }
-
+  if (!rid) { list.innerHTML = '<div class="empty-state">Select a room above</div>'; form.style.display = 'none'; return; }
   form.style.display = 'block';
   const room = rooms.find(r => r.id === rid);
   list.innerHTML = '';
-
-  if (!room?.tasks?.length) {
-    list.innerHTML = '<div class="empty-state">No tasks yet.</div>';
-  } else {
-    room.tasks.forEach((task, idx) => {
-      const el = document.createElement('div');
-      el.className = 'supply-item';
-      el.innerHTML = `
-        <div class="supply-info"><div class="supply-name">${task.name}</div></div>
-        <button class="x-btn" onclick="deleteTask('${room.id}',${idx})">✕</button>`;
-      list.appendChild(el);
-    });
-  }
+  if (!room?.tasks?.length) { list.innerHTML = '<div class="empty-state">No tasks yet.</div>'; }
+  (room?.tasks || []).forEach((task, idx) => {
+    const el = document.createElement('div');
+    el.className = 'supply-item';
+    el.innerHTML = `
+      <div class="supply-info"><div class="supply-name">${task.name}</div></div>
+      <button class="x-btn" onclick="deleteTask('${room.id}',${idx})">✕</button>`;
+    list.appendChild(el);
+  });
 }
 
 async function addTask() {
   const rid  = document.getElementById('ar-room-sel').value;
   const name = document.getElementById('new-task-name').value.trim();
   if (!rid || !name) return;
-
   const room = rooms.find(r => r.id === rid);
   if (!room) return;
   room.tasks = [...(room.tasks || []), { id: 't' + Date.now(), name }];
-
   try {
     await db.collection('facilities').doc(FACILITY).set({ rooms }, { merge: true });
     document.getElementById('new-task-name').value = '';
     showToast('Task added');
-    loadAdminTasks();
-    populateRoomSel();
+    loadAdminTasks(); populateRoomSel();
   } catch (e) { showToast(e.message, true); }
 }
 
@@ -1337,8 +1687,7 @@ async function deleteTask(roomId, idx) {
   room.tasks.splice(idx, 1);
   try {
     await db.collection('facilities').doc(FACILITY).set({ rooms }, { merge: true });
-    showToast('Task deleted');
-    loadAdminTasks();
+    showToast('Task deleted'); loadAdminTasks();
   } catch (e) { showToast(e.message, true); }
 }
 
@@ -1350,30 +1699,22 @@ async function loadDailyReport() {
   const wrap = document.getElementById('daily-content');
   if (!date || !currentData) return;
   wrap.innerHTML = '<div class="empty-state">Loading…</div>';
-
   try {
     const snap = await db.collection('submissions')
       .where('facility', '==', currentData.facility || FACILITY)
       .where('date', '==', date)
       .orderBy('timestamp', 'desc').get();
-
     if (snap.empty) { wrap.innerHTML = '<div class="empty-state">No submissions for this date.</div>'; return; }
     wrap.innerHTML = '';
     snap.docs.forEach(doc => {
       const d    = doc.data();
       const ts   = d.timestamp?.toDate?.() || new Date();
-      const done = (d.tasks || []).filter(t => t.status === 'yes').length;
-      const time = ts.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-      wrap.appendChild(buildSubCard(
-        d.userName,
-        `${d.room} · ${d.shift} Shift · ${time}`,
-        `${done}/${(d.tasks||[]).length} Done`,
-        d.tasks || []
-      ));
+      const done = (d.tasks||[]).filter(t => t.status === 'yes').length;
+      const time = ts.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'});
+      wrap.appendChild(buildSubCard(d.userName, `${d.room} · ${d.shift} Shift · ${time}`,
+        `${done}/${(d.tasks||[]).length} Done`, d.tasks || []));
     });
-  } catch (e) {
-    wrap.innerHTML = `<div style="color:var(--red);font-size:0.85rem">${e.message}</div>`;
-  }
+  } catch (e) { wrap.innerHTML = `<div style="color:#ff6b6b;font-size:0.85rem">${e.message}</div>`; }
 }
 
 // ================================================================
@@ -1387,18 +1728,13 @@ async function loadWeeklyReport() {
 
   const dates = [];
   const start = new Date(startStr + 'T00:00:00');
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(start); d.setDate(d.getDate() + i);
-    dates.push(d.toISOString().slice(0, 10));
-  }
+  for (let i = 0; i < 7; i++) { const d = new Date(start); d.setDate(d.getDate()+i); dates.push(d.toISOString().slice(0,10)); }
 
   try {
     const snap = await db.collection('submissions')
       .where('facility', '==', currentData.facility || FACILITY)
-      .where('date', '>=', dates[0])
-      .where('date', '<=', dates[6])
+      .where('date', '>=', dates[0]).where('date', '<=', dates[6])
       .orderBy('date').orderBy('timestamp').get();
-
     if (snap.empty) { wrap.innerHTML = '<div class="empty-state">No submissions for this week.</div>'; return; }
 
     const byStaff = {};
@@ -1415,16 +1751,16 @@ async function loadWeeklyReport() {
       const rows = dates.map(date => {
         const subs = days[date] || [];
         if (!subs.length) return `<tr><td>${date}</td><td style="color:var(--muted)">—</td><td>—</td><td>—</td></tr>`;
-        let yes = 0, all = 0;
-        subs.forEach(s => (s.tasks||[]).forEach(t => { all++; if (t.status === 'yes') yes++; }));
-        totalYes += yes; totalAll += all;
-        const pct   = all ? Math.round(yes / all * 100) : 0;
-        const color = pct >= 80 ? '#10b981' : pct >= 50 ? '#f59e0b' : '#ef4444';
-        return `<tr><td>${date}</td><td style="color:var(--muted)">${subs.map(s=>s.room).join(', ')}</td><td>${yes}/${all}</td><td style="color:${color};font-weight:600">${pct}%</td></tr>`;
+        let yes=0,all=0;
+        subs.forEach(s => (s.tasks||[]).forEach(t => { all++; if(t.status==='yes') yes++; }));
+        totalYes+=yes; totalAll+=all;
+        const pct  = all ? Math.round(yes/all*100) : 0;
+        const col  = pct>=80 ? '#1dd1a1' : pct>=50 ? '#ff9f43' : '#ff6b6b';
+        return `<tr><td>${date}</td><td style="color:var(--muted)">${subs.map(s=>s.room).join(', ')}</td><td>${yes}/${all}</td><td style="color:${col};font-weight:700">${pct}%</td></tr>`;
       }).join('');
 
-      const wPct = totalAll ? Math.round(totalYes / totalAll * 100) : 0;
-      const wCol = wPct >= 80 ? '#10b981' : wPct >= 50 ? '#f59e0b' : '#ef4444';
+      const wPct = totalAll ? Math.round(totalYes/totalAll*100) : 0;
+      const wCol = wPct>=80 ? '#1dd1a1' : wPct>=50 ? '#ff9f43' : '#ff6b6b';
       const card = document.createElement('div');
       card.className = 'sub-card';
       card.innerHTML = `
@@ -1442,17 +1778,15 @@ async function loadWeeklyReport() {
         </div>`;
       wrap.appendChild(card);
     });
-  } catch (e) {
-    wrap.innerHTML = `<div style="color:var(--red);font-size:0.85rem">${e.message}</div>`;
-  }
+  } catch (e) { wrap.innerHTML = `<div style="color:#ff6b6b;font-size:0.85rem">${e.message}</div>`; }
 }
 
 function buildSubCard(name, meta, pill, tasks) {
   const el = document.createElement('div');
   el.className = 'sub-card';
   const taskHTML = tasks.map(t => {
-    const cls = t.status === 'yes' ? 's-yes' : t.status === 'no' ? 's-no' : t.status === 'carry-over' ? 's-carry' : 'muted';
-    const lbl = t.status === 'yes' ? '✓ Yes' : t.status === 'no' ? '✗ No' : t.status === 'carry-over' ? '→ Carry Over' : '—';
+    const cls = t.status==='yes' ? 's-yes' : t.status==='no' ? 's-no' : t.status==='carry-over' ? 's-carry' : 'muted';
+    const lbl = t.status==='yes' ? '✓ Yes' : t.status==='no' ? '✗ No' : t.status==='carry-over' ? '↻ Later' : '—';
     return `<div class="task-row"><span class="task-row-name">${t.name}</span><span class="${cls}">${lbl}</span></div>`;
   }).join('');
   el.innerHTML = `
@@ -1467,35 +1801,19 @@ function buildSubCard(name, meta, pill, tasks) {
 // ================================================================
 //  UTILITIES
 // ================================================================
-function showToast(msg, isErr = false) {
+function showToast(msg, isErr=false) {
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className   = isErr ? 't-err' : 't-ok';
+  el.textContent = msg; el.className = isErr ? 't-err' : 't-ok';
   el.style.display = 'block';
   clearTimeout(el._t);
   el._t = setTimeout(() => el.style.display = 'none', 3000);
 }
-
-function showErr(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.style.display = 'block'; }
-function hideErr(id)       { document.getElementById(id).style.display = 'none'; }
-
-function showMsg(el, msg, isErr) {
-  el.style.display = 'block';
-  el.style.color   = isErr ? 'var(--red)' : 'var(--teal)';
-  el.textContent   = msg;
-}
-
+function showErr(id,msg) { const el=document.getElementById(id); el.textContent=msg; el.style.display='block'; }
+function hideErr(id)      { document.getElementById(id).style.display='none'; }
+function showMsg(el,msg,isErr) { el.style.display='block'; el.style.color=isErr?'#ff6b6b':'#1dd1a1'; el.textContent=msg; }
 function friendlyError(e) {
-  const map = {
-    'auth/user-not-found':       'No account found with this email.',
-    'auth/wrong-password':       'Incorrect password.',
-    'auth/invalid-email':        'Invalid email address.',
-    'auth/email-already-in-use': 'An account with this email already exists.',
-    'auth/too-many-requests':    'Too many attempts. Try again later.',
-    'auth/invalid-credential':   'Incorrect email or password.',
-    'auth/weak-password':        'Password must be at least 6 characters.',
-  };
-  return map[e.code] || e.message;
+  const m = { 'auth/user-not-found':'No account with this email.','auth/wrong-password':'Wrong password.','auth/invalid-email':'Invalid email.','auth/email-already-in-use':'Email already registered.','auth/too-many-requests':'Too many attempts — try again later.','auth/invalid-credential':'Incorrect email or password.','auth/weak-password':'Password must be at least 6 characters.' };
+  return m[e.code] || e.message;
 }
 </script>
 </body>
