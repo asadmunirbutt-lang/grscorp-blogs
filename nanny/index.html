@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>SHIFT_CREW | GRSCORP</title>
+  <title>Happy Nannying | GRSCORP</title>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -11,19 +11,19 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:          #0d1117;
-      --surface:     #161b22;
-      --card:        #21262d;
-      --card2:       #2d333b;
-      --teal:        #00c9a7;
-      --teal-dk:     #00a88a;
-      --red:         #e53935;
-      --red-dk:      #b71c1c;
-      --carry-bg:    #3b0d0d;
-      --carry-bdr:   #c62828;
-      --text:        #e6edf3;
-      --muted:       #8b949e;
-      --border:      #30363d;
+      --bg:          #0d0820;
+      --surface:     #160f31;
+      --card:        #1e1445;
+      --card2:       #281b58;
+      --teal:        #ff7043;
+      --teal-dk:     #e64a19;
+      --red:         #e91e8c;
+      --red-dk:      #c2185b;
+      --carry-bg:    #2d0d28;
+      --carry-bdr:   #9c27b0;
+      --text:        #f0ebff;
+      --muted:       #9580c4;
+      --border:      #3b2468;
     }
 
     html, body {
@@ -45,19 +45,32 @@
       justify-content: center;
       min-height: 100vh;
       padding: 20px;
+      background: linear-gradient(135deg, #0d0820 0%, #1a0a3a 50%, #0d1a2e 100%);
     }
 
     .login-box {
       background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      border: 1px solid #5b2d8a;
+      border-radius: 16px;
       padding: 36px 28px;
       width: 100%;
       max-width: 380px;
+      box-shadow: 0 0 40px rgba(171,71,188,0.2), 0 0 80px rgba(255,112,67,0.08);
     }
 
     .login-logo { text-align: center; margin-bottom: 28px; }
-    .login-logo .app-name { color: var(--teal); font-size: 1.9rem; font-weight: 700; letter-spacing: 3px; }
+    .login-logo .app-name {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+      background: linear-gradient(90deg, #ff7043, #ff4081, #ab47bc, #ff7043);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 3s linear infinite;
+    }
+    @keyframes shimmer { to { background-position: 200% center; } }
     .login-logo .app-sub  { color: var(--muted); font-size: 0.75rem; margin-top: 5px; letter-spacing: 0.5px; }
 
     .fg { margin-bottom: 13px; }
@@ -82,8 +95,8 @@
       font-weight: 600; padding: 10px 18px;
       transition: all 0.15s; display: inline-block; text-align: center;
     }
-    .btn-teal  { background: var(--teal); color: #000; }
-    .btn-teal:hover { background: var(--teal-dk); }
+    .btn-teal  { background: linear-gradient(90deg, #ff7043, #e91e8c); color: #fff; border: none; }
+    .btn-teal:hover { background: linear-gradient(90deg, #e64a19, #c2185b); }
     .btn-red   { background: var(--red); color: #fff; }
     .btn-red:hover { background: var(--red-dk); }
     .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
@@ -98,7 +111,7 @@
     #app-screen { display: none; flex-direction: column; min-height: 100vh; }
 
     .tab-bar {
-      background: var(--surface);
+      background: linear-gradient(90deg, #160f31, #1a0a3a, #160f31);
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -167,8 +180,8 @@
     .user-avatar {
       width: 46px; height: 46px;
       border-radius: 8px;
-      background: var(--teal);
-      color: #000;
+      background: linear-gradient(135deg, #ff7043, #e91e8c);
+      color: #fff;
       font-weight: 700;
       font-size: 1rem;
       display: flex;
@@ -176,10 +189,19 @@
       justify-content: center;
       flex-shrink: 0;
       letter-spacing: 0.5px;
+      box-shadow: 0 2px 12px rgba(255,112,67,0.4);
     }
 
     .user-info { flex: 1; min-width: 0; }
-    .user-app-name { color: var(--teal); font-weight: 700; font-size: 1.05rem; letter-spacing: 1px; }
+    .user-app-name {
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: 0.5px;
+      background: linear-gradient(90deg, #ff7043, #ff4081, #ab47bc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
     .user-welcome  { color: var(--muted); font-size: 0.78rem; margin-top: 2px; }
 
     .sign-out-btn {
@@ -255,7 +277,15 @@
     .submit-row { margin-top: 16px; }
 
     /* ── NOTES / SUPPLIES ── */
-    .sec-heading { color: var(--teal); font-size: 1rem; font-weight: 700; margin: 22px 0 10px; }
+    .sec-heading {
+      font-size: 1rem;
+      font-weight: 700;
+      margin: 22px 0 10px;
+      background: linear-gradient(90deg, #ff7043, #e91e8c);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
     .note-item {
       background: var(--card);
@@ -308,7 +338,15 @@
     .input-row .fg.qty-f { flex: 0 0 72px; }
 
     /* ── ADMIN ── */
-    .admin-heading { color: var(--teal); font-size: 1.4rem; font-weight: 700; margin-bottom: 14px; }
+    .admin-heading {
+      font-size: 1.4rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+      background: linear-gradient(90deg, #ff7043, #e91e8c, #ab47bc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
 
     .admin-sub-tabs { display: flex; gap: 7px; margin-bottom: 16px; }
     .asub-btn {
@@ -415,7 +453,7 @@
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">
-      <div class="app-name">SHIFT_CREW</div>
+      <div class="app-name">Happy Nannying</div>
       <div class="app-sub">GRSCORP HOUSEHOLD MANAGEMENT</div>
     </div>
 
@@ -467,7 +505,7 @@
       <div class="user-header">
         <div class="user-avatar" id="user-avatar">GR</div>
         <div class="user-info">
-          <div class="user-app-name">SHIFT_CREW</div>
+          <div class="user-app-name">Happy Nannying</div>
           <div class="user-welcome" id="user-welcome">Welcome</div>
         </div>
         <button class="sign-out-btn" onclick="doLogout()">Sign<br>Out</button>
