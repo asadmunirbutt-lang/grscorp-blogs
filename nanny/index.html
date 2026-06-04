@@ -7,6 +7,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -222,7 +223,7 @@
     }
     .logout-tab:hover { background: rgba(233,30,140,0.25); }
 
-    .app-content { flex: 1; max-width: 960px; margin: 0 auto; width: 100%; }
+    .app-content { flex: 1; max-width: 1280px; margin: 0 auto; width: 100%; }
 
     .view { display: none; padding: 0 0 70px; }
     .view.active { display: block; }
@@ -790,22 +791,95 @@
     .empty-state { color: var(--muted); font-size: 0.88rem; padding: 12px 0; }
     .muted { color: var(--muted); }
 
-    /* ═══════════════ TWO-COLUMN CHECKLIST LAYOUT ═══════════════ */
+    /* ═══════════════ THREE-COLUMN CHECKLIST LAYOUT ═══════════════ */
     .checklist-layout {
       display: grid;
-      grid-template-columns: 1fr 360px;
+      grid-template-columns: 230px 1fr 330px;
+      grid-template-areas: "laundry tasks notes";
       align-items: start;
     }
-    .col-left  { min-width: 0; }
-    .col-right {
-      border-left: 1px solid var(--border);
-      padding-top: 14px;
-      padding-bottom: 40px;
+    .col-laundry { grid-area: laundry; border-right: 1px solid var(--border); min-width: 0; }
+    .col-tasks   { grid-area: tasks;   min-width: 0; }
+    .col-right   { grid-area: notes;   border-left: 1px solid var(--border); padding-top: 14px; padding-bottom: 40px; }
+    @media (max-width: 960px) {
+      .checklist-layout { grid-template-columns: 1fr 290px; grid-template-areas: "tasks notes" "laundry laundry"; }
+      .col-laundry { border-right: none; border-top: 1px solid var(--border); }
     }
-    @media (max-width: 720px) {
-      .checklist-layout { grid-template-columns: 1fr; }
+    @media (max-width: 620px) {
+      .checklist-layout { grid-template-columns: 1fr; grid-template-areas: "tasks" "notes" "laundry"; }
       .col-right { border-left: none; padding-top: 0; }
     }
+
+    /* ═══════════════ SHIFT GROUPS ═══════════════ */
+    .shift-group { margin-bottom: 10px; }
+    .sg-label { color: var(--muted); font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 7px; }
+
+    /* ═══════════════ CRITICAL BADGE ═══════════════ */
+    .critical-badge {
+      background: linear-gradient(135deg, #ff1744, #ff6b6b);
+      color: #fff; font-size: 0.6rem; font-weight: 700;
+      padding: 3px 7px; border-radius: 20px; letter-spacing: 0.5px; flex-shrink: 0;
+      animation: pulse-red 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse-red {
+      0%,100% { box-shadow: 0 0 0 0 rgba(255,23,68,0.5); }
+      50%      { box-shadow: 0 0 0 5px rgba(255,23,68,0); }
+    }
+    .task-card.is-critical { border-left-color: #ff1744 !important; background: rgba(255,23,68,0.05) !important; }
+
+    /* ═══════════════ LATER NOTE ═══════════════ */
+    .later-note-wrap { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(255,159,67,0.25); }
+    .later-note-input {
+      width: 100%; background: rgba(255,159,67,0.07);
+      border: 1px solid rgba(255,159,67,0.3); border-radius: 8px;
+      color: var(--text); font-size: 0.82rem; padding: 8px 10px;
+      resize: vertical; min-height: 52px; outline: none; font-family: inherit;
+    }
+    .later-note-input:focus { border-color: #ff9f43; }
+    .later-note-input::placeholder { color: var(--dim); }
+    .later-note-req { color: #ff9f43; font-size: 0.68rem; margin-top: 3px; }
+
+    /* ═══════════════ LAUNDRY PANEL ═══════════════ */
+    .laundry-panel { padding: 14px 12px; }
+    .laundry-panel-title { font-size: 0.88rem; font-weight: 800; color: var(--text); margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+    .laundry-section-lbl { color: var(--muted); font-size: 0.67rem; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 6px; }
+    .lcat-btns, .ltype-btns { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+    .lcat-btn, .ltype-btn {
+      background: var(--card); border: 1.5px solid var(--border2); border-radius: 8px;
+      color: var(--muted); cursor: pointer; font-size: 0.78rem; font-weight: 600;
+      padding: 7px 10px; text-align: left; transition: all 0.15s; display: flex; align-items: center; gap: 6px;
+    }
+    .lcat-btn.active { background: rgba(192,132,252,0.15); border-color: var(--lavender); color: var(--lavender); }
+    .lcat-btn:hover, .ltype-btn:hover { background: var(--card2); color: var(--text); }
+    .ltype-btn { color: var(--text); font-weight: 700; }
+    .ltype-btn.lt-wash:hover  { border-color: #54a0ff; }
+    .ltype-btn.lt-dryer:hover { border-color: #ff9f43; }
+    .ltype-btn.lt-fold:hover  { border-color: #1dd1a1; }
+    .laundry-date-group { margin-bottom: 6px; }
+    .laundry-date-hdr {
+      background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); cursor: pointer; font-size: 0.76rem; font-weight: 700;
+      padding: 6px 10px; display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 4px; user-select: none; transition: background 0.15s;
+    }
+    .laundry-date-hdr:hover { background: var(--card2); }
+    .ldh-arrow { transition: transform 0.15s; font-size: 0.58rem; }
+    .ldh-arrow.open { transform: rotate(90deg); }
+    .laundry-date-entries { display: none; }
+    .laundry-date-entries.open { display: block; }
+    .laundry-entry {
+      border: 1px solid var(--border); border-left: 3px solid var(--dim);
+      border-radius: 8px; padding: 6px 9px; margin-bottom: 4px; font-size: 0.74rem;
+    }
+    .laundry-entry.lt-wash  { border-left-color: #54a0ff; }
+    .laundry-entry.lt-dryer { border-left-color: #ff9f43; }
+    .laundry-entry.lt-fold  { border-left-color: #1dd1a1; }
+    .le-row { display: flex; align-items: center; gap: 5px; }
+    .le-type { font-weight: 700; color: var(--text); }
+    .le-cat  { color: var(--muted); font-size: 0.68rem; }
+    .le-time { margin-left: auto; color: var(--muted); font-size: 0.68rem; flex-shrink: 0; }
+    .le-who  { color: var(--dim); font-size: 0.68rem; margin-top: 2px; }
+    .laundry-empty { color: var(--muted); font-size: 0.78rem; padding: 10px 0; text-align: center; }
 
     /* ═══════════════ SUPPLY STATUS ═══════════════ */
     .supply-status { display: flex; gap: 5px; margin-top: 7px; }
@@ -833,6 +907,66 @@
     }
     .pill-pending { background: rgba(255,159,67,0.15); color: #ff9f43; border: 1px solid rgba(255,159,67,0.3); }
     .pill-ordered { background: rgba(29,209,161,0.15); color: #1dd1a1; border: 1px solid rgba(29,209,161,0.3); }
+
+    /* ═══════════════ NOTE PHOTO ═══════════════ */
+    .note-photo-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+    .photo-pick-btn {
+      background: var(--card);
+      border: 1.5px solid var(--border2);
+      border-radius: 8px;
+      color: var(--lavender);
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 7px 12px;
+      transition: all 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    .photo-pick-btn:hover { background: var(--card2); border-color: var(--lavender); }
+    .photo-pick-name { font-size: 0.73rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 140px; }
+    .note-photo-preview {
+      position: relative;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+    .note-photo-preview img {
+      max-width: 100%;
+      max-height: 130px;
+      border-radius: 10px;
+      object-fit: cover;
+      display: block;
+      border: 1px solid var(--border2);
+    }
+    .clear-photo-btn {
+      position: absolute;
+      top: 5px; right: 5px;
+      background: rgba(0,0,0,0.65);
+      border: none;
+      border-radius: 50%;
+      color: #fff;
+      cursor: pointer;
+      width: 22px; height: 22px;
+      font-size: 0.65rem;
+      line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .note-img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-top: 8px;
+      display: block;
+      border: 1px solid var(--border2);
+      cursor: pointer;
+    }
+    .upload-progress {
+      font-size: 0.75rem;
+      color: var(--lavender);
+      display: none;
+      margin-bottom: 6px;
+    }
   </style>
 </head>
 <body>
@@ -910,35 +1044,75 @@
           <button class="sign-out-btn" onclick="doLogout()">Sign Out</button>
         </div>
 
-        <!-- Shift cards -->
+        <!-- Shift groups -->
         <div class="shift-label-row">
           <span class="field-label">Select Your Shift</span>
           <span class="shift-locked-badge" id="shift-locked-badge">🔒 Locked</span>
         </div>
-        <div class="shift-cards" id="shift-cards">
-          <button class="shift-card s-morning" onclick="selectShift('1st', this)">
-            <span class="shift-emoji">🌅</span>
-            <span class="shift-name">Morning</span>
-            <span class="shift-time">6AM–2PM</span>
-          </button>
-          <button class="shift-card s-midday" onclick="selectShift('2nd', this)">
-            <span class="shift-emoji">☀️</span>
-            <span class="shift-name">Midday</span>
-            <span class="shift-time">2PM–10PM</span>
-          </button>
-          <button class="shift-card s-night" onclick="selectShift('3rd', this)">
-            <span class="shift-emoji">🌙</span>
-            <span class="shift-name">Night</span>
-            <span class="shift-time">10PM–6AM</span>
-          </button>
+
+        <div id="sg-weekdays" class="shift-group">
+          <div class="sg-label">📅 Weekdays (Mon–Fri)</div>
+          <div class="shift-cards">
+            <button class="shift-card s-morning" onclick="selectShift('morning', this, 'weekdays')">
+              <span class="shift-emoji">🌅</span>
+              <span class="shift-name">Morning</span>
+              <span class="shift-time">6AM–2PM</span>
+            </button>
+            <button class="shift-card s-midday" onclick="selectShift('midday', this, 'weekdays')">
+              <span class="shift-emoji">☀️</span>
+              <span class="shift-name">Midday</span>
+              <span class="shift-time">2PM–10PM</span>
+            </button>
+            <button class="shift-card s-night" onclick="selectShift('night', this, 'weekdays')">
+              <span class="shift-emoji">🌙</span>
+              <span class="shift-name">Night</span>
+              <span class="shift-time">10PM–6AM</span>
+            </button>
+          </div>
+        </div>
+
+        <div id="sg-weekends" class="shift-group">
+          <div class="sg-label">🗓️ Weekends</div>
+          <div class="shift-cards">
+            <button class="shift-card s-morning" onclick="selectShift('weekend-a', this, 'weekends')">
+              <span class="shift-emoji">🅰️</span>
+              <span class="shift-name">A Shift</span>
+              <span class="shift-time">Weekend</span>
+            </button>
+            <button class="shift-card s-night" onclick="selectShift('weekend-b', this, 'weekends')">
+              <span class="shift-emoji">🅱️</span>
+              <span class="shift-name">B Shift</span>
+              <span class="shift-time">Weekend</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Two-column layout -->
+      <!-- Three-column layout -->
       <div class="checklist-layout">
 
-        <!-- LEFT: room selector + tasks -->
-        <div class="col-left">
+        <!-- LAUNDRY (left) -->
+        <div class="col-laundry">
+          <div class="laundry-panel">
+            <div class="laundry-panel-title">🧺 Laundry Log</div>
+            <div class="laundry-section-lbl">Category</div>
+            <div class="lcat-btns">
+              <button class="lcat-btn active" onclick="setLaundryCat('wearable',this)">👕 Wearable Clothes</button>
+              <button class="lcat-btn" onclick="setLaundryCat('cleaning',this)">🧹 Cleaning Cloths</button>
+              <button class="lcat-btn" onclick="setLaundryCat('linen',this)">🛏️ Linen &amp; Sheets</button>
+            </div>
+            <div class="laundry-section-lbl">Log Event</div>
+            <div class="ltype-btns">
+              <button class="ltype-btn lt-wash"  onclick="logLaundry('wash')">🫧 Started Wash</button>
+              <button class="ltype-btn lt-dryer" onclick="logLaundry('dryer')">🌀 Started Dryer</button>
+              <button class="ltype-btn lt-fold"  onclick="logLaundry('fold')">👕 Folding Done</button>
+            </div>
+            <div id="laundry-log"><div class="laundry-empty">No laundry logged yet</div></div>
+          </div>
+        </div>
+
+        <!-- TASKS (middle) -->
+        <div class="col-tasks">
           <div class="room-section">
             <div class="field-label" style="margin:14px 0 8px">Select Room / Area</div>
             <div class="room-select-wrap">
@@ -958,6 +1132,16 @@
               <span class="sec-icon">📝</span> Notes
             </div>
             <div class="fg"><textarea id="note-txt" placeholder="Add a note for the team..."></textarea></div>
+            <div class="note-photo-row">
+              <label class="photo-pick-btn" for="note-photo">📷 Add Photo</label>
+              <input type="file" id="note-photo" accept="image/*" style="display:none" onchange="onNotePhotoSelected(this)">
+              <span id="note-photo-name" class="photo-pick-name"></span>
+            </div>
+            <div class="note-photo-preview" id="note-photo-preview" style="display:none">
+              <img id="note-photo-img" src="" alt="preview">
+              <button class="clear-photo-btn" onclick="clearNotePhoto()">✕</button>
+            </div>
+            <div class="upload-progress" id="upload-progress">⬆ Uploading photo…</div>
             <button class="btn btn-ghost btn-sm" onclick="submitNote()" style="margin-bottom:14px">Post Note</button>
             <div id="notes-list"></div>
           </div>
@@ -1183,8 +1367,10 @@ const DEFAULT_ROOMS = [
 // ================================================================
 //  STATE
 // ================================================================
-let auth, db, secondaryApp;
+let auth, db, storage, secondaryApp;
 let currentUser   = null;
+let notePhotoFile = null;
+let laundryCat    = 'wearable';
 let currentData   = null;
 let rooms         = [];
 let carryOvers    = {};
@@ -1209,8 +1395,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   try {
     firebase.initializeApp(FIREBASE_CONFIG);
-    auth = firebase.auth();
-    db   = firebase.firestore();
+    auth    = firebase.auth();
+    db      = firebase.firestore();
+    storage = firebase.storage();
   } catch (e) { showToast('Firebase init error: ' + e.message, true); return; }
 
   auth.onAuthStateChanged(user => { if (user) onUserLogin(user); else showLoginScreen(); });
@@ -1320,6 +1507,7 @@ async function showAppScreen() {
   await loadRooms();
   loadNotes();
   loadSupplies();
+  loadLaundryLog();
 
   if (isAdmin) { loadStaffList(); populateAdminRoomSel(); }
 }
@@ -1366,13 +1554,19 @@ function populateRoomSel() {
   });
 }
 
-function selectShift(shiftId, el) {
-  if (shiftLocked) return;
+function selectShift(shiftId, el, group) {
+  const isAdmin = currentData?.role === 'admin';
+  if (shiftLocked && !isAdmin) return;
   selectedShift = shiftId;
-  shiftLocked   = true;
-  document.querySelectorAll('.shift-card').forEach(c => { c.classList.remove('selected'); c.disabled = true; });
+  document.querySelectorAll('.shift-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
-  document.getElementById('shift-locked-badge').style.display = 'block';
+  if (!isAdmin) {
+    shiftLocked = true;
+    document.querySelectorAll('.shift-card').forEach(c => { c.disabled = true; });
+    const other = document.getElementById('sg-' + (group === 'weekdays' ? 'weekends' : 'weekdays'));
+    if (other) other.style.display = 'none';
+    document.getElementById('shift-locked-badge').style.display = 'block';
+  }
 }
 
 function onRoomChange() {
@@ -1403,13 +1597,20 @@ function renderTasks() {
     </div>`;
 
   (selectedRoom.tasks || []).forEach(task => {
-    const isCarry  = !!roomCarry[task.name];
-    const status   = taskStatuses[task.id] || '';
-    const cardCls  = isCarry ? ' is-carry' : (status ? ' done-' + status : '');
-    const badge    = isCarry ? '<span class="carry-badge">↻ CARRY-OVER</span>' : '';
+    const carryData  = roomCarry[task.name];
+    const carryCount = carryData?.count || 0;
+    const isCarry    = carryCount > 0;
+    const isCritical = carryCount >= 2;
+    const status     = taskStatuses[task.id] || '';
+    const statusSuffix = status === 'carry-over' ? 'carry' : status;
+    const cardCls = (isCritical ? ' is-critical' : isCarry ? ' is-carry' : '') + (status ? ' done-' + statusSuffix : '');
+    const badge = isCritical
+      ? `<span class="critical-badge">⚠️ CRITICAL (${carryCount} shifts)</span>`
+      : isCarry ? '<span class="carry-badge">↻ CARRY-OVER</span>' : '';
     const yesCls   = status === 'yes'        ? ' sel-yes'   : '';
     const noCls    = status === 'no'         ? ' sel-no'    : '';
     const carryCls = status === 'carry-over' ? ' sel-carry' : '';
+    const showNote = status === 'carry-over' ? 'block' : 'none';
 
     html += `
       <div class="task-card${cardCls}" id="tc-${task.id}">
@@ -1417,16 +1618,21 @@ function renderTasks() {
           <div class="task-name">${task.name}</div>
           ${badge}
         </div>
+        ${isCritical ? `<div style="font-size:0.72rem;color:#ff6b6b;margin-bottom:8px;padding:5px 8px;background:rgba(255,23,68,0.08);border-radius:6px">Not completed in last ${carryCount} shifts — previous note: <em>${carryData?.note || '—'}</em></div>` : ''}
         <div class="task-btns">
           <button class="tbtn${yesCls}" onclick="setStatus('${task.id}','yes')">
             <span class="tbtn-icon">✓</span> Yes
           </button>
           <button class="tbtn${noCls}" onclick="setStatus('${task.id}','no')">
-            <span class="tbtn-icon">✗</span> No
+            <span class="tbtn-icon">○</span> Not Needed
           </button>
           <button class="tbtn${carryCls}" onclick="setStatus('${task.id}','carry-over')">
             <span class="tbtn-icon">↻</span> Later
           </button>
+        </div>
+        <div class="later-note-wrap" id="later-note-${task.id}" style="display:${showNote}">
+          <textarea class="later-note-input" id="later-note-txt-${task.id}" placeholder="Why is this being carried over? (required)" rows="2"></textarea>
+          <div class="later-note-req">⚠️ Note required before submitting</div>
         </div>
       </div>`;
   });
@@ -1444,12 +1650,16 @@ function setStatus(taskId, status) {
   taskStatuses[taskId] = status;
   const card = document.getElementById('tc-' + taskId);
   if (!card) return;
-  card.classList.remove('done-yes','done-no','done-carry-over','done-carry');
-  if (status) card.classList.add('done-' + status.replace('-over',''));
+  card.classList.remove('done-yes','done-no','done-carry');
+  if (status === 'yes')   card.classList.add('done-yes');
+  if (status === 'no')    card.classList.add('done-no');
+  if (status === 'carry-over') card.classList.add('done-carry');
   const btns = card.querySelectorAll('.tbtn');
   btns[0].className = 'tbtn' + (status === 'yes'        ? ' sel-yes'   : '');
   btns[1].className = 'tbtn' + (status === 'no'         ? ' sel-no'    : '');
   btns[2].className = 'tbtn' + (status === 'carry-over' ? ' sel-carry' : '');
+  const noteWrap = document.getElementById('later-note-' + taskId);
+  if (noteWrap) noteWrap.style.display = status === 'carry-over' ? 'block' : 'none';
   updateProgress();
 }
 
@@ -1471,10 +1681,31 @@ async function submitRoomTasks() {
   if (!selectedRoom)  { showToast('Please select a room first', true); return; }
   if (!selectedShift) { showToast('Please select your shift first', true); return; }
 
-  const tasks = (selectedRoom.tasks || []).map(t => ({ name: t.name, status: taskStatuses[t.id] || 'no-response' }));
+  // Validate Later tasks have notes
+  for (const t of (selectedRoom.tasks || [])) {
+    if (taskStatuses[t.id] === 'carry-over') {
+      const noteEl = document.getElementById('later-note-txt-' + t.id);
+      if (!noteEl?.value.trim()) {
+        showToast(`Add a reason for "${t.name}" (Later requires a note)`, true);
+        noteEl?.focus(); return;
+      }
+    }
+  }
+
+  const tasks = (selectedRoom.tasks || []).map(t => ({
+    id: t.id, name: t.name, status: taskStatuses[t.id] || 'no-response'
+  }));
 
   const roomCarry = { ...(carryOvers[selectedRoom.id] || {}) };
-  tasks.forEach(t => { if (t.status === 'carry-over') roomCarry[t.name] = true; else delete roomCarry[t.name]; });
+  tasks.forEach(t => {
+    if (t.status === 'carry-over') {
+      const note = document.getElementById('later-note-txt-' + t.id)?.value.trim() || '';
+      const prevCount = roomCarry[t.name]?.count || 0;
+      roomCarry[t.name] = { count: prevCount + 1, note };
+    } else {
+      delete roomCarry[t.name];
+    }
+  });
   carryOvers[selectedRoom.id] = roomCarry;
 
   try {
@@ -1488,7 +1719,10 @@ async function submitRoomTasks() {
       roomId:    selectedRoom.id,
       shift:     selectedShift,
       date:      new Date().toISOString().slice(0, 10),
-      tasks,
+      tasks: tasks.map(t => ({
+        name: t.name, status: t.status,
+        laterNote: t.status === 'carry-over' ? (document.getElementById('later-note-txt-' + t.id)?.value.trim() || '') : null
+      })),
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
     batch.set(db.collection('facilities').doc(FACILITY), { carryOvers }, { merge: true });
@@ -1506,30 +1740,33 @@ async function loadNotes() {
   const list = document.getElementById('notes-list');
   list.innerHTML = '';
   try {
-    const snap = await db.collection('notes')
-      .where('facility', '==', currentData?.facility || FACILITY)
-      .orderBy('timestamp', 'desc').limit(30).get();
-    snap.docs.forEach(doc => {
+    const myFacility = currentData?.facility || FACILITY;
+    const snap = await db.collection('notes').orderBy('timestamp', 'desc').limit(50).get();
+    snap.docs.filter(d => d.data().facility === myFacility).forEach(doc => {
       const d = doc.data();
       const ts = d.timestamp?.toDate?.() || new Date();
-      list.appendChild(buildNoteEl(doc.id, d.userName, ts, d.text));
+      list.appendChild(buildNoteEl(doc.id, d.userName, ts, d.text, d.imageUrl));
     });
   } catch (e) { console.warn('Notes:', e.message); }
 }
 
-function buildNoteEl(id, author, ts, text) {
+function buildNoteEl(id, author, ts, text, imageUrl) {
   const el    = document.createElement('div');
   el.className = 'note-item';
   const tsStr  = ts.toLocaleDateString('en-US') + ', ' + ts.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'});
+  const imgHTML = imageUrl
+    ? `<img src="${imageUrl}" class="note-img" onclick="window.open('${imageUrl}','_blank')" title="Tap to view full size">`
+    : '';
+  const hasContent = text || imageUrl;
   el.innerHTML = `
     <div class="note-header" onclick="toggleNote(this)">
       <div class="note-header-left">
         <span class="note-arrow">▶</span>
-        <span class="note-author">${author} – ${tsStr}</span>
+        <span class="note-author">${author}${imageUrl ? ' 📷' : ''} – ${tsStr}</span>
       </div>
       <button class="x-btn" onclick="deleteNote('${id}',event)">✕</button>
     </div>
-    <div class="note-body">${text}</div>`;
+    <div class="note-body">${text || ''}${imgHTML}</div>`;
   return el;
 }
 
@@ -1540,23 +1777,60 @@ function toggleNote(header) {
   arrow.classList.toggle('open', body.classList.contains('open'));
 }
 
+function onNotePhotoSelected(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 15 * 1024 * 1024) { showToast('Image too large (max 15 MB)', true); input.value = ''; return; }
+  notePhotoFile = file;
+  document.getElementById('note-photo-name').textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('note-photo-img').src = e.target.result;
+    document.getElementById('note-photo-preview').style.display = 'inline-block';
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearNotePhoto() {
+  notePhotoFile = null;
+  document.getElementById('note-photo').value = '';
+  document.getElementById('note-photo-name').textContent = '';
+  document.getElementById('note-photo-preview').style.display = 'none';
+  document.getElementById('note-photo-img').src = '';
+}
+
 async function submitNote() {
   const txt = document.getElementById('note-txt').value.trim();
-  if (!txt) return;
+  if (!txt && !notePhotoFile) return;
+  const progressEl = document.getElementById('upload-progress');
   try {
-    const ref = await db.collection('notes').add({
-      text: txt, userId: currentUser.uid,
+    let imageUrl = null;
+    if (notePhotoFile) {
+      progressEl.style.display = 'block';
+      const ext = notePhotoFile.name.split('.').pop();
+      const ref = storage.ref(`notes/${FACILITY}/${Date.now()}.${ext}`);
+      const snap = await ref.put(notePhotoFile);
+      imageUrl = await snap.ref.getDownloadURL();
+      progressEl.style.display = 'none';
+    }
+    const docRef = await db.collection('notes').add({
+      text: txt, imageUrl: imageUrl || null,
+      userId: currentUser.uid,
       userName: currentData?.name || currentUser.email,
       facility: currentData?.facility || FACILITY,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
     document.getElementById('note-txt').value = '';
+    clearNotePhoto();
     showToast('📝 Note posted');
-    const list = document.getElementById('notes-list');
+    const list   = document.getElementById('notes-list');
     const author = currentData?.name || currentUser.email;
-    const newEl = buildNoteEl(ref.id, author, new Date(), txt);
+    const newEl  = buildNoteEl(docRef.id, author, new Date(), txt, imageUrl);
     list.insertBefore(newEl, list.firstChild);
-  } catch (e) { showToast(e.message, true); }
+  } catch (e) {
+    progressEl.style.display = 'none';
+    showToast(e.message, true);
+  }
 }
 
 async function deleteNote(id, e) {
@@ -1574,10 +1848,9 @@ async function loadSupplies() {
   list.innerHTML = '';
   const isAdmin = currentData?.role === 'admin';
   try {
-    const snap = await db.collection('supplies')
-      .where('facility', '==', currentData?.facility || FACILITY)
-      .orderBy('timestamp', 'desc').limit(30).get();
-    snap.docs.forEach(doc => {
+    const myFacility2 = currentData?.facility || FACILITY;
+    const snap = await db.collection('supplies').orderBy('timestamp', 'desc').limit(50).get();
+    snap.docs.filter(doc => doc.data().facility === myFacility2).forEach(doc => {
       const d      = doc.data();
       const ts     = d.timestamp?.toDate?.() || new Date();
       const status = d.status || 'pending';
@@ -1639,6 +1912,80 @@ async function updateSupplyStatus(id, status) {
     else btns[1].classList.add('ss-ordered');
     showToast(status === 'ordered' ? '✅ Marked as Ordered' : '⏳ Marked as Pending');
   } catch (e) { showToast('Error: ' + e.message, true); }
+}
+
+// ================================================================
+//  LAUNDRY TRACKER
+// ================================================================
+function setLaundryCat(cat, el) {
+  laundryCat = cat;
+  document.querySelectorAll('.lcat-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+async function logLaundry(type) {
+  const typeLabels = { wash: '🫧 Started Wash', dryer: '🌀 Started Dryer', fold: '👕 Folding Done' };
+  const catLabels  = { wearable: '👕 Wearable', cleaning: '🧹 Cleaning', linen: '🛏️ Linen' };
+  try {
+    await db.collection('laundry').add({
+      type, category: laundryCat,
+      typeLabel: typeLabels[type], catLabel: catLabels[laundryCat],
+      userId: currentUser.uid, userName: currentData?.name || currentUser.email,
+      facility: currentData?.facility || FACILITY,
+      date: new Date().toISOString().slice(0, 10),
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showToast(typeLabels[type] + ' logged');
+    loadLaundryLog();
+  } catch (e) { showToast(e.message, true); }
+}
+
+async function loadLaundryLog() {
+  const logEl = document.getElementById('laundry-log');
+  if (!logEl) return;
+  try {
+    const snap = await db.collection('laundry').orderBy('timestamp', 'desc').limit(120).get();
+    const myFac = currentData?.facility || FACILITY;
+    const entries = snap.docs.filter(d => d.data().facility === myFac).map(d => ({ id: d.id, ...d.data() }));
+    if (!entries.length) { logEl.innerHTML = '<div class="laundry-empty">No laundry logged yet</div>'; return; }
+    const byDate = {};
+    entries.forEach(e => { const dt = e.date || '?'; if (!byDate[dt]) byDate[dt] = []; byDate[dt].push(e); });
+    const today = new Date().toISOString().slice(0, 10);
+    logEl.innerHTML = '';
+    Object.entries(byDate).forEach(([date, items]) => {
+      const isToday = date === today;
+      const label   = isToday ? 'Today' : formatLaundryDate(date);
+      const group   = document.createElement('div');
+      group.className = 'laundry-date-group';
+      const rows = items.map(e => {
+        const ts  = e.timestamp?.toDate?.() || new Date();
+        const time = ts.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+        return `<div class="laundry-entry lt-${e.type}">
+          <div class="le-row"><span class="le-type">${e.typeLabel}</span><span class="le-cat">${e.catLabel}</span><span class="le-time">${time}</span></div>
+          <div class="le-who">${e.userName}</div>
+        </div>`;
+      }).join('');
+      group.innerHTML = `
+        <div class="laundry-date-hdr" onclick="toggleLaundryGroup(this)">
+          <span>${label} <span style="color:var(--muted);font-weight:400">(${items.length})</span></span>
+          <span class="ldh-arrow ${isToday ? 'open' : ''}">▶</span>
+        </div>
+        <div class="laundry-date-entries ${isToday ? 'open' : ''}">${rows}</div>`;
+      logEl.appendChild(group);
+    });
+  } catch (e) { console.warn('Laundry:', e.message); }
+}
+
+function toggleLaundryGroup(hdr) {
+  const entries = hdr.nextElementSibling;
+  const arrow   = hdr.querySelector('.ldh-arrow');
+  const open    = entries.classList.toggle('open');
+  arrow.classList.toggle('open', open);
+}
+
+function formatLaundryDate(str) {
+  const d = new Date(str + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 // ================================================================
@@ -1779,13 +2126,14 @@ async function loadDailyReport() {
   if (!date || !currentData) return;
   wrap.innerHTML = '<div class="empty-state">Loading…</div>';
   try {
-    const snap = await db.collection('submissions')
-      .where('facility', '==', currentData.facility || FACILITY)
-      .where('date', '==', date)
-      .orderBy('timestamp', 'desc').get();
-    if (snap.empty) { wrap.innerHTML = '<div class="empty-state">No submissions for this date.</div>'; return; }
+    const snap = await db.collection('submissions').where('date', '==', date).get();
+    const myFac = currentData?.facility || FACILITY;
+    const dailyDocs = snap.docs
+      .filter(d => d.data().facility === myFac)
+      .sort((a,b) => (b.data().timestamp?.toMillis?.() || 0) - (a.data().timestamp?.toMillis?.() || 0));
+    if (!dailyDocs.length) { wrap.innerHTML = '<div class="empty-state">No submissions for this date.</div>'; return; }
     wrap.innerHTML = '';
-    snap.docs.forEach(doc => {
+    dailyDocs.forEach(doc => {
       const d    = doc.data();
       const ts   = d.timestamp?.toDate?.() || new Date();
       const done = (d.tasks||[]).filter(t => t.status === 'yes').length;
@@ -1811,13 +2159,19 @@ async function loadWeeklyReport() {
 
   try {
     const snap = await db.collection('submissions')
-      .where('facility', '==', currentData.facility || FACILITY)
-      .where('date', '>=', dates[0]).where('date', '<=', dates[6])
-      .orderBy('date').orderBy('timestamp').get();
-    if (snap.empty) { wrap.innerHTML = '<div class="empty-state">No submissions for this week.</div>'; return; }
+      .where('date', '>=', dates[0]).where('date', '<=', dates[6]).get();
+    const myFacW = currentData?.facility || FACILITY;
+    const weekDocs = snap.docs
+      .filter(d => d.data().facility === myFacW)
+      .sort((a,b) => {
+        const da = a.data(), db2 = b.data();
+        return da.date !== db2.date ? (da.date < db2.date ? -1 : 1)
+          : (da.timestamp?.toMillis?.() || 0) - (db2.timestamp?.toMillis?.() || 0);
+      });
+    if (!weekDocs.length) { wrap.innerHTML = '<div class="empty-state">No submissions for this week.</div>'; return; }
 
     const byStaff = {};
-    snap.docs.forEach(doc => {
+    weekDocs.forEach(doc => {
       const d = doc.data();
       if (!byStaff[d.userName]) byStaff[d.userName] = {};
       if (!byStaff[d.userName][d.date]) byStaff[d.userName][d.date] = [];
