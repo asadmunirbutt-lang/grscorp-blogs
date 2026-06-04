@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>SHIFT_CREW | GRSCORP</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0d1117;
+      --surface:     #161b22;
+      --card:        #21262d;
+      --card2:       #2d333b;
+      --teal:        #00c9a7;
+      --teal-dk:     #00a88a;
+      --red:         #e53935;
+      --red-dk:      #b71c1c;
+      --carry-bg:    #3b0d0d;
+      --carry-bdr:   #c62828;
+      --text:        #e6edf3;
+      --muted:       #8b949e;
+      --border:      #30363d;
+    }
+
+    html, body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      font-size: 15px;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    input, select, textarea, button { font-family: inherit; font-size: inherit; }
+
+    /* ── LOGIN ── */
+    #login-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .login-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 36px 28px;
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .login-logo { text-align: center; margin-bottom: 28px; }
+    .login-logo .app-name { color: var(--teal); font-size: 1.9rem; font-weight: 700; letter-spacing: 3px; }
+    .login-logo .app-sub  { color: var(--muted); font-size: 0.75rem; margin-top: 5px; letter-spacing: 0.5px; }
+
+    .fg { margin-bottom: 13px; }
+    .fg label { display: block; color: var(--muted); font-size: 0.8rem; margin-bottom: 5px; }
+    .fg input, .fg select, .fg textarea {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 9px 11px;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    .fg input:focus, .fg select:focus, .fg textarea:focus { border-color: var(--teal); }
+    .fg select option { background: var(--card); }
+    .fg textarea { resize: vertical; min-height: 70px; }
+
+    .btn {
+      border: none; border-radius: 6px; cursor: pointer;
+      font-weight: 600; padding: 10px 18px;
+      transition: all 0.15s; display: inline-block; text-align: center;
+    }
+    .btn-teal  { background: var(--teal); color: #000; }
+    .btn-teal:hover { background: var(--teal-dk); }
+    .btn-red   { background: var(--red); color: #fff; }
+    .btn-red:hover { background: var(--red-dk); }
+    .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .btn-ghost:hover { border-color: var(--teal); color: var(--teal); }
+    .btn-block { width: 100%; }
+    .btn-sm    { padding: 6px 12px; font-size: 0.82rem; }
+
+    .err-msg { color: #ef4444; font-size: 0.8rem; margin-bottom: 10px; display: none; }
+    .link-btn { background: none; border: none; color: var(--teal); cursor: pointer; font-size: 0.82rem; padding: 0; text-decoration: underline; }
+
+    /* ── APP SHELL ── */
+    #app-screen { display: none; flex-direction: column; min-height: 100vh; }
+
+    .tab-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      gap: 4px;
+      overflow-x: auto;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+    .tab-bar::-webkit-scrollbar { display: none; }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 7px 13px;
+      transition: all 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { background: var(--teal); color: #000; font-weight: 600; }
+
+    .tab-spacer { flex: 1; }
+
+    .logout-tab {
+      background: var(--red);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 7px 13px;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    .app-content {
+      flex: 1;
+      max-width: 600px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .view { display: none; padding: 14px 14px 60px; }
+    .view.active { display: block; }
+
+    /* ── CHECKLIST ── */
+    .user-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .user-avatar {
+      width: 46px; height: 46px;
+      border-radius: 8px;
+      background: var(--teal);
+      color: #000;
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      letter-spacing: 0.5px;
+    }
+
+    .user-info { flex: 1; min-width: 0; }
+    .user-app-name { color: var(--teal); font-weight: 700; font-size: 1.05rem; letter-spacing: 1px; }
+    .user-welcome  { color: var(--muted); font-size: 0.78rem; margin-top: 2px; }
+
+    .sign-out-btn {
+      background: var(--red);
+      border: none;
+      border-radius: 6px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 6px 11px;
+      line-height: 1.3;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .field-label { color: var(--muted); font-size: 0.8rem; margin-bottom: 5px; margin-top: 12px; }
+    .field-note  { color: var(--muted); font-size: 0.73rem; margin-top: 4px; font-style: italic; }
+
+    .room-title { font-size: 1.2rem; font-weight: 700; margin: 16px 0 10px; }
+
+    .task-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 7px;
+      padding: 11px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .task-card.is-carry { background: var(--carry-bg); border-color: var(--carry-bdr); }
+
+    .task-name {
+      flex: 1;
+      font-weight: 600;
+      font-size: 0.88rem;
+      min-width: 90px;
+      line-height: 1.3;
+    }
+
+    .carry-badge {
+      background: var(--red);
+      color: #fff;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+    }
+
+    .task-actions { display: flex; gap: 5px; flex-shrink: 0; }
+
+    .tact {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 5px 8px;
+      transition: all 0.12s;
+      white-space: nowrap;
+    }
+    .tact:hover           { border-color: var(--teal); color: var(--text); }
+    .tact.sel-yes         { background: #064e3b; border-color: #10b981; color: #10b981; }
+    .tact.sel-no          { background: #7f1d1d; border-color: #ef4444; color: #fca5a5; }
+    .tact.sel-carry       { background: #1e293b; border-color: #64748b; color: #94a3b8; }
+
+    .submit-row { margin-top: 16px; }
+
+    /* ── NOTES / SUPPLIES ── */
+    .sec-heading { color: var(--teal); font-size: 1rem; font-weight: 700; margin: 22px 0 10px; }
+
+    .note-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      margin-bottom: 5px;
+      overflow: hidden;
+    }
+    .note-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 11px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .note-header-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--teal);
+      font-size: 0.82rem;
+      min-width: 0;
+    }
+    .note-arrow { font-size: 0.65rem; flex-shrink: 0; transition: transform 0.15s; }
+    .note-arrow.open { transform: rotate(90deg); }
+    .note-author { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .note-body { display: none; padding: 0 11px 10px; color: var(--muted); font-size: 0.83rem; line-height: 1.5; }
+    .note-body.open { display: block; }
+
+    .x-btn { background: none; border: none; color: var(--red); cursor: pointer; font-size: 1rem; padding: 3px 5px; line-height: 1; flex-shrink: 0; }
+
+    .supply-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 9px 11px;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .supply-info { flex: 1; min-width: 0; }
+    .supply-name { font-weight: 600; font-size: 0.88rem; }
+    .supply-meta { color: var(--muted); font-size: 0.72rem; margin-top: 2px; }
+    .supply-qty  { background: var(--card2); border-radius: 4px; font-weight: 700; padding: 3px 9px; font-size: 0.9rem; }
+
+    .input-row { display: flex; gap: 7px; margin-bottom: 7px; }
+    .input-row .fg { flex: 1; margin-bottom: 0; }
+    .input-row .fg.qty-f { flex: 0 0 72px; }
+
+    /* ── ADMIN ── */
+    .admin-heading { color: var(--teal); font-size: 1.4rem; font-weight: 700; margin-bottom: 14px; }
+
+    .admin-sub-tabs { display: flex; gap: 7px; margin-bottom: 16px; }
+    .asub-btn {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 8px 18px;
+      transition: all 0.15s;
+    }
+    .asub-btn.active { background: var(--teal); border-color: var(--teal); color: #000; }
+
+    .admin-panel { display: none; }
+    .admin-panel.active { display: block; }
+
+    .panel-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 14px;
+    }
+    .panel-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 14px; }
+
+    .staff-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 11px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .staff-details { flex: 1; min-width: 0; }
+    .staff-name { font-weight: 700; font-size: 0.92rem; }
+    .staff-meta { color: var(--muted); font-size: 0.75rem; margin-top: 2px; }
+    .staff-role { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; margin-top: 2px; }
+
+    /* ── REPORTS ── */
+    .report-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 14px; }
+
+    .date-row { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+    .date-row input[type="date"] {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      padding: 8px 10px;
+      font-size: 0.88rem;
+      flex: 1;
+      outline: none;
+    }
+
+    .sub-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+    .sub-header { background: var(--card); padding: 11px 14px; display: flex; align-items: center; justify-content: space-between; }
+    .sub-name   { font-weight: 700; font-size: 0.92rem; }
+    .sub-meta   { color: var(--muted); font-size: 0.75rem; margin-top: 2px; }
+    .sub-pill   { background: var(--card2); border-radius: 12px; color: var(--muted); font-size: 0.72rem; font-weight: 600; padding: 3px 10px; white-space: nowrap; }
+    .sub-tasks  { padding: 6px 14px 12px; }
+
+    .task-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 0.83rem; gap: 8px; }
+    .task-row:last-child { border-bottom: none; }
+    .task-row-name { flex: 1; }
+    .s-yes   { color: #10b981; font-weight: 600; }
+    .s-no    { color: #ef4444; font-weight: 600; }
+    .s-carry { color: #94a3b8; font-weight: 600; }
+
+    .week-wrap  { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .week-table { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 320px; }
+    .week-table th, .week-table td { border: 1px solid var(--border); padding: 6px 8px; text-align: center; }
+    .week-table th { background: var(--card); color: var(--muted); font-weight: 600; }
+    .week-table td:first-child { text-align: left; }
+    .week-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      padding: 11px 22px; border-radius: 8px; font-size: 0.88rem; font-weight: 600;
+      z-index: 9999; display: none; max-width: 88vw; text-align: center; pointer-events: none;
+    }
+    .t-ok  { background: var(--teal); color: #000; }
+    .t-err { background: var(--red);  color: #fff; }
+
+    /* ── SETUP BANNER ── */
+    .setup-banner {
+      background: #1a1200; border: 1px solid #f59e0b; border-radius: 10px;
+      color: #fbbf24; font-size: 0.82rem; margin-bottom: 20px; padding: 16px; line-height: 1.6;
+    }
+    .setup-banner strong { display: block; margin-bottom: 8px; font-size: 0.92rem; color: #f59e0b; }
+    .setup-banner code  { background: rgba(0,0,0,0.4); border-radius: 3px; font-family: monospace; font-size: 0.8rem; padding: 1px 4px; }
+
+    .empty-state { color: var(--muted); font-size: 0.88rem; padding: 10px 0; }
+    .muted       { color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════ LOGIN ═══════════════════ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="app-name">SHIFT_CREW</div>
+      <div class="app-sub">GRSCORP HOUSEHOLD MANAGEMENT</div>
+    </div>
+
+    <div id="setup-banner-wrap"></div>
+
+    <!-- Sign-in -->
+    <div id="login-form">
+      <div class="fg"><label>Email</label><input type="email" id="li-email" placeholder="you@example.com" autocomplete="email"></div>
+      <div class="fg"><label>Password</label><input type="password" id="li-pwd" placeholder="••••••••" autocomplete="current-password"></div>
+      <div class="err-msg" id="li-err"></div>
+      <button class="btn btn-teal btn-block" onclick="doLogin()">Sign In</button>
+      <div style="text-align:center;margin-top:12px;font-size:0.82rem;color:var(--muted)">
+        <button class="link-btn" onclick="showForgot()">Forgot password?</button>
+        &nbsp;·&nbsp;
+        <button class="link-btn" onclick="showRegForm()">New staff? Set password</button>
+      </div>
+    </div>
+
+    <!-- First-time register -->
+    <div id="reg-form" style="display:none">
+      <p style="color:var(--muted);font-size:0.82rem;margin-bottom:14px">Your admin must have added your email. Create a password to activate your account.</p>
+      <div class="fg"><label>Email</label><input type="email" id="rg-email" placeholder="you@example.com"></div>
+      <div class="fg"><label>New Password (min 6 chars)</label><input type="password" id="rg-pwd" placeholder="Choose a password"></div>
+      <div class="err-msg" id="rg-err"></div>
+      <button class="btn btn-teal btn-block" onclick="doRegister()">Create Password &amp; Sign In</button>
+      <div style="text-align:center;margin-top:10px">
+        <button class="link-btn" onclick="showLoginForm()">← Back to Sign In</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ APP ═══════════════════ -->
+<div id="app-screen">
+  <!-- Tab bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="checklist" onclick="switchTab('checklist')">Checklist</button>
+    <button class="tab-btn" data-tab="admin" onclick="switchTab('admin')" id="admin-tab" style="display:none">Admin</button>
+    <button class="tab-btn" data-tab="daily"  onclick="switchTab('daily')">Daily</button>
+    <button class="tab-btn" data-tab="weekly" onclick="switchTab('weekly')">Weekly</button>
+    <div class="tab-spacer"></div>
+    <button class="logout-tab" onclick="doLogout()">Logout</button>
+  </div>
+
+  <div class="app-content">
+
+    <!-- ── CHECKLIST ── -->
+    <div class="view active" id="view-checklist">
+      <div class="user-header">
+        <div class="user-avatar" id="user-avatar">GR</div>
+        <div class="user-info">
+          <div class="user-app-name">SHIFT_CREW</div>
+          <div class="user-welcome" id="user-welcome">Welcome</div>
+        </div>
+        <button class="sign-out-btn" onclick="doLogout()">Sign<br>Out</button>
+      </div>
+
+      <div class="field-label">Select Shift</div>
+      <div class="fg" style="margin-bottom:4px">
+        <select id="shift-sel" onchange="onShiftChange()">
+          <option value="">-- Select your shift --</option>
+          <option value="1st">1st Shift (Morning) (6:00 AM – 2:00 PM)</option>
+          <option value="2nd">2nd Shift (Midday) (2:00 PM – 10:00 PM)</option>
+          <option value="3rd">3rd Shift (Night) (10:00 PM – 6:00 AM)</option>
+        </select>
+      </div>
+      <div class="field-note" id="shift-note" style="display:none">Your shift is locked to your login selection</div>
+
+      <div class="field-label">Select Room/Area</div>
+      <div class="fg">
+        <select id="room-sel" onchange="onRoomChange()">
+          <option value="">-- Select a room --</option>
+        </select>
+      </div>
+
+      <div id="room-content"></div>
+
+      <!-- Notes -->
+      <div class="sec-heading">Notes</div>
+      <div class="fg"><textarea id="note-txt" placeholder="Add a note..."></textarea></div>
+      <button class="btn btn-ghost btn-sm" onclick="submitNote()" style="margin-bottom:14px">Submit Note</button>
+      <div id="notes-list"></div>
+
+      <!-- Supplies -->
+      <div class="sec-heading">Supplies</div>
+      <div class="input-row">
+        <div class="fg"><input type="text" id="sup-name" placeholder="Supply name"></div>
+        <div class="fg qty-f"><input type="number" id="sup-qty" placeholder="Qty" min="1" value="1"></div>
+      </div>
+      <button class="btn btn-teal btn-block btn-sm" onclick="submitSupply()" style="margin-bottom:14px">Submit Supply</button>
+      <div id="supplies-list"></div>
+      <div style="height:30px"></div>
+    </div>
+
+    <!-- ── ADMIN ── -->
+    <div class="view" id="view-admin">
+      <div class="admin-heading">Admin Dashboard</div>
+      <div class="admin-sub-tabs">
+        <button class="asub-btn active" onclick="switchAdminTab('staff')">Staff</button>
+        <button class="asub-btn"        onclick="switchAdminTab('tasks')">Tasks</button>
+      </div>
+
+      <!-- Staff panel -->
+      <div class="admin-panel active" id="ap-staff">
+        <div class="panel-card">
+          <h3>Create Staff Account</h3>
+          <div class="fg"><label>Email</label><input type="email" id="ns-email" placeholder="staff@example.com"></div>
+          <div class="fg"><label>Full Name</label><input type="text" id="ns-name" placeholder="Full Name"></div>
+          <div class="fg">
+            <label>Role</label>
+            <select id="ns-role">
+              <option value="caretaker">CARETAKER</option>
+              <option value="admin">ADMIN</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Temporary Password (share with staff)</label>
+            <input type="text" id="ns-pwd" placeholder="e.g. Welcome2025!">
+          </div>
+          <div class="fg">
+            <label>Facility</label>
+            <select id="ns-facility"><option value="grscorp">GRSCORP Household</option></select>
+          </div>
+          <button class="btn btn-teal btn-block" onclick="createStaff()">Create Staff</button>
+          <div id="ns-msg" style="margin-top:8px;font-size:0.82rem;display:none"></div>
+        </div>
+        <div class="panel-card">
+          <h3>Staff List</h3>
+          <div id="staff-list"><div class="empty-state">Loading…</div></div>
+        </div>
+      </div>
+
+      <!-- Tasks panel -->
+      <div class="admin-panel" id="ap-tasks">
+        <div class="panel-card">
+          <h3>Manage Tasks by Room</h3>
+          <div class="fg">
+            <label>Select Room</label>
+            <select id="ar-room-sel" onchange="loadAdminTasks()">
+              <option value="">-- Select Room --</option>
+            </select>
+          </div>
+          <div id="add-task-form" style="display:none">
+            <div class="fg" style="margin-top:8px">
+              <label>New Task Name</label>
+              <input type="text" id="new-task-name" placeholder="e.g. Bed made">
+            </div>
+            <button class="btn btn-teal btn-sm" onclick="addTask()">+ Add Task</button>
+          </div>
+        </div>
+        <div class="panel-card">
+          <h3>Tasks in Selected Room</h3>
+          <div id="ar-tasks-list"><div class="empty-state">Select a room above</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DAILY ── -->
+    <div class="view" id="view-daily">
+      <div class="report-title">Daily Report</div>
+      <div class="date-row">
+        <input type="date" id="daily-date" onchange="loadDailyReport()">
+        <button class="btn btn-ghost btn-sm" onclick="loadDailyReport()">Load</button>
+      </div>
+      <div id="daily-content"><div class="empty-state">Select a date to view submissions.</div></div>
+    </div>
+
+    <!-- ── WEEKLY ── -->
+    <div class="view" id="view-weekly">
+      <div class="report-title">Weekly Overview</div>
+      <div class="date-row">
+        <span style="color:var(--muted);font-size:0.82rem;white-space:nowrap">Week of:</span>
+        <input type="date" id="weekly-date" onchange="loadWeeklyReport()">
+        <button class="btn btn-ghost btn-sm" onclick="loadWeeklyReport()">Load</button>
+      </div>
+      <div id="weekly-content"><div class="empty-state">Select a week start date.</div></div>
+    </div>
+
+  </div><!-- app-content -->
+</div><!-- app-screen -->
+
+<div id="toast"></div>
+
+<script>
+// ================================================================
+//  FIREBASE CONFIGURATION
+//  ----------------------------------------------------------------
+//  1. Go to https://console.firebase.google.com
+//  2. Create a project → Enable Authentication (Email/Password)
+//  3. Enable Firestore Database (start in test mode for now)
+//  4. Project Settings → Your apps → Add Web App → copy config below
+//  5. Ask Claude to paste the values here, then push to GitHub
+//
+//  Firestore security rules to add after testing:
+//  rules_version = '2';
+//  service cloud.firestore {
+//    match /databases/{db}/documents {
+//      match /{doc=**} { allow read, write: if request.auth != null; }
+//    }
+//  }
+// ================================================================
+const FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyDpe1XWs4eZDm7FbID2mBRPKoV76Fiyv6c",
+  authDomain:        "nanny-22cb0.firebaseapp.com",
+  projectId:         "nanny-22cb0",
+  storageBucket:     "nanny-22cb0.firebasestorage.app",
+  messagingSenderId: "1074639853147",
+  appId:             "1:1074639853147:web:86968de12c2f3f20e5517e"
+};
+
+// Emails always granted admin role (no Firestore lookup required)
+const ADMIN_EMAILS = ['amb@grscorp.us'];
+
+const FACILITY = 'grscorp';
+
+const DEFAULT_ROOMS = [
+  { id: 'azlans-room', name: "Azlan's Room", tasks: [
+    { id: 'ar1', name: 'Bed made' },
+    { id: 'ar2', name: 'Toys organized' },
+    { id: 'ar3', name: 'Sheets changed (Mon/Wed/Fri)' },
+    { id: 'ar4', name: 'Clothes put away' },
+    { id: 'ar5', name: 'Floor vacuumed' },
+    { id: 'ar6', name: 'Surfaces wiped' },
+    { id: 'ar7', name: 'Laundry basket checked' },
+  ]},
+  { id: 'dining-area', name: 'Dining Area', tasks: [
+    { id: 'da1', name: 'Table wiped' },
+    { id: 'da2', name: 'Chairs cleaned' },
+    { id: 'da3', name: 'Floor swept/vacuumed' },
+    { id: 'da4', name: 'Trash emptied' },
+  ]},
+  { id: 'downstairs-bathroom', name: 'Downstairs Bathroom', tasks: [
+    { id: 'db1', name: 'Toilet cleaned' },
+    { id: 'db2', name: 'Sink wiped' },
+    { id: 'db3', name: 'Mirror cleaned' },
+    { id: 'db4', name: 'Floor mopped' },
+    { id: 'db5', name: 'Towels changed' },
+    { id: 'db6', name: 'Supplies restocked' },
+  ]},
+  { id: 'final-checks', name: 'Final Checks', tasks: [
+    { id: 'fc1', name: 'All lights off' },
+    { id: 'fc2', name: 'Doors locked' },
+    { id: 'fc3', name: 'Windows closed' },
+    { id: 'fc4', name: 'Appliances off' },
+  ]},
+  { id: 'general-final-checks', name: 'General/Final Checks', tasks: [
+    { id: 'gfc1', name: 'Handover completed' },
+    { id: 'gfc2', name: 'Notes updated' },
+    { id: 'gfc3', name: 'Supplies reported' },
+  ]},
+  { id: 'hallways', name: 'Hallways', tasks: [
+    { id: 'hw1', name: 'Floor vacuumed/swept' },
+    { id: 'hw2', name: 'Surfaces dusted' },
+    { id: 'hw3', name: 'Items put away' },
+  ]},
+  { id: 'kitchen', name: 'Kitchen', tasks: [
+    { id: 'k1', name: 'Dishes done' },
+    { id: 'k2', name: 'Counters wiped' },
+    { id: 'k3', name: 'Sink cleaned' },
+    { id: 'k4', name: 'Stovetop cleaned' },
+    { id: 'k5', name: 'Fridge exterior wiped' },
+    { id: 'k6', name: 'Floor swept/mopped' },
+    { id: 'k7', name: 'Trash emptied' },
+  ]},
+  { id: 'laundry', name: 'Laundry', tasks: [
+    { id: 'l1', name: 'Washer loaded/started' },
+    { id: 'l2', name: 'Dryer emptied' },
+    { id: 'l3', name: 'Clothes folded' },
+    { id: 'l4', name: 'Clothes put away' },
+  ]},
+  { id: 'office', name: 'Office', tasks: [
+    { id: 'o1', name: 'Desk wiped' },
+    { id: 'o2', name: 'Floor vacuumed' },
+    { id: 'o3', name: 'Trash emptied' },
+  ]},
+  { id: 'pet-care', name: 'Pet Care', tasks: [
+    { id: 'pc1', name: 'Pets fed' },
+    { id: 'pc2', name: 'Water bowls filled' },
+    { id: 'pc3', name: 'Litter/area cleaned' },
+  ]},
+  { id: 'pets', name: 'Pets', tasks: [
+    { id: 'p1', name: 'Morning walk/exercise' },
+    { id: 'p2', name: 'Grooming checked' },
+    { id: 'p3', name: 'Medications given' },
+  ]},
+  { id: 'sitting-area', name: 'Sitting Area', tasks: [
+    { id: 'sa1', name: 'Cushions arranged' },
+    { id: 'sa2', name: 'Surfaces dusted' },
+    { id: 'sa3', name: 'Floor vacuumed' },
+    { id: 'sa4', name: 'Items tidied' },
+  ]},
+  { id: 'stairs', name: 'Stairs', tasks: [
+    { id: 'st1', name: 'Vacuumed/swept' },
+    { id: 'st2', name: 'Handrail wiped' },
+  ]},
+];
+
+// ================================================================
+//  STATE
+// ================================================================
+let auth, db, secondaryApp;
+let currentUser   = null;
+let currentData   = null;
+let rooms         = [];
+let carryOvers    = {};   // { roomId: { taskName: true } }
+let selectedShift = null;
+let shiftLocked   = false;
+let selectedRoom  = null;
+let taskStatuses  = {};   // { taskId: 'yes'|'no'|'carry-over' }
+
+// ================================================================
+//  INIT
+// ================================================================
+function isConfigured() {
+  return FIREBASE_CONFIG.apiKey && !FIREBASE_CONFIG.apiKey.startsWith('REPLACE');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const today = new Date().toISOString().slice(0, 10);
+  document.getElementById('daily-date').value  = today;
+  document.getElementById('weekly-date').value = today;
+
+  if (!isConfigured()) {
+    renderSetupBanner();
+    return;
+  }
+
+  try {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    auth = firebase.auth();
+    db   = firebase.firestore();
+  } catch (e) {
+    showToast('Firebase init error: ' + e.message, true);
+    return;
+  }
+
+  auth.onAuthStateChanged(user => {
+    if (user) onUserLogin(user);
+    else      showLoginScreen();
+  });
+});
+
+function renderSetupBanner() {
+  document.getElementById('setup-banner-wrap').innerHTML = `
+    <div class="setup-banner">
+      <strong>⚙️ Firebase Setup Required</strong>
+      This app needs a Firebase project to store data and handle logins.<br><br>
+      <strong>Quick setup:</strong><br>
+      1. Go to <strong>console.firebase.google.com</strong> → create a project.<br>
+      2. Enable <strong>Authentication → Email/Password</strong>.<br>
+      3. Enable <strong>Firestore Database</strong> (test mode is fine to start).<br>
+      4. Project Settings → Your apps → Web app → copy the config values.<br>
+      5. Share the values with Claude and ask to update <code>nanny/index.html</code>.<br><br>
+      Once done, <strong>amb@grscorp.us</strong> will automatically be admin.
+    </div>`;
+}
+
+// ================================================================
+//  AUTH
+// ================================================================
+async function doLogin() {
+  const email = document.getElementById('li-email').value.trim();
+  const pwd   = document.getElementById('li-pwd').value;
+  hideErr('li-err');
+  if (!email || !pwd) { showErr('li-err', 'Enter your email and password.'); return; }
+  try {
+    await auth.signInWithEmailAndPassword(email, pwd);
+  } catch (e) {
+    showErr('li-err', friendlyError(e));
+  }
+}
+
+async function doRegister() {
+  const email = document.getElementById('rg-email').value.trim();
+  const pwd   = document.getElementById('rg-pwd').value;
+  hideErr('rg-err');
+  if (!email || pwd.length < 6) { showErr('rg-err', 'Valid email and password (min 6 chars) required.'); return; }
+
+  if (!ADMIN_EMAILS.includes(email)) {
+    try {
+      const q = await db.collection('staff').where('email', '==', email).limit(1).get();
+      if (q.empty) { showErr('rg-err', 'Email not on staff list. Contact your admin.'); return; }
+    } catch (e) { showErr('rg-err', e.message); return; }
+  }
+
+  try {
+    await auth.createUserWithEmailAndPassword(email, pwd);
+  } catch (e) {
+    showErr('rg-err', friendlyError(e));
+  }
+}
+
+async function doLogout() {
+  selectedShift = null; shiftLocked = false;
+  currentUser   = null; currentData  = null;
+  taskStatuses  = {}; selectedRoom   = null;
+  if (auth) await auth.signOut();
+  else showLoginScreen();
+}
+
+async function showForgot() {
+  const email = prompt('Enter your email to receive a password reset link:');
+  if (!email) return;
+  try {
+    await auth.sendPasswordResetEmail(email);
+    showToast('Password reset email sent!');
+  } catch (e) { showToast(e.message, true); }
+}
+
+async function onUserLogin(user) {
+  currentUser = user;
+  const isAdmin = ADMIN_EMAILS.includes(user.email);
+
+  try {
+    const snap = await db.collection('users').doc(user.uid).get();
+    if (snap.exists) {
+      currentData = snap.data();
+    } else {
+      let staffData = { email: user.email, name: user.email.split('@')[0], role: isAdmin ? 'admin' : 'caretaker', facility: FACILITY };
+      if (!isAdmin) {
+        const q = await db.collection('staff').where('email', '==', user.email).limit(1).get();
+        if (!q.empty) staffData = { ...q.docs[0].data(), email: user.email };
+      }
+      await db.collection('users').doc(user.uid).set({ ...staffData, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+      currentData = staffData;
+    }
+    if (isAdmin) currentData.role = 'admin';
+  } catch (e) {
+    currentData = { name: user.email, role: isAdmin ? 'admin' : 'caretaker', facility: FACILITY };
+  }
+
+  showAppScreen();
+}
+
+// ================================================================
+//  SCREEN SWITCHING
+// ================================================================
+function showLoginScreen() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app-screen').style.display   = 'none';
+}
+
+function showLoginForm() {
+  document.getElementById('login-form').style.display = 'block';
+  document.getElementById('reg-form').style.display   = 'none';
+}
+
+function showRegForm() {
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('reg-form').style.display   = 'block';
+}
+
+async function showAppScreen() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display   = 'flex';
+
+  const isAdmin = currentData?.role === 'admin';
+  document.getElementById('admin-tab').style.display = isAdmin ? 'block' : 'none';
+
+  const name     = currentData?.name || currentUser?.email || '';
+  const initials = name.split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'GR';
+  document.getElementById('user-avatar').textContent  = initials;
+  document.getElementById('user-welcome').textContent = 'Welcome, ' + name;
+
+  await loadRooms();
+  loadNotes();
+  loadSupplies();
+
+  if (isAdmin) {
+    loadStaffList();
+    populateAdminRoomSel();
+  }
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.view').forEach(v  => v.classList.toggle('active', v.id === 'view-' + tab));
+  if (tab === 'daily')  loadDailyReport();
+  if (tab === 'weekly') loadWeeklyReport();
+}
+
+function switchAdminTab(tab) {
+  document.querySelectorAll('.asub-btn').forEach((b, i) =>
+    b.classList.toggle('active', (tab === 'staff' && i === 0) || (tab === 'tasks' && i === 1)));
+  document.getElementById('ap-staff').classList.toggle('active', tab === 'staff');
+  document.getElementById('ap-tasks').classList.toggle('active', tab === 'tasks');
+}
+
+// ================================================================
+//  ROOMS & TASKS
+// ================================================================
+async function loadRooms() {
+  try {
+    const snap = await db.collection('facilities').doc(FACILITY).get();
+    if (snap.exists && snap.data().rooms?.length) {
+      rooms      = snap.data().rooms;
+      carryOvers = snap.data().carryOvers || {};
+    } else {
+      rooms = DEFAULT_ROOMS;
+      await db.collection('facilities').doc(FACILITY).set({ rooms, carryOvers: {} }, { merge: true });
+    }
+  } catch (e) {
+    rooms = DEFAULT_ROOMS;
+  }
+  populateRoomSel();
+}
+
+function populateRoomSel() {
+  const sel = document.getElementById('room-sel');
+  sel.innerHTML = '<option value="">-- Select a room --</option>';
+  rooms.forEach(r => {
+    const o = document.createElement('option');
+    o.value = r.id; o.textContent = r.name;
+    sel.appendChild(o);
+  });
+}
+
+function onShiftChange() {
+  const v = document.getElementById('shift-sel').value;
+  if (v && !shiftLocked) {
+    selectedShift = v; shiftLocked = true;
+    document.getElementById('shift-sel').disabled = true;
+    document.getElementById('shift-note').style.display = 'block';
+  }
+}
+
+function onRoomChange() {
+  taskStatuses = {};
+  const rid = document.getElementById('room-sel').value;
+  if (!rid) { document.getElementById('room-content').innerHTML = ''; selectedRoom = null; return; }
+  selectedRoom = rooms.find(r => r.id === rid) || null;
+  renderTasks();
+}
+
+function renderTasks() {
+  const wrap = document.getElementById('room-content');
+  if (!selectedRoom) { wrap.innerHTML = ''; return; }
+  const roomCarry = carryOvers[selectedRoom.id] || {};
+  let html = `<div class="room-title">${selectedRoom.name}</div>`;
+
+  (selectedRoom.tasks || []).forEach(task => {
+    const isCarry  = !!roomCarry[task.name];
+    const status   = taskStatuses[task.id] || '';
+    const cardCls  = isCarry ? ' is-carry' : '';
+    const badge    = isCarry ? '<span class="carry-badge">CARRY-OVER</span>' : '';
+    const yesCls   = status === 'yes'          ? ' sel-yes'   : '';
+    const noCls    = status === 'no'           ? ' sel-no'    : '';
+    const carryCls = status === 'carry-over'   ? ' sel-carry' : '';
+
+    html += `
+      <div class="task-card${cardCls}" id="tc-${task.id}">
+        <div class="task-name">${task.name}</div>
+        ${badge}
+        <div class="task-actions">
+          <button class="tact${yesCls}"   onclick="setStatus('${task.id}','yes')">✓ Yes</button>
+          <button class="tact${noCls}"    onclick="setStatus('${task.id}','no')">✗ No</button>
+          <button class="tact${carryCls}" onclick="setStatus('${task.id}','carry-over')">→ Carry Over</button>
+        </div>
+      </div>`;
+  });
+
+  html += `<div class="submit-row"><button class="btn btn-teal btn-block" onclick="submitRoomTasks()">Submit Room Tasks</button></div>`;
+  wrap.innerHTML = html;
+}
+
+function setStatus(taskId, status) {
+  taskStatuses[taskId] = status;
+  const card = document.getElementById('tc-' + taskId);
+  if (!card) return;
+  const btns = card.querySelectorAll('.tact');
+  btns[0].className = 'tact' + (status === 'yes'          ? ' sel-yes'   : '');
+  btns[1].className = 'tact' + (status === 'no'           ? ' sel-no'    : '');
+  btns[2].className = 'tact' + (status === 'carry-over'   ? ' sel-carry' : '');
+}
+
+async function submitRoomTasks() {
+  if (!selectedRoom)  { showToast('Select a room first', true); return; }
+  if (!selectedShift) { showToast('Select a shift first', true); return; }
+
+  const tasks = (selectedRoom.tasks || []).map(t => ({
+    name: t.name, status: taskStatuses[t.id] || 'no-response'
+  }));
+
+  // Update carry-over map
+  const roomCarry = { ...(carryOvers[selectedRoom.id] || {}) };
+  tasks.forEach(t => {
+    if (t.status === 'carry-over') roomCarry[t.name] = true;
+    else delete roomCarry[t.name];
+  });
+  carryOvers[selectedRoom.id] = roomCarry;
+
+  try {
+    const batch = db.batch();
+
+    batch.set(db.collection('submissions').doc(), {
+      userId:    currentUser.uid,
+      userName:  currentData?.name || currentUser.email,
+      userEmail: currentUser.email,
+      facility:  currentData?.facility || FACILITY,
+      room:      selectedRoom.name,
+      roomId:    selectedRoom.id,
+      shift:     selectedShift,
+      date:      new Date().toISOString().slice(0, 10),
+      tasks,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    batch.set(db.collection('facilities').doc(FACILITY), { carryOvers }, { merge: true });
+
+    await batch.commit();
+    showToast('Room tasks submitted!');
+    taskStatuses = {};
+    renderTasks();
+  } catch (e) { showToast('Error: ' + e.message, true); }
+}
+
+// ================================================================
+//  NOTES
+// ================================================================
+async function loadNotes() {
+  const list = document.getElementById('notes-list');
+  list.innerHTML = '';
+  try {
+    const snap = await db.collection('notes')
+      .where('facility', '==', currentData?.facility || FACILITY)
+      .orderBy('timestamp', 'desc').limit(30).get();
+    snap.docs.forEach(doc => {
+      const d  = doc.data();
+      const ts = d.timestamp?.toDate?.() || new Date();
+      list.appendChild(buildNoteEl(doc.id, d.userName, ts, d.text));
+    });
+  } catch (e) { console.warn('Notes:', e.message); }
+}
+
+function buildNoteEl(id, author, ts, text) {
+  const el    = document.createElement('div');
+  el.className = 'note-item';
+  const tsStr  = ts.toLocaleDateString('en-US') + ', ' + ts.toLocaleTimeString();
+  el.innerHTML = `
+    <div class="note-header" onclick="toggleNote(this)">
+      <div class="note-header-left">
+        <span class="note-arrow">▶</span>
+        <span class="note-author">${author} – ${tsStr}</span>
+      </div>
+      <button class="x-btn" onclick="deleteNote('${id}',event)">✕</button>
+    </div>
+    <div class="note-body">${text}</div>`;
+  return el;
+}
+
+function toggleNote(header) {
+  const body  = header.nextElementSibling;
+  const arrow = header.querySelector('.note-arrow');
+  body.classList.toggle('open');
+  arrow.classList.toggle('open', body.classList.contains('open'));
+}
+
+async function submitNote() {
+  const txt = document.getElementById('note-txt').value.trim();
+  if (!txt) return;
+  try {
+    await db.collection('notes').add({
+      text: txt,
+      userId:    currentUser.uid,
+      userName:  currentData?.name || currentUser.email,
+      facility:  currentData?.facility || FACILITY,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('note-txt').value = '';
+    showToast('Note saved');
+    loadNotes();
+  } catch (e) { showToast(e.message, true); }
+}
+
+async function deleteNote(id, e) {
+  e.stopPropagation();
+  if (!confirm('Delete this note?')) return;
+  try { await db.collection('notes').doc(id).delete(); loadNotes(); }
+  catch (e) { showToast('Error', true); }
+}
+
+// ================================================================
+//  SUPPLIES
+// ================================================================
+async function loadSupplies() {
+  const list = document.getElementById('supplies-list');
+  list.innerHTML = '';
+  try {
+    const snap = await db.collection('supplies')
+      .where('facility', '==', currentData?.facility || FACILITY)
+      .orderBy('timestamp', 'desc').limit(30).get();
+    snap.docs.forEach(doc => {
+      const d  = doc.data();
+      const ts = d.timestamp?.toDate?.() || new Date();
+      const el = document.createElement('div');
+      el.className = 'supply-item';
+      el.innerHTML = `
+        <div class="supply-info">
+          <div class="supply-name">${d.name}</div>
+          <div class="supply-meta">${d.userName} – ${ts.toLocaleDateString('en-US')}</div>
+        </div>
+        <span class="supply-qty">${d.quantity}</span>
+        <button class="x-btn" onclick="deleteSupply('${doc.id}')">✕</button>`;
+      list.appendChild(el);
+    });
+  } catch (e) { console.warn('Supplies:', e.message); }
+}
+
+async function submitSupply() {
+  const name = document.getElementById('sup-name').value.trim();
+  const qty  = parseInt(document.getElementById('sup-qty').value) || 1;
+  if (!name) return;
+  try {
+    await db.collection('supplies').add({
+      name, quantity: qty,
+      userId:    currentUser.uid,
+      userName:  currentData?.name || currentUser.email,
+      facility:  currentData?.facility || FACILITY,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('sup-name').value = '';
+    document.getElementById('sup-qty').value  = '1';
+    showToast('Supply added');
+    loadSupplies();
+  } catch (e) { showToast(e.message, true); }
+}
+
+async function deleteSupply(id) {
+  if (!confirm('Remove supply item?')) return;
+  try { await db.collection('supplies').doc(id).delete(); loadSupplies(); }
+  catch (e) { showToast('Error', true); }
+}
+
+// ================================================================
+//  ADMIN — STAFF
+// ================================================================
+async function loadStaffList() {
+  const list = document.getElementById('staff-list');
+  list.innerHTML = '<div class="empty-state">Loading…</div>';
+  try {
+    const snap = await db.collection('staff')
+      .where('facility', '==', currentData?.facility || FACILITY).get();
+    list.innerHTML = '';
+    if (snap.empty) { list.innerHTML = '<div class="empty-state">No staff yet.</div>'; return; }
+    snap.docs.forEach(doc => {
+      const d  = doc.data();
+      const el = document.createElement('div');
+      el.className = 'staff-card';
+      el.innerHTML = `
+        <div class="staff-details">
+          <div class="staff-name">${d.name}</div>
+          <div class="staff-meta">${d.email}</div>
+          <div class="staff-role">${(d.role || '').toUpperCase()} · ${(d.facility || '').toUpperCase()}</div>
+        </div>
+        <button class="btn btn-red btn-sm" onclick="deleteStaff('${doc.id}','${d.name}')">Delete</button>`;
+      list.appendChild(el);
+    });
+  } catch (e) {
+    list.innerHTML = `<div style="color:var(--red);font-size:0.82rem">${e.message}</div>`;
+  }
+}
+
+async function createStaff() {
+  const email    = document.getElementById('ns-email').value.trim();
+  const name     = document.getElementById('ns-name').value.trim();
+  const role     = document.getElementById('ns-role').value;
+  const tmpPwd   = document.getElementById('ns-pwd').value;
+  const facility = document.getElementById('ns-facility').value;
+  const msgEl    = document.getElementById('ns-msg');
+
+  if (!email || !name || !tmpPwd) {
+    showMsg(msgEl, 'Fill in email, name, and temporary password.', true); return;
+  }
+
+  showMsg(msgEl, 'Creating account…', false);
+
+  try {
+    // Secondary app instance keeps admin session active while creating new user
+    if (!secondaryApp) {
+      secondaryApp = firebase.initializeApp(FIREBASE_CONFIG, 'secondary');
+    }
+    const secAuth = firebase.app('secondary').auth();
+    const cred    = await secAuth.createUserWithEmailAndPassword(email, tmpPwd);
+    const uid     = cred.user.uid;
+
+    const batch = db.batch();
+    batch.set(db.collection('users').doc(uid), {
+      email, name, role, facility,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+      createdBy: currentUser.uid
+    });
+    batch.set(db.collection('staff').doc(), {
+      email, name, role, facility, uid,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await batch.commit();
+    await secAuth.signOut();
+
+    showMsg(msgEl, `✓ Account created. Share temp password: ${tmpPwd}`, false);
+    document.getElementById('ns-email').value = '';
+    document.getElementById('ns-name').value  = '';
+    document.getElementById('ns-pwd').value   = '';
+    loadStaffList();
+  } catch (e) {
+    showMsg(msgEl, 'Error: ' + e.message, true);
+  }
+}
+
+async function deleteStaff(docId, name) {
+  if (!confirm(`Remove ${name} from staff?`)) return;
+  try {
+    await db.collection('staff').doc(docId).delete();
+    showToast('Staff removed');
+    loadStaffList();
+  } catch (e) { showToast('Error: ' + e.message, true); }
+}
+
+// ================================================================
+//  ADMIN — TASKS
+// ================================================================
+function populateAdminRoomSel() {
+  const sel = document.getElementById('ar-room-sel');
+  sel.innerHTML = '<option value="">-- Select Room --</option>';
+  rooms.forEach(r => {
+    const o = document.createElement('option');
+    o.value = r.id; o.textContent = r.name;
+    sel.appendChild(o);
+  });
+}
+
+function loadAdminTasks() {
+  const rid  = document.getElementById('ar-room-sel').value;
+  const list = document.getElementById('ar-tasks-list');
+  const form = document.getElementById('add-task-form');
+
+  if (!rid) {
+    list.innerHTML = '<div class="empty-state">Select a room above</div>';
+    form.style.display = 'none'; return;
+  }
+
+  form.style.display = 'block';
+  const room = rooms.find(r => r.id === rid);
+  list.innerHTML = '';
+
+  if (!room?.tasks?.length) {
+    list.innerHTML = '<div class="empty-state">No tasks yet.</div>';
+  } else {
+    room.tasks.forEach((task, idx) => {
+      const el = document.createElement('div');
+      el.className = 'supply-item';
+      el.innerHTML = `
+        <div class="supply-info"><div class="supply-name">${task.name}</div></div>
+        <button class="x-btn" onclick="deleteTask('${room.id}',${idx})">✕</button>`;
+      list.appendChild(el);
+    });
+  }
+}
+
+async function addTask() {
+  const rid  = document.getElementById('ar-room-sel').value;
+  const name = document.getElementById('new-task-name').value.trim();
+  if (!rid || !name) return;
+
+  const room = rooms.find(r => r.id === rid);
+  if (!room) return;
+  room.tasks = [...(room.tasks || []), { id: 't' + Date.now(), name }];
+
+  try {
+    await db.collection('facilities').doc(FACILITY).set({ rooms }, { merge: true });
+    document.getElementById('new-task-name').value = '';
+    showToast('Task added');
+    loadAdminTasks();
+    populateRoomSel();
+  } catch (e) { showToast(e.message, true); }
+}
+
+async function deleteTask(roomId, idx) {
+  if (!confirm('Delete this task?')) return;
+  const room = rooms.find(r => r.id === roomId);
+  if (!room) return;
+  room.tasks.splice(idx, 1);
+  try {
+    await db.collection('facilities').doc(FACILITY).set({ rooms }, { merge: true });
+    showToast('Task deleted');
+    loadAdminTasks();
+  } catch (e) { showToast(e.message, true); }
+}
+
+// ================================================================
+//  DAILY REPORT
+// ================================================================
+async function loadDailyReport() {
+  const date = document.getElementById('daily-date').value;
+  const wrap = document.getElementById('daily-content');
+  if (!date || !currentData) return;
+  wrap.innerHTML = '<div class="empty-state">Loading…</div>';
+
+  try {
+    const snap = await db.collection('submissions')
+      .where('facility', '==', currentData.facility || FACILITY)
+      .where('date', '==', date)
+      .orderBy('timestamp', 'desc').get();
+
+    if (snap.empty) { wrap.innerHTML = '<div class="empty-state">No submissions for this date.</div>'; return; }
+    wrap.innerHTML = '';
+    snap.docs.forEach(doc => {
+      const d    = doc.data();
+      const ts   = d.timestamp?.toDate?.() || new Date();
+      const done = (d.tasks || []).filter(t => t.status === 'yes').length;
+      const time = ts.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+      wrap.appendChild(buildSubCard(
+        d.userName,
+        `${d.room} · ${d.shift} Shift · ${time}`,
+        `${done}/${(d.tasks||[]).length} Done`,
+        d.tasks || []
+      ));
+    });
+  } catch (e) {
+    wrap.innerHTML = `<div style="color:var(--red);font-size:0.85rem">${e.message}</div>`;
+  }
+}
+
+// ================================================================
+//  WEEKLY REPORT
+// ================================================================
+async function loadWeeklyReport() {
+  const startStr = document.getElementById('weekly-date').value;
+  const wrap     = document.getElementById('weekly-content');
+  if (!startStr || !currentData) return;
+  wrap.innerHTML = '<div class="empty-state">Loading…</div>';
+
+  const dates = [];
+  const start = new Date(startStr + 'T00:00:00');
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(start); d.setDate(d.getDate() + i);
+    dates.push(d.toISOString().slice(0, 10));
+  }
+
+  try {
+    const snap = await db.collection('submissions')
+      .where('facility', '==', currentData.facility || FACILITY)
+      .where('date', '>=', dates[0])
+      .where('date', '<=', dates[6])
+      .orderBy('date').orderBy('timestamp').get();
+
+    if (snap.empty) { wrap.innerHTML = '<div class="empty-state">No submissions for this week.</div>'; return; }
+
+    const byStaff = {};
+    snap.docs.forEach(doc => {
+      const d = doc.data();
+      if (!byStaff[d.userName]) byStaff[d.userName] = {};
+      if (!byStaff[d.userName][d.date]) byStaff[d.userName][d.date] = [];
+      byStaff[d.userName][d.date].push(d);
+    });
+
+    wrap.innerHTML = '';
+    Object.entries(byStaff).forEach(([staffName, days]) => {
+      let totalYes = 0, totalAll = 0;
+      const rows = dates.map(date => {
+        const subs = days[date] || [];
+        if (!subs.length) return `<tr><td>${date}</td><td style="color:var(--muted)">—</td><td>—</td><td>—</td></tr>`;
+        let yes = 0, all = 0;
+        subs.forEach(s => (s.tasks||[]).forEach(t => { all++; if (t.status === 'yes') yes++; }));
+        totalYes += yes; totalAll += all;
+        const pct   = all ? Math.round(yes / all * 100) : 0;
+        const color = pct >= 80 ? '#10b981' : pct >= 50 ? '#f59e0b' : '#ef4444';
+        return `<tr><td>${date}</td><td style="color:var(--muted)">${subs.map(s=>s.room).join(', ')}</td><td>${yes}/${all}</td><td style="color:${color};font-weight:600">${pct}%</td></tr>`;
+      }).join('');
+
+      const wPct = totalAll ? Math.round(totalYes / totalAll * 100) : 0;
+      const wCol = wPct >= 80 ? '#10b981' : wPct >= 50 ? '#f59e0b' : '#ef4444';
+      const card = document.createElement('div');
+      card.className = 'sub-card';
+      card.innerHTML = `
+        <div class="sub-header">
+          <div><div class="sub-name">${staffName}</div><div class="sub-meta">Weekly Summary</div></div>
+          <span class="sub-pill" style="color:${wCol}">${wPct}% Done</span>
+        </div>
+        <div class="sub-tasks">
+          <div class="week-wrap">
+            <table class="week-table">
+              <thead><tr><th>Date</th><th>Rooms</th><th>Done</th><th>%</th></tr></thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        </div>`;
+      wrap.appendChild(card);
+    });
+  } catch (e) {
+    wrap.innerHTML = `<div style="color:var(--red);font-size:0.85rem">${e.message}</div>`;
+  }
+}
+
+function buildSubCard(name, meta, pill, tasks) {
+  const el = document.createElement('div');
+  el.className = 'sub-card';
+  const taskHTML = tasks.map(t => {
+    const cls = t.status === 'yes' ? 's-yes' : t.status === 'no' ? 's-no' : t.status === 'carry-over' ? 's-carry' : 'muted';
+    const lbl = t.status === 'yes' ? '✓ Yes' : t.status === 'no' ? '✗ No' : t.status === 'carry-over' ? '→ Carry Over' : '—';
+    return `<div class="task-row"><span class="task-row-name">${t.name}</span><span class="${cls}">${lbl}</span></div>`;
+  }).join('');
+  el.innerHTML = `
+    <div class="sub-header">
+      <div><div class="sub-name">${name}</div><div class="sub-meta">${meta}</div></div>
+      <span class="sub-pill">${pill}</span>
+    </div>
+    <div class="sub-tasks">${taskHTML}</div>`;
+  return el;
+}
+
+// ================================================================
+//  UTILITIES
+// ================================================================
+function showToast(msg, isErr = false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className   = isErr ? 't-err' : 't-ok';
+  el.style.display = 'block';
+  clearTimeout(el._t);
+  el._t = setTimeout(() => el.style.display = 'none', 3000);
+}
+
+function showErr(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.style.display = 'block'; }
+function hideErr(id)       { document.getElementById(id).style.display = 'none'; }
+
+function showMsg(el, msg, isErr) {
+  el.style.display = 'block';
+  el.style.color   = isErr ? 'var(--red)' : 'var(--teal)';
+  el.textContent   = msg;
+}
+
+function friendlyError(e) {
+  const map = {
+    'auth/user-not-found':       'No account found with this email.',
+    'auth/wrong-password':       'Incorrect password.',
+    'auth/invalid-email':        'Invalid email address.',
+    'auth/email-already-in-use': 'An account with this email already exists.',
+    'auth/too-many-requests':    'Too many attempts. Try again later.',
+    'auth/invalid-credential':   'Incorrect email or password.',
+    'auth/weak-password':        'Password must be at least 6 characters.',
+  };
+  return map[e.code] || e.message;
+}
+</script>
+</body>
+</html>
