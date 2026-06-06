@@ -894,6 +894,67 @@
     .le-who  { color: var(--dim); font-size: 0.68rem; margin-top: 2px; }
     .laundry-empty { color: var(--muted); font-size: 0.78rem; padding: 10px 0; text-align: center; }
 
+    /* ═══════════════ SHIFT END ═══════════════ */
+    .shift-end-wrap { padding: 12px 0 4px; }
+    .shift-end-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #ff5252 0%, #b44eff 100%);
+      background-size: 200% auto;
+      border: none; border-radius: 12px; color: #fff;
+      cursor: pointer; font-size: 0.88rem; font-weight: 800;
+      padding: 13px; letter-spacing: 0.3px;
+      box-shadow: 0 4px 20px rgba(255,82,82,0.35);
+      transition: all 0.2s; display: none;
+    }
+    .shift-end-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 26px rgba(255,82,82,0.5); }
+    .shift-ended-notice {
+      background: rgba(0,229,160,0.12); border: 1px solid rgba(0,229,160,0.3);
+      border-radius: 10px; color: #00e5a0; font-size: 0.82rem; font-weight: 700;
+      padding: 10px 14px; text-align: center; display: none;
+    }
+
+    /* ═══════════════ TASK TIMESTAMP ═══════════════ */
+    .task-ts { color: var(--dim); font-size: 0.65rem; margin-top: 5px; display: none; }
+    .task-ts.visible { display: block; }
+
+    /* ═══════════════ FOOD LOG ═══════════════ */
+    .sec-heading.food-head { color: #ff4081; text-shadow: 0 0 20px rgba(255,64,129,0.4); }
+    .food-log-entry {
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 3px solid #ff4081; border-radius: 10px;
+      padding: 8px 12px; margin-bottom: 6px;
+    }
+    .food-log-meal { font-weight: 700; font-size: 0.88rem; color: var(--text); }
+    .food-log-meta { color: var(--muted); font-size: 0.72rem; margin-top: 2px; }
+
+    /* ═══════════════ PROFILE PIC ═══════════════ */
+    .reg-selfie-wrap { text-align: center; margin-bottom: 14px; }
+    .reg-selfie-preview {
+      width: 80px; height: 80px; border-radius: 50%;
+      object-fit: cover; display: none;
+      border: 3px solid var(--lavender);
+      box-shadow: 0 0 20px rgba(180,78,255,0.4);
+      margin: 8px auto; display: none;
+    }
+    .user-avatar img {
+      width: 100%; height: 100%; border-radius: 12px; object-fit: cover;
+    }
+
+    /* ═══════════════ RAINBOW VIEWPORT BORDER ═══════════════ */
+    #rainbow-border {
+      position: fixed; inset: 0; pointer-events: none; z-index: 99999;
+      animation: rb-cycle 3s linear infinite;
+    }
+    @keyframes rb-cycle {
+      0%   { box-shadow: inset 0 0 0 4px #ff5252, inset 0 0 35px rgba(255,82,82,0.12); }
+      16%  { box-shadow: inset 0 0 0 4px #ff8c00, inset 0 0 35px rgba(255,140,0,0.12); }
+      33%  { box-shadow: inset 0 0 0 4px #ffd000, inset 0 0 35px rgba(255,208,0,0.12); }
+      50%  { box-shadow: inset 0 0 0 4px #00e5a0, inset 0 0 35px rgba(0,229,160,0.12); }
+      66%  { box-shadow: inset 0 0 0 4px #2979ff, inset 0 0 35px rgba(41,121,255,0.12); }
+      83%  { box-shadow: inset 0 0 0 4px #b44eff, inset 0 0 35px rgba(180,78,255,0.12); }
+      100% { box-shadow: inset 0 0 0 4px #ff5252, inset 0 0 35px rgba(255,82,82,0.12); }
+    }
+
     /* ═══════════════ SUPPLY STATUS ═══════════════ */
     .supply-status { display: flex; gap: 5px; margin-top: 7px; }
     .ss-btn {
@@ -1008,9 +1069,16 @@
     </div>
 
     <div id="reg-form" style="display:none">
-      <p style="color:var(--muted);font-size:0.82rem;margin-bottom:14px;line-height:1.5">Your admin must have added your email first. Then create a password to activate your account.</p>
+      <p style="color:var(--muted);font-size:0.82rem;margin-bottom:14px;line-height:1.5">Your admin must have added your email first. Create a password and upload a profile photo to activate your account.</p>
       <div class="fg"><label>Email</label><input type="email" id="rg-email" placeholder="you@example.com"></div>
       <div class="fg"><label>New Password (min 6 chars)</label><input type="password" id="rg-pwd" placeholder="Choose a password"></div>
+      <div class="reg-selfie-wrap">
+        <div style="color:var(--muted);font-size:0.78rem;margin-bottom:8px;font-weight:500">Profile Photo <span style="color:#ff5252">*required</span></div>
+        <img id="rg-photo-preview" style="width:80px;height:80px;border-radius:50%;object-fit:cover;display:none;border:3px solid var(--lavender);box-shadow:0 0 20px rgba(180,78,255,0.4);margin:0 auto 10px;display:none" alt="">
+        <label class="photo-pick-btn" for="rg-photo" style="display:inline-flex;margin:0 auto">📷 Take Selfie / Choose Photo</label>
+        <input type="file" id="rg-photo" accept="image/*" capture="user" style="display:none" onchange="onRegPhotoSelected(this)">
+        <div id="rg-photo-name" style="font-size:0.72rem;color:var(--muted);margin-top:5px"></div>
+      </div>
       <div class="err-msg" id="rg-err"></div>
       <button class="btn btn-primary btn-block" onclick="doRegister()">Activate Account →</button>
       <div style="text-align:center;margin-top:10px">
@@ -1086,19 +1154,36 @@
 
         <div id="sg-weekends" class="shift-group">
           <div class="sg-label">🗓️ Weekends</div>
-          <div class="shift-cards">
-            <button class="shift-card s-morning" onclick="selectShift('weekend-a', this, 'weekends')">
+          <div class="shift-cards" style="flex-wrap:wrap;gap:6px">
+            <button class="shift-card s-morning" style="flex:1 1 calc(50% - 6px);min-width:72px" onclick="selectShift('sat-a', this, 'weekends')">
               <span class="shift-emoji">🅰️</span>
-              <span class="shift-name">A Shift</span>
-              <span class="shift-time">Weekend</span>
+              <span class="shift-name">Sat A</span>
+              <span class="shift-time">Saturday</span>
             </button>
-            <button class="shift-card s-night" onclick="selectShift('weekend-b', this, 'weekends')">
+            <button class="shift-card s-midday" style="flex:1 1 calc(50% - 6px);min-width:72px" onclick="selectShift('sat-b', this, 'weekends')">
               <span class="shift-emoji">🅱️</span>
-              <span class="shift-name">B Shift</span>
-              <span class="shift-time">Weekend</span>
+              <span class="shift-name">Sat B</span>
+              <span class="shift-time">Saturday</span>
+            </button>
+            <button class="shift-card s-night" style="flex:1 1 calc(50% - 6px);min-width:72px" onclick="selectShift('sun-a', this, 'weekends')">
+              <span class="shift-emoji">🅰️</span>
+              <span class="shift-name">Sun A</span>
+              <span class="shift-time">Sunday</span>
+            </button>
+            <button class="shift-card" style="flex:1 1 calc(50% - 6px);min-width:72px;border-color:rgba(0,229,160,0.25)" onclick="selectShift('sun-b', this, 'weekends')">
+              <span class="shift-emoji">🅱️</span>
+              <span class="shift-name">Sun B</span>
+              <span class="shift-time">Sunday</span>
             </button>
           </div>
         </div>
+
+        <!-- Shift end -->
+        <div class="shift-end-wrap">
+          <button class="shift-end-btn" id="shift-end-btn" onclick="endShift()">🏁 End My Shift & Lock</button>
+          <div class="shift-ended-notice" id="shift-ended-notice">✅ Shift ended — changes locked. Contact admin to unlock.</div>
+        </div>
+
       </div>
 
       <!-- Three-column layout -->
@@ -1178,6 +1263,30 @@
             </div>
             <button class="btn btn-ghost btn-sm btn-block" onclick="submitSupply()" style="margin-bottom:14px">Add Supply Request</button>
             <div id="supplies-list"></div>
+            <div style="height:16px"></div>
+          </div>
+
+          <!-- Azlan's Food Log -->
+          <div class="section-block">
+            <div class="sec-heading food-head">
+              <span class="sec-icon">🍽️</span> Azlan's Food Log
+            </div>
+            <div class="input-row">
+              <div class="fg">
+                <select id="food-meal" style="background:var(--card);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);padding:10px 12px;outline:none;-webkit-appearance:none;appearance:none;width:100%">
+                  <option value="">— Select meal —</option>
+                  <option value="Noodles">🍜 Noodles</option>
+                  <option value="Nuggets">🍗 Nuggets</option>
+                  <option value="Fries">🍟 Fries</option>
+                  <option value="Chocolate Toast">🍞 Chocolate Toast</option>
+                  <option value="Snacks">🍪 Snacks</option>
+                </select>
+              </div>
+              <div class="fg qty-f"><input type="number" id="food-qty" placeholder="Qty" min="1" value="1" style="background:var(--card);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);padding:10px 12px;outline:none;width:100%"></div>
+            </div>
+            <div class="fg" style="margin-bottom:10px"><input type="text" id="food-notes" placeholder="Notes (e.g. what snacks, extras…)" style="background:var(--card);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);padding:10px 12px;outline:none;width:100%"></div>
+            <button class="btn btn-ghost btn-sm btn-block" onclick="logFood()" style="margin-bottom:14px">🍽️ Log Meal</button>
+            <div id="food-log-list"></div>
             <div style="height:20px"></div>
           </div>
         </div>
@@ -1192,6 +1301,7 @@
         <div class="admin-sub-tabs">
           <button class="asub-btn active" onclick="switchAdminTab('staff')">👥 Staff</button>
           <button class="asub-btn" onclick="switchAdminTab('tasks')">📋 Tasks</button>
+          <button class="asub-btn" onclick="switchAdminTab('shifts')">🔓 Shifts</button>
         </div>
       </div>
 
@@ -1246,6 +1356,19 @@
         <div class="panel-card">
           <h3>Tasks in Selected Room</h3>
           <div id="ar-tasks-list"><div class="empty-state">Select a room above</div></div>
+        </div>
+      </div>
+
+      <!-- Shifts Unlock -->
+      <div class="admin-panel" id="ap-shifts">
+        <div class="panel-card">
+          <h3>🔓 Unlock Ended Shifts</h3>
+          <p style="color:var(--muted);font-size:0.82rem;margin-bottom:14px;line-height:1.5">Staff who clicked "End My Shift" are locked. Use this to unlock so they can make corrections.</p>
+          <div class="date-row" style="margin-bottom:14px">
+            <input type="date" id="se-date" style="flex:1;background:var(--card);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);padding:10px 12px;font-size:0.88rem;outline:none">
+            <button class="btn btn-ghost btn-sm" onclick="loadShiftEnds()">Load</button>
+          </div>
+          <div id="shift-ends-list"><div class="empty-state">Select a date above</div></div>
         </div>
       </div>
     </div>
@@ -1303,19 +1426,21 @@ const FACILITY     = 'grscorp';
 // ================================================================
 //  DEFAULT DATA  (rooms with emojis)
 // ================================================================
+const ROOMS_VERSION = 3;
 const DEFAULT_ROOMS = [
   // ── UPSTAIRS ──
   { id:'azlans-room', floor:'upstairs', emoji:'🛏️', name:"Azlan's Room", tasks:[
     {id:'ar1', name:'Make bed'},
-    {id:'ar2', name:'Change sheets (Mon/Wed/Fri)'},
-    {id:'ar3', name:'Laundry basket checked'},
+    {id:'ar2', name:'Change sheets', desc:'Monday Morning & Friday Evening — change if needed', monFriOnly:true},
+    {id:'ar3', name:'Check laundry basket', desc:'Put any dirty laundry in the laundry room'},
     {id:'ar4', name:'Put clothes/stuff back in place'},
-    {id:'ar5', name:'Sweep/broom floor'},
-    {id:'ar6', name:'Steam vacuum'},
+    {id:'ar5', name:'Steam vacuum floors'},
+    {id:'ar6', name:'Steam mop floor'},
     {id:'ar7', name:'Change trash bag'},
-    {id:'ar8', name:'Dust furniture'},
-    {id:'ar9', name:'Clean windows'},
+    {id:'ar8', name:'Dust & disinfect furniture'},
+    {id:'ar9', name:'Clean windows/glass/mirror'},
     {id:'ar10',name:'Spot wall cleaning'},
+    {id:'ar11',name:'Check closets and organize'},
   ]},
   { id:'azlans-bathroom', floor:'upstairs', emoji:'🛁', name:"Azlan's Bathroom", tasks:[
     {id:'ab1', name:'Toilet cleaned'},
@@ -1353,21 +1478,21 @@ const DEFAULT_ROOMS = [
   { id:'hallways-upstairs', floor:'upstairs', emoji:'🚪', name:'Hallways Upstairs', tasks:[
     {id:'hu1', name:'Sweep/broom floor'},
     {id:'hu2', name:'Steam mop'},
-    {id:'hu3', name:'Change trash bag'},
-    {id:'hu4', name:'Put stuff back in place'},
-    {id:'hu5', name:'Dust furniture'},
-    {id:'hu6', name:'Clean windows'},
-    {id:'hu7', name:'Spot wall cleaning'},
+    {id:'hu3', name:'Put stuff back in place'},
+    {id:'hu4', name:'Dust furniture'},
+    {id:'hu5', name:'Clean windows'},
+    {id:'hu6', name:'Spot wall cleaning'},
+    {id:'hu7', name:'Clean railings', desc:'Tuesday Morning & Thursday Evening only', tueThuOnly:true},
   ]},
   // ── DOWNSTAIRS ──
   { id:'hallways-downstairs', floor:'downstairs', emoji:'🚪', name:'Hallways Downstairs', tasks:[
     {id:'hd1', name:'Sweep/broom floor'},
     {id:'hd2', name:'Steam mop'},
-    {id:'hd3', name:'Change trash bag'},
-    {id:'hd4', name:'Put stuff back in place'},
-    {id:'hd5', name:'Dust furniture'},
-    {id:'hd6', name:'Clean windows'},
-    {id:'hd7', name:'Spot wall cleaning'},
+    {id:'hd3', name:'Put stuff back in place'},
+    {id:'hd4', name:'Dust furniture'},
+    {id:'hd5', name:'Clean windows'},
+    {id:'hd6', name:'Spot wall cleaning'},
+    {id:'hd7', name:"Coco's sitting area cleaned"},
   ]},
   { id:'stairs', floor:'downstairs', emoji:'🪜', name:'Stairs', tasks:[
     {id:'st1', name:'Sweep/broom floor'},
@@ -1376,6 +1501,7 @@ const DEFAULT_ROOMS = [
     {id:'st4', name:'Spot wall cleaning'},
   ]},
   { id:'study-room', floor:'downstairs', emoji:'📚', name:'Study Room', tasks:[
+    {id:'sr0', name:'Vacuum carpet'},
     {id:'sr1', name:'Sweep/broom floor'},
     {id:'sr2', name:'Steam mop'},
     {id:'sr3', name:'Change trash bag'},
@@ -1386,6 +1512,7 @@ const DEFAULT_ROOMS = [
   ]},
   { id:'living-room', floor:'downstairs', emoji:'🛋️', name:'Living Room', tasks:[
     {id:'lr1', name:'Cushions arranged'},
+    {id:'lr1b',name:'Vacuum carpet'},
     {id:'lr2', name:'Sweep/broom floor'},
     {id:'lr3', name:'Steam mop'},
     {id:'lr4', name:'Change trash bag'},
@@ -1444,6 +1571,8 @@ const DEFAULT_ROOMS = [
   { id:'final-checks', floor:'downstairs', emoji:'✅', name:'Final Checks', tasks:[
     {id:'fc1', name:"Check Azlan's food supplies", desc:"If anything low or needed, add to Supplies Needed section"},
     {id:'fc2', name:'Water bottles for Azlan', desc:'Ensure at least 5 filled water bottles in the fridge'},
+    {id:'fc3', name:'Take trash bins out to the road', desc:'Monday is trash day — place all bins at the roadside before end of shift', sunOnly:true},
+    {id:'fc4', name:'Bring trash bins back to driveway', desc:'Morning shift — bring bins back after Monday morning pickup', monOnly:true},
   ]},
   // ── PETS ──
   { id:'pet-care', floor:'upstairs', emoji:'🐾', name:'Pet Care', tasks:[
@@ -1458,6 +1587,9 @@ const DEFAULT_ROOMS = [
     {id:'pc9',  name:'Tortoise — Clean cage/area'},
     {id:'pc10', name:'Coco — Water refilled'},
     {id:'pc11', name:'Coco — Food refilled'},
+    {id:'pc12', name:'Dove — Refill feed'},
+    {id:'pc13', name:'Dove — Refill water'},
+    {id:'pc14', name:'Dove — Clean cage'},
   ]},
 ];
 
@@ -1467,12 +1599,14 @@ const DEFAULT_ROOMS = [
 let auth, db, storage, secondaryApp;
 let currentUser   = null;
 let notePhotoFile = null;
+let regPhotoFile  = null;
 let laundryCat    = 'wearable';
 let currentData   = null;
 let rooms         = [];
 let carryOvers    = {};
 let selectedShift = null;
 let shiftLocked   = false;
+let shiftEnded    = false;
 let selectedRoom  = null;
 let taskStatuses  = {};
 
@@ -1521,24 +1655,50 @@ async function doLogin() {
   catch (e) { showErr('li-err', friendlyError(e)); }
 }
 
+function onRegPhotoSelected(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) { showErr('rg-err', 'Photo too large (max 10 MB)'); input.value = ''; return; }
+  regPhotoFile = file;
+  document.getElementById('rg-photo-name').textContent = file.name;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const prev = document.getElementById('rg-photo-preview');
+    prev.src = e.target.result;
+    prev.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
 async function doRegister() {
   const email = document.getElementById('rg-email').value.trim();
   const pwd   = document.getElementById('rg-pwd').value;
   hideErr('rg-err');
   if (!email || pwd.length < 6) { showErr('rg-err', 'Valid email and min 6-char password required.'); return; }
+  if (!regPhotoFile && !ADMIN_EMAILS.includes(email)) { showErr('rg-err', 'Profile photo is required — please take a selfie or choose a photo.'); return; }
   if (!ADMIN_EMAILS.includes(email)) {
     try {
       const q = await db.collection('staff').where('email', '==', email).limit(1).get();
       if (q.empty) { showErr('rg-err', 'Email not on staff list. Contact your admin.'); return; }
     } catch (e) { showErr('rg-err', e.message); return; }
   }
-  try { await auth.createUserWithEmailAndPassword(email, pwd); }
-  catch (e) { showErr('rg-err', friendlyError(e)); }
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, pwd);
+    if (regPhotoFile) {
+      try {
+        const ext = regPhotoFile.name.split('.').pop();
+        const ref = storage.ref(`profilePics/${cred.user.uid}.${ext}`);
+        const snap = await ref.put(regPhotoFile);
+        const photoURL = await snap.ref.getDownloadURL();
+        await db.collection('users').doc(cred.user.uid).set({ photoURL }, { merge: true });
+      } catch (pe) { /* photo upload failure is non-fatal */ }
+    }
+  } catch (e) { showErr('rg-err', friendlyError(e)); }
 }
 
 async function doLogout() {
-  selectedShift = null; shiftLocked = false;
-  currentUser   = null; currentData  = null;
+  selectedShift = null; shiftLocked = false; shiftEnded = false;
+  currentUser   = null; currentData  = null; regPhotoFile = null;
   taskStatuses  = {}; selectedRoom   = null;
   if (auth) await auth.signOut(); else showLoginScreen();
 }
@@ -1600,13 +1760,22 @@ async function showAppScreen() {
 
   const name     = currentData?.name || currentUser?.email || '';
   const initials = name.split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'HN';
-  document.getElementById('user-avatar').textContent  = initials;
+  const avatarEl = document.getElementById('user-avatar');
+  const photoURL = currentData?.photoURL;
+  if (photoURL) {
+    avatarEl.innerHTML = `<img src="${photoURL}" alt="${initials}" style="width:100%;height:100%;border-radius:12px;object-fit:cover">`;
+  } else {
+    avatarEl.textContent = initials;
+  }
   document.getElementById('user-welcome').textContent = 'Welcome back, ' + name.split(' ')[0] + '! 👋';
 
+  shiftEnded = false;
   await loadRooms();
   loadNotes();
   loadSupplies();
   loadLaundryLog();
+  loadFoodLog();
+  checkShiftEnd();
 
   if (isAdmin) { loadStaffList(); populateAdminRoomSel(); }
 }
@@ -1620,9 +1789,15 @@ function switchTab(tab) {
 
 function switchAdminTab(tab) {
   document.querySelectorAll('.asub-btn').forEach((b, i) =>
-    b.classList.toggle('active', (tab==='staff'&&i===0)||(tab==='tasks'&&i===1)));
+    b.classList.toggle('active', (tab==='staff'&&i===0)||(tab==='tasks'&&i===1)||(tab==='shifts'&&i===2)));
   document.getElementById('ap-staff').classList.toggle('active', tab === 'staff');
   document.getElementById('ap-tasks').classList.toggle('active', tab === 'tasks');
+  document.getElementById('ap-shifts').classList.toggle('active', tab === 'shifts');
+  if (tab === 'shifts') {
+    const today = new Date().toISOString().slice(0, 10);
+    const el = document.getElementById('se-date');
+    if (el && !el.value) { el.value = today; loadShiftEnds(); }
+  }
 }
 
 // ================================================================
@@ -1633,11 +1808,12 @@ async function loadRooms() {
     const snap = await db.collection('facilities').doc(FACILITY).get();
     const data = snap.exists ? snap.data() : {};
     const stored = data.rooms || [];
-    const needsReset = !stored.length || !stored[0].floor || stored.some(r => r.floor === 'pets');
+    const storedVersion = data.roomsVersion || 1;
+    const needsReset = !stored.length || !stored[0].floor || stored.some(r => r.floor === 'pets') || storedVersion < ROOMS_VERSION;
     if (needsReset) {
       rooms = DEFAULT_ROOMS;
       carryOvers = {};
-      await db.collection('facilities').doc(FACILITY).set({ rooms, carryOvers: {} }, { merge: true });
+      await db.collection('facilities').doc(FACILITY).set({ rooms, carryOvers: {}, roomsVersion: ROOMS_VERSION }, { merge: true });
     } else {
       rooms = stored;
       carryOvers = data.carryOvers || {};
@@ -1681,17 +1857,63 @@ function onFloorChange() {
 
 function selectShift(shiftId, el, group) {
   const isAdmin = currentData?.role === 'admin';
-  if (shiftLocked && !isAdmin) return;
+  if ((shiftLocked || shiftEnded) && !isAdmin) return;
   selectedShift = shiftId;
   document.querySelectorAll('.shift-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
+  const endBtn = document.getElementById('shift-end-btn');
   if (!isAdmin) {
     shiftLocked = true;
     document.querySelectorAll('.shift-card').forEach(c => { c.disabled = true; });
     const other = document.getElementById('sg-' + (group === 'weekdays' ? 'weekends' : 'weekdays'));
     if (other) other.style.display = 'none';
     document.getElementById('shift-locked-badge').style.display = 'block';
+    if (endBtn) endBtn.style.display = 'block';
+  } else {
+    if (endBtn) endBtn.style.display = 'block';
   }
+}
+
+async function endShift() {
+  if (!selectedShift) { showToast('Select your shift first', true); return; }
+  if (shiftEnded) return;
+  if (!confirm('End your shift? Task changes will be locked. Admin can unlock if needed.')) return;
+  try {
+    await db.collection('shiftEnds').add({
+      userId:    currentUser.uid,
+      userName:  currentData?.name || currentUser.email,
+      userEmail: currentUser.email,
+      facility:  currentData?.facility || FACILITY,
+      shift:     selectedShift,
+      date:      new Date().toISOString().slice(0, 10),
+      locked:    true,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    shiftEnded = true;
+    document.getElementById('shift-end-btn').style.display = 'none';
+    document.getElementById('shift-ended-notice').style.display = 'block';
+    renderTasks();
+    showToast('🏁 Shift ended — tasks locked');
+  } catch (e) { showToast('Error: ' + e.message, true); }
+}
+
+async function checkShiftEnd() {
+  if (currentData?.role === 'admin') return;
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const snap  = await db.collection('shiftEnds')
+      .where('userId', '==', currentUser.uid)
+      .where('date', '==', today)
+      .where('locked', '==', true)
+      .limit(1).get();
+    if (!snap.empty) {
+      shiftEnded = true;
+      const endBtn = document.getElementById('shift-end-btn');
+      const notice = document.getElementById('shift-ended-notice');
+      if (endBtn) endBtn.style.display = 'none';
+      if (notice) notice.style.display = 'block';
+    }
+  } catch (e) { /* non-fatal */ }
 }
 
 function onRoomChange() {
@@ -1702,15 +1924,27 @@ function onRoomChange() {
   renderTasks();
 }
 
+function getVisibleTasks(roomTasks) {
+  const day      = new Date().getDay();
+  const isMonFri = day === 1 || day === 5;
+  const isTueThu = day === 2 || day === 4;
+  const isSun    = day === 0;
+  const isMon    = day === 1;
+  return (roomTasks || []).filter(t => {
+    if (t.monFriOnly && !isMonFri) return false;
+    if (t.tueThuOnly && !isTueThu) return false;
+    if (t.sunOnly    && !isSun)    return false;
+    if (t.monOnly    && !isMon)    return false;
+    return true;
+  });
+}
+
 function renderTasks() {
   const wrap = document.getElementById('room-content');
   if (!selectedRoom) { wrap.innerHTML = ''; return; }
-  const roomCarry = carryOvers[selectedRoom.id] || {};
-
-  // Room header
-  const todayDay    = new Date().getDay();
-  const isMonFri    = todayDay === 1 || todayDay === 5;
-  const visibleTasks = (selectedRoom.tasks || []).filter(t => !t.monFriOnly || isMonFri);
+  const roomCarry    = carryOvers[selectedRoom.id] || {};
+  const visibleTasks = getVisibleTasks(selectedRoom.tasks);
+  const locked       = shiftEnded;
 
   let html = `
     <div class="room-header">
@@ -1730,7 +1964,10 @@ function renderTasks() {
     const carryCount = carryData?.count || 0;
     const isCarry    = carryCount > 0;
     const isCritical = carryCount >= 2;
-    const status     = taskStatuses[task.id] || '';
+    const tsObj      = taskStatuses[task.id] || null;
+    const status     = tsObj?.status || '';
+    const tsMs       = tsObj?.ts || null;
+    const tsStr      = tsMs ? new Date(tsMs).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}) : '';
     const statusSuffix = status === 'carry-over' ? 'carry' : status;
     const cardCls = (isCritical ? ' is-critical' : isCarry ? ' is-carry' : '') + (status ? ' done-' + statusSuffix : '');
     const badge = isCritical
@@ -1740,6 +1977,7 @@ function renderTasks() {
     const noCls    = status === 'no'         ? ' sel-no'    : '';
     const carryCls = status === 'carry-over' ? ' sel-carry' : '';
     const showNote = status === 'carry-over' ? 'block' : 'none';
+    const disAttr  = locked ? 'disabled' : '';
 
     html += `
       <div class="task-card${cardCls}" id="tc-${task.id}">
@@ -1747,20 +1985,21 @@ function renderTasks() {
           <div class="task-name">${task.name}${task.desc ? `<div class="task-desc">${task.desc}</div>` : ''}</div>
           ${badge}
         </div>
-        ${isCritical ? `<div style="font-size:0.72rem;color:#ff6b6b;margin-bottom:8px;padding:5px 8px;background:rgba(255,23,68,0.08);border-radius:6px">Not completed in last ${carryCount} shifts — previous note: <em>${carryData?.note || '—'}</em></div>` : ''}
+        ${isCritical ? `<div style="font-size:0.72rem;color:#ff5252;margin-bottom:8px;padding:5px 8px;background:rgba(255,23,68,0.08);border-radius:6px">Not completed in last ${carryCount} shifts — previous note: <em>${carryData?.note || '—'}</em></div>` : ''}
         <div class="task-btns">
-          <button class="tbtn${yesCls}" onclick="setStatus('${task.id}','yes')">
+          <button class="tbtn${yesCls}" onclick="setStatus('${task.id}','yes')" ${disAttr}>
             <span class="tbtn-icon">✓</span> Yes
           </button>
-          <button class="tbtn${noCls}" onclick="setStatus('${task.id}','no')">
+          <button class="tbtn${noCls}" onclick="setStatus('${task.id}','no')" ${disAttr}>
             <span class="tbtn-icon">○</span> Not Needed
           </button>
-          <button class="tbtn${carryCls}" onclick="setStatus('${task.id}','carry-over')">
+          <button class="tbtn${carryCls}" onclick="setStatus('${task.id}','carry-over')" ${disAttr}>
             <span class="tbtn-icon">↻</span> Later
           </button>
         </div>
+        <div class="task-ts${tsStr ? ' visible' : ''}" id="task-ts-${task.id}">🕐 Marked at ${tsStr}</div>
         <div class="later-note-wrap" id="later-note-${task.id}" style="display:${showNote}">
-          <textarea class="later-note-input" id="later-note-txt-${task.id}" placeholder="Why is this being carried over? (required)" rows="2"></textarea>
+          <textarea class="later-note-input" id="later-note-txt-${task.id}" placeholder="Why is this being carried over? (required)" rows="2" ${disAttr}></textarea>
           <div class="later-note-req">⚠️ Note required before submitting</div>
         </div>
       </div>`;
@@ -1776,12 +2015,14 @@ function renderTasks() {
 }
 
 function setStatus(taskId, status) {
-  taskStatuses[taskId] = status;
+  if (shiftEnded) return;
+  const now = Date.now();
+  taskStatuses[taskId] = { status, ts: now };
   const card = document.getElementById('tc-' + taskId);
   if (!card) return;
   card.classList.remove('done-yes','done-no','done-carry');
-  if (status === 'yes')   card.classList.add('done-yes');
-  if (status === 'no')    card.classList.add('done-no');
+  if (status === 'yes')        card.classList.add('done-yes');
+  if (status === 'no')         card.classList.add('done-no');
   if (status === 'carry-over') card.classList.add('done-carry');
   const btns = card.querySelectorAll('.tbtn');
   btns[0].className = 'tbtn' + (status === 'yes'        ? ' sel-yes'   : '');
@@ -1789,15 +2030,19 @@ function setStatus(taskId, status) {
   btns[2].className = 'tbtn' + (status === 'carry-over' ? ' sel-carry' : '');
   const noteWrap = document.getElementById('later-note-' + taskId);
   if (noteWrap) noteWrap.style.display = status === 'carry-over' ? 'block' : 'none';
+  const tsEl = document.getElementById('task-ts-' + taskId);
+  if (tsEl) {
+    const t = new Date(now).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+    tsEl.textContent = '🕐 Marked at ' + t;
+    tsEl.classList.add('visible');
+  }
   updateProgress();
 }
 
 function updateProgress() {
   if (!selectedRoom) return;
-  const todayDayUp = new Date().getDay();
-  const isMonFriUp = todayDayUp === 1 || todayDayUp === 5;
-  const total = selectedRoom.tasks.filter(t => !t.monFriOnly || isMonFriUp).length;
-  const done  = Object.values(taskStatuses).filter(s => !!s).length;
+  const total = getVisibleTasks(selectedRoom.tasks).length;
+  const done  = Object.values(taskStatuses).filter(s => !!s?.status).length;
   const pct   = total ? Math.round(done / total * 100) : 0;
 
   const fill  = document.getElementById('progress-fill');
@@ -1812,9 +2057,11 @@ async function submitRoomTasks() {
   if (!selectedRoom)  { showToast('Please select a room first', true); return; }
   if (!selectedShift) { showToast('Please select your shift first', true); return; }
 
+  if (shiftEnded) { showToast('Shift already ended — contact admin to unlock', true); return; }
+
   // Validate Later tasks have notes
   for (const t of (selectedRoom.tasks || [])) {
-    if (taskStatuses[t.id] === 'carry-over') {
+    if (taskStatuses[t.id]?.status === 'carry-over') {
       const noteEl = document.getElementById('later-note-txt-' + t.id);
       if (!noteEl?.value.trim()) {
         showToast(`Add a reason for "${t.name}" (Later requires a note)`, true);
@@ -1824,7 +2071,9 @@ async function submitRoomTasks() {
   }
 
   const tasks = (selectedRoom.tasks || []).map(t => ({
-    id: t.id, name: t.name, status: taskStatuses[t.id] || 'no-response'
+    id: t.id, name: t.name,
+    status: taskStatuses[t.id]?.status || 'no-response',
+    markedAt: taskStatuses[t.id]?.ts || null
   }));
 
   const roomCarry = { ...(carryOvers[selectedRoom.id] || {}) };
@@ -1852,13 +2101,14 @@ async function submitRoomTasks() {
       date:      new Date().toISOString().slice(0, 10),
       tasks: tasks.map(t => ({
         name: t.name, status: t.status,
+        markedAt: t.markedAt,
         laterNote: t.status === 'carry-over' ? (document.getElementById('later-note-txt-' + t.id)?.value.trim() || '') : null
       })),
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
     batch.set(db.collection('facilities').doc(FACILITY), { carryOvers }, { merge: true });
     await batch.commit();
-    showToast('🎉 Room tasks submitted!');
+    showToast('🎉 Room tasks saved!');
     taskStatuses = {};
     renderTasks();
   } catch (e) { showToast('Error: ' + e.message, true); }
@@ -2118,6 +2368,51 @@ function toggleLaundryGroup(hdr) {
 function formatLaundryDate(str) {
   const d = new Date(str + 'T00:00:00');
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+// ================================================================
+//  FOOD LOG
+// ================================================================
+async function logFood() {
+  const meal  = document.getElementById('food-meal').value;
+  const qty   = parseInt(document.getElementById('food-qty').value) || 1;
+  const notes = document.getElementById('food-notes').value.trim();
+  if (!meal) { showToast('Select a meal first', true); return; }
+  try {
+    await db.collection('foodlog').add({
+      meal, qty, notes: notes || null,
+      userId:   currentUser.uid,
+      userName: currentData?.name || currentUser.email,
+      facility: currentData?.facility || FACILITY,
+      date:     new Date().toISOString().slice(0, 10),
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('food-meal').value  = '';
+    document.getElementById('food-qty').value   = 1;
+    document.getElementById('food-notes').value = '';
+    showToast('🍽️ Meal logged');
+    loadFoodLog();
+  } catch (e) { showToast(e.message, true); }
+}
+
+async function loadFoodLog() {
+  const list = document.getElementById('food-log-list');
+  if (!list) return;
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const snap  = await db.collection('foodlog').orderBy('timestamp','desc').limit(50).get();
+    const myFac = currentData?.facility || FACILITY;
+    const entries = snap.docs.filter(d => d.data().facility === myFac).map(d => ({ id: d.id, ...d.data() }));
+    if (!entries.length) { list.innerHTML = '<div class="empty-state" style="font-size:0.82rem">No meals logged today</div>'; return; }
+    list.innerHTML = entries.map(e => {
+      const ts  = e.timestamp?.toDate?.() || new Date();
+      const time = ts.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+      return `<div class="food-log-entry">
+        <div class="food-log-meal">${e.meal} × ${e.qty}${e.notes ? ` — <span style="font-weight:400;color:var(--muted)">${e.notes}</span>` : ''}</div>
+        <div class="food-log-meta">By ${e.userName} · ${time} · ${e.date === today ? 'Today' : e.date}</div>
+      </div>`;
+    }).join('');
+  } catch (e) { console.warn('FoodLog:', e.message); }
 }
 
 // ================================================================
@@ -2381,12 +2676,49 @@ function showToast(msg, isErr=false) {
   el._t = setTimeout(() => el.style.display = 'none', 3000);
 }
 function showErr(id,msg) { const el=document.getElementById(id); el.textContent=msg; el.style.display='block'; }
+async function loadShiftEnds() {
+  const list = document.getElementById('shift-ends-list');
+  const date = document.getElementById('se-date').value;
+  if (!date || !list) return;
+  list.innerHTML = '<div class="empty-state">Loading…</div>';
+  try {
+    const snap = await db.collection('shiftEnds')
+      .where('date', '==', date).orderBy('timestamp', 'desc').get();
+    const myFac = currentData?.facility || FACILITY;
+    const docs  = snap.docs.filter(d => d.data().facility === myFac);
+    if (!docs.length) { list.innerHTML = '<div class="empty-state">No shift ends recorded for this date.</div>'; return; }
+    list.innerHTML = '';
+    docs.forEach(doc => {
+      const d  = doc.data();
+      const el = document.createElement('div');
+      el.className = 'staff-card';
+      el.innerHTML = `
+        <div class="staff-details">
+          <div class="staff-name">${d.userName}</div>
+          <div class="staff-meta">${d.shift} · ${d.locked ? '🔒 Locked' : '🔓 Unlocked'}</div>
+        </div>
+        ${d.locked ? `<button class="btn btn-ghost btn-sm" onclick="unlockShift('${doc.id}',this)">🔓 Unlock</button>` : '<span style="color:#00e5a0;font-size:0.8rem">Unlocked</span>'}`;
+      list.appendChild(el);
+    });
+  } catch (e) { list.innerHTML = `<div style="color:#ff5252;font-size:0.82rem">${e.message}</div>`; }
+}
+
+async function unlockShift(docId, btn) {
+  btn.disabled = true;
+  try {
+    await db.collection('shiftEnds').doc(docId).update({ locked: false });
+    showToast('Shift unlocked — staff can now make changes');
+    loadShiftEnds();
+  } catch (e) { showToast(e.message, true); btn.disabled = false; }
+}
+
 function hideErr(id)      { document.getElementById(id).style.display='none'; }
-function showMsg(el,msg,isErr) { el.style.display='block'; el.style.color=isErr?'#ff6b6b':'#1dd1a1'; el.textContent=msg; }
+function showMsg(el,msg,isErr) { el.style.display='block'; el.style.color=isErr?'#ff5252':'#00e5a0'; el.textContent=msg; }
 function friendlyError(e) {
   const m = { 'auth/user-not-found':'No account with this email.','auth/wrong-password':'Wrong password.','auth/invalid-email':'Invalid email.','auth/email-already-in-use':'Email already registered.','auth/too-many-requests':'Too many attempts — try again later.','auth/invalid-credential':'Incorrect email or password.','auth/weak-password':'Password must be at least 6 characters.' };
   return m[e.code] || e.message;
 }
 </script>
+<div id="rainbow-border"></div>
 </body>
 </html>
