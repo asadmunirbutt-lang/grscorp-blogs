@@ -920,23 +920,64 @@
       color: var(--coral);
     }
 
-    /* ═══════════════ THREE-COLUMN CHECKLIST LAYOUT ═══════════════ */
+    /* ═══════════════ TWO-COLUMN CHECKLIST LAYOUT ═══════════════ */
     .checklist-layout {
       display: grid;
-      grid-template-columns: 230px 1fr 330px;
-      grid-template-areas: "laundry tasks notes";
+      grid-template-columns: 1fr 330px;
+      grid-template-areas: "tasks notes";
       align-items: start;
     }
-    .col-laundry { grid-area: laundry; border-right: 1px solid var(--border); min-width: 0; }
-    .col-tasks   { grid-area: tasks;   min-width: 0; }
-    .col-right   { grid-area: notes;   border-left: 1px solid var(--border); padding-top: 14px; padding-bottom: 40px; }
-    @media (max-width: 960px) {
-      .checklist-layout { grid-template-columns: 1fr 290px; grid-template-areas: "tasks notes" "laundry laundry"; }
-      .col-laundry { border-right: none; border-top: 1px solid var(--border); }
-    }
-    @media (max-width: 620px) {
-      .checklist-layout { grid-template-columns: 1fr; grid-template-areas: "tasks" "notes" "laundry"; }
+    .col-tasks   { grid-area: tasks; min-width: 0; }
+    .col-right   { grid-area: notes; border-left: 1px solid var(--border); padding-top: 14px; padding-bottom: 40px; }
+    @media (max-width: 760px) {
+      .checklist-layout { grid-template-columns: 1fr; grid-template-areas: "tasks" "notes"; }
       .col-right { border-left: none; padding-top: 0; }
+    }
+
+    /* ═══════════════ INLINE LAUNDRY BLOCK ═══════════════ */
+    .laundry-inline {
+      margin: 0 16px 14px;
+      background: var(--card);
+      border: 1.5px solid var(--border2);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .laundry-inline-hdr {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      font-size: 0.88rem;
+      font-weight: 800;
+      border-bottom: 1px solid var(--border);
+    }
+    .laundry-hist-toggle {
+      background: var(--card2);
+      border: 1.5px solid var(--border2);
+      border-radius: 20px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .laundry-hist-toggle.active {
+      background: rgba(0,229,160,0.15);
+      border-color: var(--mint);
+      color: var(--mint);
+    }
+    .laundry-controls { padding: 10px 14px 4px; }
+    .lcat-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+    .ltype-row { display: flex; gap: 6px; margin-bottom: 2px; }
+    .lcat-row .lcat-btn { flex: 1; text-align: center; justify-content: center; font-size: 0.74rem; padding: 6px 6px; }
+    .ltype-row .ltype-btn { flex: 1; text-align: center; justify-content: center; font-size: 0.78rem; padding: 9px 6px; }
+    .laundry-hist-panel {
+      display: none;
+      border-top: 1px solid var(--border);
+      padding: 10px 12px 8px;
+      max-height: 320px;
+      overflow-y: auto;
     }
 
     /* ═══════════════ SHIFT GROUPS ═══════════════ */
@@ -1291,27 +1332,7 @@
       <!-- Three-column layout -->
       <div class="checklist-layout">
 
-        <!-- LAUNDRY (left) -->
-        <div class="col-laundry" id="sec-laundry">
-          <div class="laundry-panel">
-            <div class="laundry-panel-title">🧺 Laundry Log</div>
-            <div class="laundry-section-lbl">Category</div>
-            <div class="lcat-btns">
-              <button class="lcat-btn active" onclick="setLaundryCat('wearable',this)">👕 Wearable Clothes</button>
-              <button class="lcat-btn" onclick="setLaundryCat('cleaning',this)">🧹 Cleaning Cloths</button>
-              <button class="lcat-btn" onclick="setLaundryCat('linen',this)">🛏️ Linen &amp; Sheets</button>
-            </div>
-            <div class="laundry-section-lbl">Log Event</div>
-            <div class="ltype-btns">
-              <button class="ltype-btn lt-wash"  onclick="logLaundry('wash')">🫧 Started Wash</button>
-              <button class="ltype-btn lt-dryer" onclick="logLaundry('dryer')">🌀 Started Dryer</button>
-              <button class="ltype-btn lt-fold"  onclick="logLaundry('fold')">👕 Folding Done</button>
-            </div>
-            <div id="laundry-log"><div class="laundry-empty">No laundry logged yet</div></div>
-          </div>
-        </div>
-
-        <!-- TASKS (middle) -->
+        <!-- TASKS (left) -->
         <div class="col-tasks">
           <!-- Sticky room name -->
           <div class="room-sticky-hdr" id="room-sticky-hdr">
@@ -1334,6 +1355,30 @@
               </select>
             </div>
           </div>
+
+          <!-- Laundry quick-log -->
+          <div class="laundry-inline" id="sec-laundry">
+            <div class="laundry-inline-hdr">
+              <span>🧺 Laundry Log</span>
+              <button class="laundry-hist-toggle" id="laundry-hist-toggle" onclick="toggleLaundryHistory()">📋 History</button>
+            </div>
+            <div class="laundry-controls">
+              <div class="lcat-row">
+                <button class="lcat-btn active" onclick="setLaundryCat('wearable',this)">👕 Clothes</button>
+                <button class="lcat-btn" onclick="setLaundryCat('cleaning',this)">🧹 Cleaning</button>
+                <button class="lcat-btn" onclick="setLaundryCat('linen',this)">🛏️ Linen</button>
+              </div>
+              <div class="ltype-row">
+                <button class="ltype-btn lt-wash"  onclick="logLaundry('wash')">🫧 Wash</button>
+                <button class="ltype-btn lt-dryer" onclick="logLaundry('dryer')">🌀 Dryer</button>
+                <button class="ltype-btn lt-fold"  onclick="logLaundry('fold')">👕 Fold</button>
+              </div>
+            </div>
+            <div class="laundry-hist-panel" id="laundry-hist-panel">
+              <div id="laundry-log"><div class="laundry-empty">No laundry logged yet</div></div>
+            </div>
+          </div>
+
           <div class="room-content-wrap" id="room-content"></div>
         </div>
 
@@ -2458,6 +2503,15 @@ function setLaundryCat(cat, el) {
   el.classList.add('active');
 }
 
+function toggleLaundryHistory() {
+  const panel = document.getElementById('laundry-hist-panel');
+  const btn   = document.getElementById('laundry-hist-toggle');
+  if (!panel) return;
+  const nowOpen = panel.style.display !== 'none' && panel.style.display !== '';
+  panel.style.display = nowOpen ? 'none' : 'block';
+  if (btn) btn.classList.toggle('active', !nowOpen);
+}
+
 async function logLaundry(type) {
   const typeLabels = { wash: '🫧 Started Wash', dryer: '🌀 Started Dryer', fold: '👕 Folding Done' };
   const catLabels  = { wearable: '👕 Wearable', cleaning: '🧹 Cleaning', linen: '🛏️ Linen' };
@@ -2482,7 +2536,13 @@ async function loadLaundryLog() {
     const snap = await db.collection('laundry').orderBy('timestamp', 'desc').limit(120).get();
     const myFac = currentData?.facility || FACILITY;
     const entries = snap.docs.filter(d => d.data().facility === myFac).map(d => ({ id: d.id, ...d.data() }));
-    if (!entries.length) { logEl.innerHTML = '<div class="laundry-empty">No laundry logged yet</div>'; return; }
+    const toggleBtn = document.getElementById('laundry-hist-toggle');
+    if (!entries.length) {
+      logEl.innerHTML = '<div class="laundry-empty">No laundry logged yet</div>';
+      if (toggleBtn) toggleBtn.textContent = '📋 History';
+      return;
+    }
+    if (toggleBtn) toggleBtn.textContent = `📋 History (${entries.length})`;
     const byDate = {};
     entries.forEach(e => { const dt = e.date || '?'; if (!byDate[dt]) byDate[dt] = []; byDate[dt].push(e); });
     const today = new Date().toISOString().slice(0, 10);
