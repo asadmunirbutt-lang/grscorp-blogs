@@ -1091,6 +1091,31 @@
       border-color: var(--mint);
       color: var(--mint);
     }
+    .laundry-log-toggle {
+      background: rgba(0,229,160,0.12);
+      border: 1.5px solid rgba(0,229,160,0.3);
+      border-radius: 20px;
+      color: var(--mint);
+      cursor: pointer;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 4px 12px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .laundry-log-toggle.active {
+      background: rgba(0,229,160,0.25);
+      border-color: var(--mint);
+    }
+    .supplies-status-divider {
+      color: var(--muted);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 10px 0 6px;
+      border-top: 1px solid var(--border);
+      margin-top: 4px;
+    }
     .laundry-controls { padding: 10px 14px 4px; }
     .lcat-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
     .ltype-row { display: flex; gap: 6px; margin-bottom: 2px; }
@@ -1500,9 +1525,12 @@
           <div class="laundry-inline" id="sec-laundry">
             <div class="laundry-inline-hdr">
               <span>🧺 Laundry Log</span>
-              <button class="laundry-hist-toggle" id="laundry-hist-toggle" onclick="toggleLaundryHistory()">📋 History</button>
+              <div style="display:flex;gap:6px">
+                <button class="laundry-log-toggle" id="laundry-log-toggle" onclick="toggleLaundryControls()">+ Log Entry</button>
+                <button class="laundry-hist-toggle" id="laundry-hist-toggle" onclick="toggleLaundryHistory()">📋 History</button>
+              </div>
             </div>
-            <div class="laundry-controls">
+            <div class="laundry-controls" id="laundry-controls" style="display:none">
               <div class="lcat-row">
                 <button class="lcat-btn active" onclick="setLaundryCat('wearable',this)">👕 Clothes</button>
                 <button class="lcat-btn" onclick="setLaundryCat('cleaning',this)">🧹 Cleaning</button>
@@ -2617,7 +2645,10 @@ async function loadSupplies() {
   try {
     const myFacility2 = currentData?.facility || FACILITY;
     const snap = await db.collection('supplies').orderBy('timestamp', 'desc').limit(50).get();
-    snap.docs.filter(doc => doc.data().facility === myFacility2).forEach(doc => {
+    const allDocs = snap.docs.filter(doc => doc.data().facility === myFacility2);
+    const pending = allDocs.filter(d => (d.data().status || 'pending') === 'pending');
+    const ordered = allDocs.filter(d => (d.data().status || 'pending') === 'ordered');
+    const buildItem = doc => {
       const d      = doc.data();
       const ts     = d.timestamp?.toDate?.() || new Date();
       const status = d.status || 'pending';
@@ -2638,8 +2669,16 @@ async function loadSupplies() {
         </div>
         <span class="supply-qty">${d.quantity}</span>
         ${isAdmin ? `<button class="x-btn" onclick="deleteSupply('${doc.id}')">✕</button>` : ''}`;
-      list.appendChild(el);
-    });
+      return el;
+    };
+    pending.forEach(doc => list.appendChild(buildItem(doc)));
+    if (ordered.length) {
+      const divider = document.createElement('div');
+      divider.className = 'supplies-status-divider';
+      divider.textContent = '✅ Ordered';
+      list.appendChild(divider);
+      ordered.forEach(doc => list.appendChild(buildItem(doc)));
+    }
   } catch (e) { console.warn('Supplies:', e.message); }
 }
 
@@ -2690,6 +2729,15 @@ function setLaundryCat(cat, el) {
   el.classList.add('active');
 }
 
+function toggleLaundryControls() {
+  const controls = document.getElementById('laundry-controls');
+  const btn      = document.getElementById('laundry-log-toggle');
+  if (!controls) return;
+  const nowOpen = controls.style.display !== 'none' && controls.style.display !== '';
+  controls.style.display = nowOpen ? 'none' : 'block';
+  if (btn) btn.classList.toggle('active', !nowOpen);
+}
+
 function toggleLaundryHistory() {
   const panel = document.getElementById('laundry-hist-panel');
   const btn   = document.getElementById('laundry-hist-toggle');
@@ -2712,6 +2760,10 @@ async function logLaundry(type) {
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
     showToast(typeLabels[type] + ' logged');
+    const controls = document.getElementById('laundry-controls');
+    const logBtn   = document.getElementById('laundry-log-toggle');
+    if (controls) controls.style.display = 'none';
+    if (logBtn)   logBtn.classList.remove('active');
     loadLaundryLog();
   } catch (e) { showToast(e.message, true); }
 }
