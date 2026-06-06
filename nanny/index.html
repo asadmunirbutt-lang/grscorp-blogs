@@ -2009,9 +2009,25 @@ async function submitRoomTasks() {
     });
     batch.set(db.collection('facilities').doc(FACILITY), { carryOvers }, { merge: true });
     await batch.commit();
-    showToast('🎉 Room tasks saved!');
-    taskStatuses = {};
-    renderTasks();
+
+    // Calculate time taken
+    const submitTime = Date.now();
+    const timestamps = Object.values(taskStatuses).map(t => t.ts).filter(Boolean);
+    const firstClick = timestamps.length ? Math.min(...timestamps) : submitTime;
+    const mins = Math.round((submitTime - firstClick) / 60000);
+    const submitStr = new Date(submitTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    // Replace submit button with completion card
+    const submitSection = document.querySelector('.submit-section');
+    if (submitSection) {
+      submitSection.innerHTML = `
+        <div style="background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.3);border-radius:14px;padding:16px;text-align:center">
+          <div style="font-size:1.4rem;margin-bottom:6px">✅</div>
+          <div style="color:#00e5a0;font-weight:800;font-size:0.95rem">Room Submitted</div>
+          <div style="color:var(--muted);font-size:0.78rem;margin-top:5px">Submitted at ${submitStr} · ${mins} min to complete</div>
+        </div>`;
+    }
+    showToast('✅ Room submitted at ' + submitStr);
   } catch (e) { showToast('Error: ' + e.message, true); }
 }
 
