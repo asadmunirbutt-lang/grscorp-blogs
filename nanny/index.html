@@ -304,6 +304,16 @@
       padding: 3px 10px;
       display: none;
     }
+    .shift-admin-badge {
+      background: rgba(180,78,255,0.15);
+      border: 1px solid rgba(180,78,255,0.3);
+      border-radius: 20px;
+      color: var(--lavender);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      display: none;
+    }
 
     .shift-cards {
       display: flex;
@@ -1267,6 +1277,7 @@
         <div class="shift-label-row">
           <span class="field-label">Select Your Shift</span>
           <span class="shift-locked-badge" id="shift-locked-badge">🔒 Locked</span>
+          <span class="shift-admin-badge"  id="shift-admin-badge">⚡ Tap to switch</span>
         </div>
 
         <div id="sg-weekdays" class="shift-group">
@@ -1899,6 +1910,7 @@ async function showAppScreen() {
   document.getElementById('admin-tab').style.display = isAdmin ? 'flex' : 'none';
   document.getElementById('daily-tab').style.display  = isAdmin ? 'flex' : 'none';
   document.getElementById('weekly-tab').style.display = isAdmin ? 'flex' : 'none';
+  document.getElementById('shift-admin-badge').style.display = isAdmin ? 'inline-block' : 'none';
 
   const name     = currentData?.name || currentUser?.email || '';
   const initials = name.split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'HN';
@@ -2534,7 +2546,8 @@ async function loadLaundryLog() {
   if (!logEl) return;
   try {
     const snap = await db.collection('laundry').orderBy('timestamp', 'desc').limit(120).get();
-    const myFac = currentData?.facility || FACILITY;
+    const myFac   = currentData?.facility || FACILITY;
+    const isAdmin = currentData?.role === 'admin';
     const entries = snap.docs.filter(d => d.data().facility === myFac).map(d => ({ id: d.id, ...d.data() }));
     const toggleBtn = document.getElementById('laundry-hist-toggle');
     if (!entries.length) {
@@ -2555,8 +2568,9 @@ async function loadLaundryLog() {
       const rows = items.map(e => {
         const ts  = e.timestamp?.toDate?.() || new Date();
         const time = ts.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
-        return `<div class="laundry-entry lt-${e.type}">
-          <div class="le-row"><span class="le-type">${e.typeLabel}</span><span class="le-cat">${e.catLabel}</span><span class="le-time">${time}</span></div>
+        const del = isAdmin ? `<button class="x-btn" style="margin-left:4px" onclick="deleteLaundryEntry('${e.id}')">✕</button>` : '';
+        return `<div class="laundry-entry lt-${e.type}" id="le-${e.id}">
+          <div class="le-row"><span class="le-type">${e.typeLabel}</span><span class="le-cat">${e.catLabel}</span><span class="le-time">${time}</span>${del}</div>
           <div class="le-who">${e.userName}</div>
         </div>`;
       }).join('');
@@ -2581,6 +2595,32 @@ function toggleLaundryGroup(hdr) {
 function formatLaundryDate(str) {
   const d = new Date(str + 'T00:00:00');
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+async function deleteLaundryEntry(id) {
+  const el = document.getElementById('le-' + id);
+  if (el) el.style.opacity = '0.4';
+  try {
+    await db.collection('laundry').doc(id).delete();
+    if (el) el.remove();
+    loadLaundryLog();
+  } catch (e) {
+    if (el) el.style.opacity = '1';
+    showToast('Error deleting entry', true);
+  }
+}
+
+async function deleteFoodEntry(id) {
+  const el = document.getElementById('fe-' + id);
+  if (el) el.style.opacity = '0.4';
+  try {
+    await db.collection('foodlog').doc(id).delete();
+    if (el) el.remove();
+    loadFoodLog();
+  } catch (e) {
+    if (el) el.style.opacity = '1';
+    showToast('Error deleting entry', true);
+  }
 }
 
 // ================================================================
@@ -2612,17 +2652,20 @@ async function loadFoodLog() {
   const list = document.getElementById('food-log-list');
   if (!list) return;
   try {
-    const today = new Date().toISOString().slice(0, 10);
-    const snap  = await db.collection('foodlog').orderBy('timestamp','desc').limit(50).get();
-    const myFac = currentData?.facility || FACILITY;
+    const today   = new Date().toISOString().slice(0, 10);
+    const isAdmin = currentData?.role === 'admin';
+    const snap    = await db.collection('foodlog').orderBy('timestamp','desc').limit(50).get();
+    const myFac   = currentData?.facility || FACILITY;
     const entries = snap.docs.filter(d => d.data().facility === myFac).map(d => ({ id: d.id, ...d.data() }));
-    if (!entries.length) { list.innerHTML = '<div class="empty-state" style="font-size:0.82rem">No meals logged today</div>'; return; }
+    if (!entries.length) { list.innerHTML = '<div class="empty-state" style="font-size:0.82rem">No meals logged yet</div>'; return; }
     list.innerHTML = entries.map(e => {
       const ts  = e.timestamp?.toDate?.() || new Date();
       const time = ts.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-      return `<div class="food-log-entry">
-        <div class="food-log-meal">${e.meal} × ${e.qty}${e.notes ? ` — <span style="font-weight:400;color:var(--muted)">${e.notes}</span>` : ''}</div>
-        <div class="food-log-meta">By ${e.userName} · ${time} · ${e.date === today ? 'Today' : e.date}</div>
+      const del  = isAdmin ? `<button class="x-btn" style="float:right;margin:-2px -4px 0 0" onclick="deleteFoodEntry('${e.id}')">✕</button>` : '';
+      return `<div class="food-log-entry" id="fe-${e.id}">
+        ${del}
+        <div class="food-log-meal">${escHtml(e.meal)} × ${e.qty}${e.notes ? ` — <span style="font-weight:400;color:var(--muted)">${escHtml(e.notes)}</span>` : ''}</div>
+        <div class="food-log-meta">By ${escHtml(e.userName)} · ${time} · ${e.date === today ? 'Today' : e.date}</div>
       </div>`;
     }).join('');
   } catch (e) { console.warn('FoodLog:', e.message); }
