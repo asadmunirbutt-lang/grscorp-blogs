@@ -1,4 +1,4 @@
-const CACHE = 'hn-v1';
+const CACHE = 'hn-v2';
 const SHELL = ['/nanny/', '/nanny/index.html'];
 
 self.addEventListener('install', e => {
@@ -7,6 +7,7 @@ self.addEventListener('install', e => {
 });
 
 self.addEventListener('activate', e => {
+  // Delete all old caches so users always get fresh files after a deploy
   e.waitUntil(
     caches.keys().then(keys =>
       Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
@@ -17,6 +18,23 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
+  const url = new URL(e.request.url);
+
+  // Network-first for the HTML shell — always picks up new deploys
+  if (url.pathname === '/nanny/' || url.pathname === '/nanny/index.html') {
+    e.respondWith(
+      fetch(e.request)
+        .then(res => {
+          const clone = res.clone();
+          caches.open(CACHE).then(c => c.put(e.request, clone));
+          return res;
+        })
+        .catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
+  // Cache-first for everything else (Firebase SDKs, icons, manifest)
   e.respondWith(
     caches.match(e.request).then(r => r || fetch(e.request).catch(() => caches.match('/nanny/')))
   );
