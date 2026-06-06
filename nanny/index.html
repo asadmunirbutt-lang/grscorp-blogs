@@ -804,6 +804,55 @@
     .empty-state { color: var(--muted); font-size: 0.88rem; padding: 12px 0; }
     .muted { color: var(--muted); }
 
+    /* ═══════════════ QUICK NAV BAR ═══════════════ */
+    .quick-nav {
+      position: sticky;
+      top: 48px;
+      z-index: 90;
+      background: rgba(10,8,24,0.97);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(180,78,255,0.15);
+      display: flex;
+      gap: 5px;
+      padding: 7px 12px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .quick-nav::-webkit-scrollbar { display: none; }
+    .qnav-btn {
+      background: var(--card);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 5px 13px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+    .qnav-btn:hover { background: var(--card2); color: var(--text); border-color: var(--lavender); }
+
+    /* ═══════════════ ROOM STICKY HEADER ═══════════════ */
+    .room-sticky-hdr {
+      position: sticky;
+      top: 92px;
+      z-index: 80;
+      background: rgba(10,8,24,0.97);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(41,121,255,0.2);
+      padding: 8px 16px;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 0.92rem;
+    }
+    .room-sticky-emoji { font-size: 1.1rem; }
+
     /* ═══════════════ THREE-COLUMN CHECKLIST LAYOUT ═══════════════ */
     .checklist-layout {
       display: grid;
@@ -1161,6 +1210,14 @@
 
       </div>
 
+      <!-- Quick nav shortcuts -->
+      <div class="quick-nav">
+        <button class="qnav-btn" onclick="scrollToSection('notes-list')">📝 Notes</button>
+        <button class="qnav-btn" onclick="scrollToSection('supplies-list')">🛒 Supplies</button>
+        <button class="qnav-btn" onclick="scrollToSection('food-log-list')">🍽️ Food Log</button>
+        <button class="qnav-btn" onclick="scrollToSection('laundry-log')">🧺 Laundry</button>
+      </div>
+
       <!-- Three-column layout -->
       <div class="checklist-layout">
 
@@ -1186,6 +1243,11 @@
 
         <!-- TASKS (middle) -->
         <div class="col-tasks">
+          <!-- Sticky room name -->
+          <div class="room-sticky-hdr" id="room-sticky-hdr">
+            <span class="room-sticky-emoji" id="room-sticky-emoji"></span>
+            <span id="room-sticky-name"></span>
+          </div>
           <div class="room-section">
             <div class="field-label" style="margin:14px 0 6px">Select Floor</div>
             <div class="room-select-wrap" style="margin-bottom:10px">
@@ -1827,13 +1889,30 @@ function selectShift(shiftId, el, group) {
 
 function onRoomChange() {
   const rid = document.getElementById('room-sel').value;
-  if (!rid) { document.getElementById('room-content').innerHTML = ''; selectedRoom = null; taskStatuses = {}; return; }
+  const stickyHdr  = document.getElementById('room-sticky-hdr');
+  const stickyName = document.getElementById('room-sticky-name');
+  const stickyEmoji = document.getElementById('room-sticky-emoji');
+  if (!rid) {
+    document.getElementById('room-content').innerHTML = '';
+    selectedRoom = null; taskStatuses = {};
+    if (stickyHdr) stickyHdr.style.display = 'none';
+    return;
+  }
   selectedRoom = rooms.find(r => r.id === rid) || null;
   if (selectedRoom) {
     if (!allRoomStatuses[selectedRoom.id]) allRoomStatuses[selectedRoom.id] = {};
     taskStatuses = allRoomStatuses[selectedRoom.id];
+    if (stickyHdr)  stickyHdr.style.display  = 'flex';
+    if (stickyName) stickyName.textContent    = selectedRoom.name;
+    if (stickyEmoji) stickyEmoji.textContent  = selectedRoom.emoji || '🏠';
   }
   renderTasks();
+}
+
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function getVisibleTasks(roomTasks) {
@@ -1918,13 +1997,17 @@ function renderTasks() {
 
   const submitEl = document.createElement('div');
   submitEl.className = 'submit-section';
-  const submitted = submittedRooms[selectedRoom.id];
+  const submitted  = submittedRooms[selectedRoom.id];
+  const isAdmin    = currentData?.role === 'admin';
   if (submitted) {
+    const detail = isAdmin
+      ? `Submitted at ${submitted.submitStr} · ${submitted.mins} min to complete`
+      : `Submitted at ${submitted.submitStr}`;
     submitEl.innerHTML = `
       <div style="background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.3);border-radius:14px;padding:16px;text-align:center">
         <div style="font-size:1.4rem;margin-bottom:6px">✅</div>
         <div style="color:#00e5a0;font-weight:800;font-size:0.95rem">Room Submitted</div>
-        <div style="color:var(--muted);font-size:0.78rem;margin-top:5px">Submitted at ${submitted.submitStr} · ${submitted.mins} min to complete</div>
+        <div style="color:var(--muted);font-size:0.78rem;margin-top:5px">${detail}</div>
       </div>`;
   } else {
     submitEl.innerHTML = `<button class="submit-btn" onclick="submitRoomTasks()">✅ Submit Room Tasks</button>`;
@@ -1952,6 +2035,14 @@ function setStatus(taskId, status) {
     const t = new Date(now).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
     tsEl.textContent = '🕐 Marked at ' + t;
     tsEl.classList.add('visible');
+  }
+  // If room was already submitted, clear it and restore the submit button
+  if (selectedRoom && submittedRooms[selectedRoom.id]) {
+    delete submittedRooms[selectedRoom.id];
+    const submitSection = document.querySelector('.submit-section');
+    if (submitSection) {
+      submitSection.innerHTML = `<button class="submit-btn" onclick="submitRoomTasks()">✅ Submit Room Tasks</button>`;
+    }
   }
   updateProgress();
 }
