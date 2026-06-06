@@ -1303,26 +1303,16 @@
 
         <div id="sg-weekends" class="shift-group">
           <div class="sg-label">🗓️ Weekends</div>
-          <div class="shift-cards" style="flex-wrap:wrap;gap:6px">
-            <button class="shift-card s-morning" style="flex:1 1 calc(50% - 6px);min-width:72px" onclick="selectShift('sat-a', this, 'weekends')">
-              <span class="shift-emoji">🅰️</span>
-              <span class="shift-name">Sat A</span>
-              <span class="shift-time">Saturday</span>
+          <div class="shift-cards">
+            <button class="shift-card s-morning" onclick="selectShift('saturday', this, 'weekends')">
+              <span class="shift-emoji">🏖️</span>
+              <span class="shift-name">Saturday</span>
+              <span class="shift-time">Weekend</span>
             </button>
-            <button class="shift-card s-midday" style="flex:1 1 calc(50% - 6px);min-width:72px" onclick="selectShift('sat-b', this, 'weekends')">
-              <span class="shift-emoji">🅱️</span>
-              <span class="shift-name">Sat B</span>
-              <span class="shift-time">Saturday</span>
-            </button>
-            <button class="shift-card s-night" style="flex:1 1 calc(50% - 6px);min-width:72px" onclick="selectShift('sun-a', this, 'weekends')">
-              <span class="shift-emoji">🅰️</span>
-              <span class="shift-name">Sun A</span>
-              <span class="shift-time">Sunday</span>
-            </button>
-            <button class="shift-card" style="flex:1 1 calc(50% - 6px);min-width:72px;border-color:rgba(0,229,160,0.25)" onclick="selectShift('sun-b', this, 'weekends')">
-              <span class="shift-emoji">🅱️</span>
-              <span class="shift-name">Sun B</span>
-              <span class="shift-time">Sunday</span>
+            <button class="shift-card s-night" onclick="selectShift('sunday', this, 'weekends')">
+              <span class="shift-emoji">🌿</span>
+              <span class="shift-name">Sunday</span>
+              <span class="shift-time">Weekend</span>
             </button>
           </div>
         </div>
