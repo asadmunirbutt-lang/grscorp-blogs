@@ -8,6 +8,14 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#b44eff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Nannying">
+  <link rel="apple-touch-icon" href="icon.svg">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -158,6 +166,73 @@
     .btn-sm { padding: 7px 14px; font-size: 0.82rem; border-radius: 8px; }
 
     .err-msg { color: #ff6b6b; font-size: 0.8rem; margin-bottom: 10px; display: none; }
+
+    .remember-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .remember-row input[type="checkbox"] {
+      accent-color: var(--lavender);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .remember-row label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+
+    .install-divider {
+      margin: 18px 0 14px;
+      border: none;
+      border-top: 1px solid var(--border);
+    }
+    .install-label {
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.74rem;
+      margin-bottom: 10px;
+    }
+    .ios-install-card {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      text-align: center;
+    }
+    .ios-install-card .ios-title {
+      font-weight: 700;
+      font-size: 0.84rem;
+      margin-bottom: 6px;
+    }
+    .ios-install-card .ios-steps {
+      color: var(--muted);
+      font-size: 0.76rem;
+      line-height: 1.8;
+    }
+    .ios-install-card .ios-steps strong { color: var(--text); }
+
+    .pwa-install-tab {
+      background: rgba(0,229,160,0.12);
+      border: 1px solid rgba(0,229,160,0.3);
+      border-radius: 8px;
+      color: var(--mint);
+      cursor: pointer;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 6px 12px;
+      display: none;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .pwa-install-tab:hover { background: rgba(0,229,160,0.2); }
+
     .link-btn {
       background: none; border: none;
       color: var(--lavender); cursor: pointer;
@@ -1207,12 +1282,34 @@
     <div id="login-form">
       <div class="fg"><label>Email</label><input type="email" id="li-email" placeholder="you@example.com" autocomplete="email"></div>
       <div class="fg"><label>Password</label><input type="password" id="li-pwd" placeholder="••••••••" autocomplete="current-password"></div>
+      <div class="remember-row">
+        <input type="checkbox" id="li-remember" checked>
+        <label for="li-remember">Remember me on this device</label>
+      </div>
       <div class="err-msg" id="li-err"></div>
       <button class="btn btn-primary btn-block" onclick="doLogin()">Sign In →</button>
       <div style="text-align:center;margin-top:14px;font-size:0.82rem;color:var(--muted)">
         <button class="link-btn" onclick="showForgot()">Forgot password?</button>
         &nbsp;·&nbsp;
         <button class="link-btn" onclick="showRegForm()">New here? Set password</button>
+      </div>
+
+      <!-- PWA install prompt -->
+      <div id="pwa-install-wrap" style="display:none">
+        <hr class="install-divider">
+        <div class="install-label">📲 Quick access on your phone</div>
+        <div id="pwa-android-install" style="display:none">
+          <button class="btn btn-ghost btn-block btn-sm" onclick="triggerInstall()">⬇ Add to Home Screen</button>
+        </div>
+        <div id="pwa-ios-install" style="display:none">
+          <div class="ios-install-card">
+            <div class="ios-title">Add to Home Screen</div>
+            <div class="ios-steps">
+              Tap <strong>⬆️ Share</strong> at the bottom of Safari<br>
+              then tap <strong>"Add to Home Screen"</strong>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1254,6 +1351,7 @@
       <span class="ti">📊</span> Weekly
     </button>
     <div class="tab-spacer"></div>
+    <button class="pwa-install-tab" id="pwa-install-tab" onclick="triggerInstall()">📲 Install</button>
     <button class="logout-tab" onclick="doLogout()">↩ Logout</button>
   </div>
 
@@ -1790,11 +1888,18 @@ function renderSetupBanner() {
 //  AUTH
 // ================================================================
 async function doLogin() {
-  const email = document.getElementById('li-email').value.trim();
-  const pwd   = document.getElementById('li-pwd').value;
+  const email    = document.getElementById('li-email').value.trim();
+  const pwd      = document.getElementById('li-pwd').value;
+  const remember = document.getElementById('li-remember')?.checked !== false;
   hideErr('li-err');
   if (!email || !pwd) { showErr('li-err', 'Enter your email and password.'); return; }
-  try { await auth.signInWithEmailAndPassword(email, pwd); }
+  try {
+    await auth.setPersistence(
+      remember ? firebase.auth.Auth.Persistence.LOCAL
+               : firebase.auth.Auth.Persistence.SESSION
+    );
+    await auth.signInWithEmailAndPassword(email, pwd);
+  }
   catch (e) { showErr('li-err', friendlyError(e)); }
 }
 
@@ -2932,6 +3037,60 @@ function friendlyError(e) {
   const m = { 'auth/user-not-found':'No account with this email.','auth/wrong-password':'Wrong password.','auth/invalid-email':'Invalid email.','auth/email-already-in-use':'Email already registered.','auth/too-many-requests':'Too many attempts — try again later.','auth/invalid-credential':'Incorrect email or password.','auth/weak-password':'Password must be at least 6 characters.' };
   return m[e.code] || e.message;
 }
+
+// ================================================================
+//  PWA INSTALL
+// ================================================================
+let deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const wrap    = document.getElementById('pwa-install-wrap');
+  const android = document.getElementById('pwa-android-install');
+  const tabBtn  = document.getElementById('pwa-install-tab');
+  if (wrap)    wrap.style.display    = 'block';
+  if (android) android.style.display = 'block';
+  if (tabBtn)  tabBtn.style.display  = 'flex';
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  const wrap   = document.getElementById('pwa-install-wrap');
+  const tabBtn = document.getElementById('pwa-install-tab');
+  if (wrap)   wrap.style.display   = 'none';
+  if (tabBtn) tabBtn.style.display = 'none';
+  showToast('✅ App installed!');
+});
+
+async function triggerInstall() {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  const { outcome } = await deferredInstallPrompt.userChoice;
+  if (outcome === 'accepted') {
+    deferredInstallPrompt = null;
+    const wrap   = document.getElementById('pwa-install-wrap');
+    const tabBtn = document.getElementById('pwa-install-tab');
+    if (wrap)   wrap.style.display   = 'none';
+    if (tabBtn) tabBtn.style.display = 'none';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Service worker for PWA
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  }
+  // iOS add-to-home-screen hint (Safari doesn't fire beforeinstallprompt)
+  const isIOS        = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true;
+  if (isIOS && !isStandalone) {
+    const wrap = document.getElementById('pwa-install-wrap');
+    const ios  = document.getElementById('pwa-ios-install');
+    if (wrap) wrap.style.display = 'block';
+    if (ios)  ios.style.display  = 'block';
+  }
+});
 </script>
 <div id="rainbow-border"></div>
 </body>
