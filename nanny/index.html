@@ -1569,7 +1569,9 @@ let carryOvers    = {};
 let selectedShift = null;
 let shiftLocked   = false;
 let selectedRoom  = null;
-let taskStatuses  = {};
+let taskStatuses    = {};
+let allRoomStatuses = {};
+let submittedRooms  = {};
 
 // ================================================================
 //  INIT
@@ -1660,7 +1662,7 @@ async function doRegister() {
 async function doLogout() {
   selectedShift = null; shiftLocked = false;
   currentUser   = null; currentData  = null; regPhotoFile = null;
-  taskStatuses  = {}; selectedRoom   = null;
+  taskStatuses = {}; allRoomStatuses = {}; submittedRooms = {}; selectedRoom = null;
   if (auth) await auth.signOut(); else showLoginScreen();
 }
 
@@ -1824,10 +1826,13 @@ function selectShift(shiftId, el, group) {
 }
 
 function onRoomChange() {
-  taskStatuses = {};
   const rid = document.getElementById('room-sel').value;
-  if (!rid) { document.getElementById('room-content').innerHTML = ''; selectedRoom = null; return; }
+  if (!rid) { document.getElementById('room-content').innerHTML = ''; selectedRoom = null; taskStatuses = {}; return; }
   selectedRoom = rooms.find(r => r.id === rid) || null;
+  if (selectedRoom) {
+    if (!allRoomStatuses[selectedRoom.id]) allRoomStatuses[selectedRoom.id] = {};
+    taskStatuses = allRoomStatuses[selectedRoom.id];
+  }
   renderTasks();
 }
 
@@ -1911,10 +1916,19 @@ function renderTasks() {
 
   wrap.innerHTML = html;
 
-  // Submit button rendered outside wrap as its own section
   const submitEl = document.createElement('div');
   submitEl.className = 'submit-section';
-  submitEl.innerHTML = `<button class="submit-btn" onclick="submitRoomTasks()">✅ Submit Room Tasks</button>`;
+  const submitted = submittedRooms[selectedRoom.id];
+  if (submitted) {
+    submitEl.innerHTML = `
+      <div style="background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.3);border-radius:14px;padding:16px;text-align:center">
+        <div style="font-size:1.4rem;margin-bottom:6px">✅</div>
+        <div style="color:#00e5a0;font-weight:800;font-size:0.95rem">Room Submitted</div>
+        <div style="color:var(--muted);font-size:0.78rem;margin-top:5px">Submitted at ${submitted.submitStr} · ${submitted.mins} min to complete</div>
+      </div>`;
+  } else {
+    submitEl.innerHTML = `<button class="submit-btn" onclick="submitRoomTasks()">✅ Submit Room Tasks</button>`;
+  }
   wrap.appendChild(submitEl);
 }
 
@@ -2010,24 +2024,14 @@ async function submitRoomTasks() {
     batch.set(db.collection('facilities').doc(FACILITY), { carryOvers }, { merge: true });
     await batch.commit();
 
-    // Calculate time taken
     const submitTime = Date.now();
     const timestamps = Object.values(taskStatuses).map(t => t.ts).filter(Boolean);
     const firstClick = timestamps.length ? Math.min(...timestamps) : submitTime;
     const mins = Math.round((submitTime - firstClick) / 60000);
     const submitStr = new Date(submitTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
-    // Replace submit button with completion card
-    const submitSection = document.querySelector('.submit-section');
-    if (submitSection) {
-      submitSection.innerHTML = `
-        <div style="background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.3);border-radius:14px;padding:16px;text-align:center">
-          <div style="font-size:1.4rem;margin-bottom:6px">✅</div>
-          <div style="color:#00e5a0;font-weight:800;font-size:0.95rem">Room Submitted</div>
-          <div style="color:var(--muted);font-size:0.78rem;margin-top:5px">Submitted at ${submitStr} · ${mins} min to complete</div>
-        </div>`;
-    }
-    showToast('✅ Room submitted at ' + submitStr);
+    submittedRooms[selectedRoom.id] = { submitStr, mins };
+    renderTasks();
+    showToast('✅ Submitted at ' + submitStr);
   } catch (e) { showToast('Error: ' + e.message, true); }
 }
 
