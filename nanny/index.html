@@ -605,9 +605,48 @@
       margin: 22px 0 10px;
       letter-spacing: 0.3px;
     }
-    .sec-heading.notes-head { color: #2979ff; text-shadow: 0 0 20px rgba(41,121,255,0.4); }
+    .sec-heading.notes-head    { color: #2979ff; text-shadow: 0 0 20px rgba(41,121,255,0.4); }
     .sec-heading.supplies-head { color: #ff8c00; text-shadow: 0 0 20px rgba(255,140,0,0.4); }
+    .sec-heading.meds-head     { color: #00bcd4; text-shadow: 0 0 20px rgba(0,188,212,0.4); }
+    .sec-heading.incidents-head{ color: #ff8c00; text-shadow: 0 0 20px rgba(255,140,0,0.4); }
     .sec-icon { font-size: 1rem; }
+
+    .med-entry {
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 3px solid #00bcd4; border-radius: 10px;
+      padding: 8px 12px; margin-bottom: 6px;
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+    .med-entry-info { flex: 1; min-width: 0; }
+    .med-name  { font-weight: 700; font-size: 0.88rem; color: var(--text); }
+    .med-dose  { display: inline-block; background: rgba(0,188,212,0.15); border: 1px solid rgba(0,188,212,0.3); border-radius: 20px; color: #00bcd4; font-size: 0.7rem; font-weight: 700; padding: 1px 8px; margin-left: 6px; }
+    .med-meta  { color: var(--muted); font-size: 0.72rem; margin-top: 2px; }
+
+    .incident-type-row { display: flex; gap: 6px; margin-bottom: 8px; }
+    .inc-type-btn {
+      flex: 1; background: var(--card); border: 1.5px solid var(--border2);
+      border-radius: 10px; color: var(--muted); cursor: pointer;
+      font-size: 0.82rem; font-weight: 700; padding: 9px 6px;
+      text-align: center; transition: all 0.15s;
+    }
+    .inc-type-btn.active { background: rgba(255,140,0,0.15); border-color: var(--orange); color: var(--orange); }
+    .inc-type-btn:hover  { background: var(--card2); color: var(--text); }
+
+    .incident-entry {
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 3px solid var(--orange); border-radius: 10px;
+      padding: 8px 12px; margin-bottom: 6px;
+      display: flex; align-items: flex-start; gap: 8px;
+    }
+    .inc-entry-info { flex: 1; min-width: 0; }
+    .inc-type-pill {
+      display: inline-block; border-radius: 20px;
+      padding: 2px 8px; font-size: 0.7rem; font-weight: 700; margin-bottom: 3px;
+    }
+    .inc-poop     { background: rgba(255,140,0,0.15); border: 1px solid rgba(255,140,0,0.3); color: var(--orange); }
+    .inc-accident { background: rgba(41,121,255,0.15); border: 1px solid rgba(41,121,255,0.3); color: var(--blue); }
+    .inc-other    { background: rgba(180,78,255,0.15); border: 1px solid rgba(180,78,255,0.3); color: var(--lavender); }
+    .inc-meta     { color: var(--muted); font-size: 0.72rem; }
 
     .note-item {
       background: var(--card);
@@ -1423,6 +1462,8 @@
         <button class="qnav-btn" onclick="scrollToSection('sec-supplies')">🛒 Supplies</button>
         <button class="qnav-btn" onclick="scrollToSection('sec-food')">🍽️ Food Log</button>
         <button class="qnav-btn" onclick="scrollToSection('sec-laundry')">🧺 Laundry</button>
+        <button class="qnav-btn" id="qnav-meds"      style="display:none" onclick="scrollToSection('sec-meds')">💊 Meds</button>
+        <button class="qnav-btn" id="qnav-incidents" style="display:none" onclick="scrollToSection('sec-incidents')">📋 Incidents</button>
       </div>
 
       <!-- Critical note banners -->
@@ -1539,6 +1580,37 @@
             </div>
             <button class="btn btn-ghost btn-sm btn-block" onclick="submitSupply()" style="margin-bottom:14px">Add Supply Request</button>
             <div id="supplies-list"></div>
+            <div style="height:20px"></div>
+          </div>
+
+          <!-- Medication Log (admin only) -->
+          <div class="section-block" id="sec-meds" style="display:none">
+            <div class="sec-heading meds-head">
+              <span class="sec-icon">💊</span> Azlan's Medication Log
+            </div>
+            <div class="input-row">
+              <div class="fg"><input type="text" id="med-name" placeholder="Medication name"></div>
+              <div class="fg qty-f"><input type="text" id="med-dose" placeholder="Dose (e.g. 5ml)"></div>
+            </div>
+            <div class="fg" style="margin-bottom:10px"><input type="text" id="med-notes" placeholder="Notes (optional)"></div>
+            <button class="btn btn-ghost btn-sm btn-block" onclick="logMedication()" style="margin-bottom:14px;border-color:rgba(0,188,212,0.4);color:#00bcd4">💊 Log Medication</button>
+            <div id="meds-list"></div>
+            <div style="height:20px"></div>
+          </div>
+
+          <!-- Incidents / Poop Log (admin only) -->
+          <div class="section-block" id="sec-incidents" style="display:none">
+            <div class="sec-heading incidents-head">
+              <span class="sec-icon">📋</span> Azlan's Incidents Log
+            </div>
+            <div class="incident-type-row">
+              <button class="inc-type-btn active" id="inc-poop-btn"     onclick="setIncidentType('poop',this)">💩 Poop</button>
+              <button class="inc-type-btn"         id="inc-accident-btn" onclick="setIncidentType('accident',this)">💧 Accident</button>
+              <button class="inc-type-btn"         id="inc-other-btn"   onclick="setIncidentType('other',this)">📌 Other</button>
+            </div>
+            <div class="fg" style="margin-bottom:10px"><input type="text" id="inc-notes" placeholder="Notes (optional)"></div>
+            <button class="btn btn-ghost btn-sm btn-block" onclick="logIncident()" style="margin-bottom:14px;border-color:rgba(255,140,0,0.4);color:var(--orange)">📋 Log Incident</button>
+            <div id="incidents-list"></div>
             <div style="height:20px"></div>
           </div>
         </div>
@@ -2006,6 +2078,14 @@ async function showAppScreen() {
   document.getElementById('daily-tab').style.display  = isAdmin ? 'flex' : 'none';
   document.getElementById('weekly-tab').style.display = isAdmin ? 'flex' : 'none';
   document.getElementById('shift-admin-badge').style.display = isAdmin ? 'inline-block' : 'none';
+  ['sec-meds','sec-incidents'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = isAdmin ? 'block' : 'none';
+  });
+  ['qnav-meds','qnav-incidents'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = isAdmin ? 'inline-flex' : 'none';
+  });
 
   const name     = currentData?.name || currentUser?.email || '';
   const initials = name.split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2) || 'HN';
@@ -2025,7 +2105,7 @@ async function showAppScreen() {
   loadFoodLog();
   loadCriticalBanners();
 
-  if (isAdmin) { loadStaffList(); populateAdminRoomSel(); }
+  if (isAdmin) { loadStaffList(); populateAdminRoomSel(); loadMedications(); loadIncidents(); }
 }
 
 function switchTab(tab) {
@@ -2764,6 +2844,126 @@ async function loadFoodLog() {
       </div>`;
     }).join('');
   } catch (e) { console.warn('FoodLog:', e.message); }
+}
+
+// ================================================================
+//  MEDICATION LOG
+// ================================================================
+async function logMedication() {
+  const name  = document.getElementById('med-name').value.trim();
+  const dose  = document.getElementById('med-dose').value.trim();
+  const notes = document.getElementById('med-notes').value.trim();
+  if (!name || !dose) { showToast('Enter medication name and dose', true); return; }
+  try {
+    await db.collection('medications').add({
+      name, dose, notes: notes || null,
+      userId:   currentUser.uid,
+      userName: currentData?.name || currentUser.email,
+      facility: currentData?.facility || FACILITY,
+      date:     new Date().toISOString().slice(0,10),
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('med-name').value  = '';
+    document.getElementById('med-dose').value  = '';
+    document.getElementById('med-notes').value = '';
+    showToast('💊 Medication logged');
+    loadMedications();
+  } catch (e) { showToast(e.message, true); }
+}
+
+async function loadMedications() {
+  const list = document.getElementById('meds-list');
+  if (!list) return;
+  try {
+    const snap    = await db.collection('medications').orderBy('timestamp','desc').limit(50).get();
+    const myFac   = currentData?.facility || FACILITY;
+    const entries = snap.docs.filter(d => d.data().facility === myFac).map(d => ({ id: d.id, ...d.data() }));
+    if (!entries.length) { list.innerHTML = '<div class="empty-state" style="font-size:0.82rem">No medications logged yet</div>'; return; }
+    const today = new Date().toISOString().slice(0,10);
+    list.innerHTML = entries.map(e => {
+      const ts   = e.timestamp?.toDate?.() || new Date();
+      const time = ts.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+      const when = e.date === today ? 'Today' : e.date;
+      return `<div class="med-entry" id="med-${e.id}">
+        <div class="med-entry-info">
+          <div class="med-name">${escHtml(e.name)}<span class="med-dose">${escHtml(e.dose)}</span></div>
+          ${e.notes ? `<div style="color:var(--muted);font-size:0.78rem;margin-top:2px">${escHtml(e.notes)}</div>` : ''}
+          <div class="med-meta">By ${escHtml(e.userName)} · ${time} · ${when}</div>
+        </div>
+        <button class="x-btn" onclick="deleteMedication('${e.id}')">✕</button>
+      </div>`;
+    }).join('');
+  } catch (e) { console.warn('Medications:', e.message); }
+}
+
+async function deleteMedication(id) {
+  const el = document.getElementById('med-' + id);
+  if (el) el.style.opacity = '0.4';
+  try { await db.collection('medications').doc(id).delete(); loadMedications(); }
+  catch (e) { if (el) el.style.opacity = '1'; showToast('Error', true); }
+}
+
+// ================================================================
+//  INCIDENTS LOG (poop / accidents)
+// ================================================================
+let incidentType = 'poop';
+
+function setIncidentType(type, el) {
+  incidentType = type;
+  document.querySelectorAll('.inc-type-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+async function logIncident() {
+  const notes = document.getElementById('inc-notes').value.trim();
+  const labels = { poop: '💩 Poop', accident: '💧 Accident', other: '📌 Other' };
+  try {
+    await db.collection('incidents').add({
+      type: incidentType, typeLabel: labels[incidentType],
+      notes: notes || null,
+      userId:   currentUser.uid,
+      userName: currentData?.name || currentUser.email,
+      facility: currentData?.facility || FACILITY,
+      date:     new Date().toISOString().slice(0,10),
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('inc-notes').value = '';
+    showToast(labels[incidentType] + ' logged');
+    loadIncidents();
+  } catch (e) { showToast(e.message, true); }
+}
+
+async function loadIncidents() {
+  const list = document.getElementById('incidents-list');
+  if (!list) return;
+  try {
+    const snap    = await db.collection('incidents').orderBy('timestamp','desc').limit(50).get();
+    const myFac   = currentData?.facility || FACILITY;
+    const entries = snap.docs.filter(d => d.data().facility === myFac).map(d => ({ id: d.id, ...d.data() }));
+    if (!entries.length) { list.innerHTML = '<div class="empty-state" style="font-size:0.82rem">No incidents logged yet</div>'; return; }
+    const today = new Date().toISOString().slice(0,10);
+    list.innerHTML = entries.map(e => {
+      const ts   = e.timestamp?.toDate?.() || new Date();
+      const time = ts.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+      const when = e.date === today ? 'Today' : e.date;
+      const cls  = e.type === 'poop' ? 'inc-poop' : e.type === 'accident' ? 'inc-accident' : 'inc-other';
+      return `<div class="incident-entry" id="inc-${e.id}">
+        <div class="inc-entry-info">
+          <span class="inc-type-pill ${cls}">${e.typeLabel}</span>
+          ${e.notes ? `<div style="color:var(--muted);font-size:0.82rem;margin-top:3px">${escHtml(e.notes)}</div>` : ''}
+          <div class="inc-meta">By ${escHtml(e.userName)} · ${time} · ${when}</div>
+        </div>
+        <button class="x-btn" onclick="deleteIncident('${e.id}')">✕</button>
+      </div>`;
+    }).join('');
+  } catch (e) { console.warn('Incidents:', e.message); }
+}
+
+async function deleteIncident(id) {
+  const el = document.getElementById('inc-' + id);
+  if (el) el.style.opacity = '0.4';
+  try { await db.collection('incidents').doc(id).delete(); loadIncidents(); }
+  catch (e) { if (el) el.style.opacity = '1'; showToast('Error', true); }
 }
 
 // ================================================================
