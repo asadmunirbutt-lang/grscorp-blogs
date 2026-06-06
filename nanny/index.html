@@ -1212,17 +1212,17 @@
 
       <!-- Quick nav shortcuts -->
       <div class="quick-nav">
-        <button class="qnav-btn" onclick="scrollToSection('notes-list')">📝 Notes</button>
-        <button class="qnav-btn" onclick="scrollToSection('supplies-list')">🛒 Supplies</button>
-        <button class="qnav-btn" onclick="scrollToSection('food-log-list')">🍽️ Food Log</button>
-        <button class="qnav-btn" onclick="scrollToSection('laundry-log')">🧺 Laundry</button>
+        <button class="qnav-btn" onclick="scrollToSection('sec-notes')">📝 Notes</button>
+        <button class="qnav-btn" onclick="scrollToSection('sec-supplies')">🛒 Supplies</button>
+        <button class="qnav-btn" onclick="scrollToSection('sec-food')">🍽️ Food Log</button>
+        <button class="qnav-btn" onclick="scrollToSection('sec-laundry')">🧺 Laundry</button>
       </div>
 
       <!-- Three-column layout -->
       <div class="checklist-layout">
 
         <!-- LAUNDRY (left) -->
-        <div class="col-laundry">
+        <div class="col-laundry" id="sec-laundry">
           <div class="laundry-panel">
             <div class="laundry-panel-title">🧺 Laundry Log</div>
             <div class="laundry-section-lbl">Category</div>
@@ -1270,7 +1270,7 @@
         <!-- RIGHT: notes + supplies -->
         <div class="col-right">
           <!-- Notes -->
-          <div class="section-block">
+          <div class="section-block" id="sec-notes">
             <div class="sec-heading notes-head">
               <span class="sec-icon">📝</span> Notes
             </div>
@@ -1290,7 +1290,7 @@
           </div>
 
           <!-- Supplies -->
-          <div class="section-block">
+          <div class="section-block" id="sec-supplies">
             <div class="sec-heading supplies-head">
               <span class="sec-icon">🛒</span> Supplies Needed
             </div>
@@ -1304,7 +1304,7 @@
           </div>
 
           <!-- Azlan's Food Log -->
-          <div class="section-block">
+          <div class="section-block" id="sec-food">
             <div class="sec-heading food-head">
               <span class="sec-icon">🍽️</span> Azlan's Food Log
             </div>
@@ -1912,7 +1912,9 @@ function onRoomChange() {
 function scrollToSection(id) {
   const el = document.getElementById(id);
   if (!el) return;
-  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const stickyOffset = 100; // tab bar (~48px) + quick nav (~44px) + buffer
+  const top = el.getBoundingClientRect().top + window.pageYOffset - stickyOffset;
+  window.scrollTo({ top, behavior: 'smooth' });
 }
 
 function getVisibleTasks(roomTasks) {
