@@ -853,6 +853,73 @@
     }
     .room-sticky-emoji { font-size: 1.1rem; }
 
+    /* ═══════════════ CRITICAL NOTE BANNER ═══════════════ */
+    #critical-banners { padding: 0 16px 8px; }
+
+    @keyframes pulse-crit {
+      0%,100% { box-shadow: 0 0 0 0 rgba(255,82,82,0.7), 0 0 20px rgba(255,82,82,0.4); }
+      50%      { box-shadow: 0 0 0 6px rgba(255,82,82,0), 0 0 30px rgba(255,82,82,0.6); }
+    }
+    @keyframes fadeOut {
+      0%   { opacity:1; transform:scale(1); }
+      100% { opacity:0; transform:scale(0.95); max-height:0; padding:0; margin:0; overflow:hidden; }
+    }
+    .critical-alert-banner {
+      background: linear-gradient(135deg, rgba(255,82,82,0.18) 0%, rgba(255,140,0,0.12) 100%);
+      border: 2px solid var(--coral);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      animation: pulse-crit 2s ease-in-out infinite;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .cab-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 800;
+      font-size: 0.8rem;
+      color: var(--coral);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .cab-text { font-size: 0.9rem; color: var(--text); line-height: 1.4; }
+    .cab-meta { font-size: 0.72rem; color: var(--muted); }
+    .cab-ack-btn {
+      align-self: flex-end;
+      background: linear-gradient(135deg, var(--coral), var(--orange));
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 6px 18px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .cab-ack-btn:active { opacity: 0.7; }
+
+    .critical-note-btn {
+      width: 100%;
+      background: var(--card2);
+      border: 2px solid var(--dim);
+      border-radius: 10px;
+      color: var(--muted);
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 8px;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .critical-note-btn.active {
+      background: rgba(255,82,82,0.18);
+      border-color: var(--coral);
+      color: var(--coral);
+    }
+
     /* ═══════════════ THREE-COLUMN CHECKLIST LAYOUT ═══════════════ */
     .checklist-layout {
       display: grid;
@@ -1218,6 +1285,9 @@
         <button class="qnav-btn" onclick="scrollToSection('sec-laundry')">🧺 Laundry</button>
       </div>
 
+      <!-- Critical note banners -->
+      <div id="critical-banners"></div>
+
       <!-- Three-column layout -->
       <div class="checklist-layout">
 
@@ -1267,42 +1337,8 @@
           <div class="room-content-wrap" id="room-content"></div>
         </div>
 
-        <!-- RIGHT: notes + supplies -->
+        <!-- RIGHT: food → notes → supplies -->
         <div class="col-right">
-          <!-- Notes -->
-          <div class="section-block" id="sec-notes">
-            <div class="sec-heading notes-head">
-              <span class="sec-icon">📝</span> Notes
-            </div>
-            <div class="fg"><textarea id="note-txt" placeholder="Add a note for the team..."></textarea></div>
-            <div class="note-photo-row">
-              <label class="photo-pick-btn" for="note-photo">📷 Add Photo</label>
-              <input type="file" id="note-photo" accept="image/*" style="display:none" onchange="onNotePhotoSelected(this)">
-              <span id="note-photo-name" class="photo-pick-name"></span>
-            </div>
-            <div class="note-photo-preview" id="note-photo-preview" style="display:none">
-              <img id="note-photo-img" src="" alt="preview">
-              <button class="clear-photo-btn" onclick="clearNotePhoto()">✕</button>
-            </div>
-            <div class="upload-progress" id="upload-progress">⬆ Uploading photo…</div>
-            <button class="btn btn-ghost btn-sm" onclick="submitNote()" style="margin-bottom:14px">Post Note</button>
-            <div id="notes-list"></div>
-          </div>
-
-          <!-- Supplies -->
-          <div class="section-block" id="sec-supplies">
-            <div class="sec-heading supplies-head">
-              <span class="sec-icon">🛒</span> Supplies Needed
-            </div>
-            <div class="input-row">
-              <div class="fg"><input type="text" id="sup-name" placeholder="Supply name"></div>
-              <div class="fg qty-f"><input type="number" id="sup-qty" placeholder="Qty" min="1" value="1"></div>
-            </div>
-            <button class="btn btn-ghost btn-sm btn-block" onclick="submitSupply()" style="margin-bottom:14px">Add Supply Request</button>
-            <div id="supplies-list"></div>
-            <div style="height:16px"></div>
-          </div>
-
           <!-- Azlan's Food Log -->
           <div class="section-block" id="sec-food">
             <div class="sec-heading food-head">
@@ -1324,6 +1360,41 @@
             <div class="fg" style="margin-bottom:10px"><input type="text" id="food-notes" placeholder="Notes (e.g. what snacks, extras…)" style="background:var(--card);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);padding:10px 12px;outline:none;width:100%"></div>
             <button class="btn btn-ghost btn-sm btn-block" onclick="logFood()" style="margin-bottom:14px">🍽️ Log Meal</button>
             <div id="food-log-list"></div>
+            <div style="height:16px"></div>
+          </div>
+
+          <!-- Notes -->
+          <div class="section-block" id="sec-notes">
+            <div class="sec-heading notes-head">
+              <span class="sec-icon">📝</span> Notes
+            </div>
+            <div class="fg"><textarea id="note-txt" placeholder="Add a note for the team..."></textarea></div>
+            <div class="note-photo-row">
+              <label class="photo-pick-btn" for="note-photo">📷 Add Photo</label>
+              <input type="file" id="note-photo" accept="image/*" style="display:none" onchange="onNotePhotoSelected(this)">
+              <span id="note-photo-name" class="photo-pick-name"></span>
+            </div>
+            <div class="note-photo-preview" id="note-photo-preview" style="display:none">
+              <img id="note-photo-img" src="" alt="preview">
+              <button class="clear-photo-btn" onclick="clearNotePhoto()">✕</button>
+            </div>
+            <div class="upload-progress" id="upload-progress">⬆ Uploading photo…</div>
+            <button class="critical-note-btn" id="note-critical-btn" onclick="toggleNoteCritical()">⚠️ Mark as Critical</button>
+            <button class="btn btn-ghost btn-sm" onclick="submitNote()" style="margin-bottom:14px">Post Note</button>
+            <div id="notes-list"></div>
+          </div>
+
+          <!-- Supplies -->
+          <div class="section-block" id="sec-supplies">
+            <div class="sec-heading supplies-head">
+              <span class="sec-icon">🛒</span> Supplies Needed
+            </div>
+            <div class="input-row">
+              <div class="fg"><input type="text" id="sup-name" placeholder="Supply name"></div>
+              <div class="fg qty-f"><input type="number" id="sup-qty" placeholder="Qty" min="1" value="1"></div>
+            </div>
+            <button class="btn btn-ghost btn-sm btn-block" onclick="submitSupply()" style="margin-bottom:14px">Add Supply Request</button>
+            <div id="supplies-list"></div>
             <div style="height:20px"></div>
           </div>
         </div>
@@ -1625,6 +1696,7 @@ let currentUser   = null;
 let notePhotoFile = null;
 let regPhotoFile  = null;
 let laundryCat    = 'wearable';
+let noteCritical  = false;
 let currentData   = null;
 let rooms         = [];
 let carryOvers    = {};
@@ -1799,6 +1871,7 @@ async function showAppScreen() {
   loadSupplies();
   loadLaundryLog();
   loadFoodLog();
+  loadCriticalBanners();
 
   if (isAdmin) { loadStaffList(); populateAdminRoomSel(); }
 }
@@ -2209,20 +2282,27 @@ async function submitNote() {
       imageUrl = await snap.ref.getDownloadURL();
       progressEl.style.display = 'none';
     }
+    const isCrit = noteCritical;
     const docRef = await db.collection('notes').add({
       text: txt, imageUrl: imageUrl || null,
       userId: currentUser.uid,
       userName: currentData?.name || currentUser.email,
       facility: currentData?.facility || FACILITY,
+      critical: isCrit,
+      acknowledged: false,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
     document.getElementById('note-txt').value = '';
     clearNotePhoto();
-    showToast('📝 Note posted');
+    noteCritical = false;
+    const critBtn = document.getElementById('note-critical-btn');
+    if (critBtn) { critBtn.textContent = '⚠️ Mark as Critical'; critBtn.classList.remove('active'); }
+    showToast(isCrit ? '🚨 Critical note posted' : '📝 Note posted');
     const list   = document.getElementById('notes-list');
     const author = currentData?.name || currentUser.email;
     const newEl  = buildNoteEl(docRef.id, author, new Date(), txt, imageUrl);
     list.insertBefore(newEl, list.firstChild);
+    if (isCrit) loadCriticalBanners();
   } catch (e) {
     progressEl.style.display = 'none';
     showToast(e.message, true);
@@ -2232,8 +2312,67 @@ async function submitNote() {
 async function deleteNote(id, e) {
   e.stopPropagation();
   if (!confirm('Delete this note?')) return;
-  try { await db.collection('notes').doc(id).delete(); loadNotes(); }
+  try { await db.collection('notes').doc(id).delete(); loadNotes(); loadCriticalBanners(); }
   catch (e) { showToast('Error', true); }
+}
+
+function toggleNoteCritical() {
+  noteCritical = !noteCritical;
+  const btn = document.getElementById('note-critical-btn');
+  if (!btn) return;
+  if (noteCritical) {
+    btn.textContent = '🚨 Critical (tap to remove)';
+    btn.classList.add('active');
+  } else {
+    btn.textContent = '⚠️ Mark as Critical';
+    btn.classList.remove('active');
+  }
+}
+
+async function loadCriticalBanners() {
+  const container = document.getElementById('critical-banners');
+  if (!container) return;
+  try {
+    const myFacility = currentData?.facility || FACILITY;
+    const snap = await db.collection('notes').orderBy('timestamp', 'desc').limit(100).get();
+    const critDocs = snap.docs.filter(doc => {
+      const d = doc.data();
+      return d.facility === myFacility && d.critical === true && !d.acknowledged;
+    });
+    if (!critDocs.length) { container.innerHTML = ''; return; }
+    container.innerHTML = critDocs.map(doc => {
+      const d   = doc.data();
+      const ts  = d.timestamp?.toDate?.() || new Date();
+      const ago = ts.toLocaleDateString('en-US',{month:'short',day:'numeric'}) + ' · ' +
+                  ts.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+      return `<div class="critical-alert-banner" id="cab-${doc.id}">
+        <div class="cab-header">🚨 Critical Note</div>
+        <div class="cab-text">${d.text ? escHtml(d.text) : '<em>Photo note</em>'}</div>
+        <div class="cab-meta">Posted by ${escHtml(d.userName || 'Unknown')} · ${ago}</div>
+        <button class="cab-ack-btn" onclick="acknowledgeNote('${doc.id}', this)">👁️ Acknowledge</button>
+      </div>`;
+    }).join('');
+  } catch (e) {
+    console.error('loadCriticalBanners:', e);
+  }
+}
+
+async function acknowledgeNote(docId, btn) {
+  btn.disabled = true;
+  btn.textContent = '✓ Acknowledged!';
+  btn.style.background = 'linear-gradient(135deg, var(--mint), var(--teal))';
+  try {
+    await db.collection('notes').doc(docId).update({ acknowledged: true });
+    const banner = document.getElementById('cab-' + docId);
+    if (banner) {
+      banner.style.animation = 'fadeOut 0.5s ease forwards';
+      setTimeout(() => banner.remove(), 500);
+    }
+  } catch (e) {
+    btn.disabled = false;
+    btn.textContent = '👁️ Acknowledge';
+    showToast('Error acknowledging note', true);
+  }
 }
 
 // ================================================================
@@ -2682,6 +2821,10 @@ function buildSubCard(name, meta, pill, tasks) {
 // ================================================================
 //  UTILITIES
 // ================================================================
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function showToast(msg, isErr=false) {
   const el = document.getElementById('toast');
   el.textContent = msg; el.className = isErr ? 't-err' : 't-ok';
