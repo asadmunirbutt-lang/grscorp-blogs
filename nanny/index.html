@@ -887,6 +887,28 @@
       transition: border-color 0.2s;
     }
     .date-row input[type="date"]:focus { border-color: var(--lavender); }
+    .date-nav-row {
+      display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+    }
+    .date-nav-btn {
+      background: var(--card); border: 1.5px solid var(--border2); border-radius: 10px;
+      color: var(--text); cursor: pointer; font-size: 1rem; padding: 9px 14px;
+      transition: background 0.15s, border-color 0.15s; flex-shrink: 0;
+    }
+    .date-nav-btn:hover { background: var(--card2); border-color: var(--lavender); }
+    .date-nav-btn:disabled { opacity: 0.35; cursor: default; }
+    .date-nav-label {
+      flex: 1; text-align: center; font-size: 0.92rem; font-weight: 700;
+      color: var(--text); background: var(--card); border: 1.5px solid var(--border2);
+      border-radius: 10px; padding: 9px 12px; line-height: 1.2;
+    }
+    .date-nav-today {
+      background: linear-gradient(135deg, var(--lavender), var(--blue));
+      border: none; border-radius: 10px; color: #fff; cursor: pointer;
+      font-size: 0.78rem; font-weight: 800; padding: 9px 13px; flex-shrink: 0;
+      transition: opacity 0.15s;
+    }
+    .date-nav-today:hover { opacity: 0.85; }
 
     .report-content { padding: 0 16px; }
 
@@ -1818,13 +1840,16 @@
     <div class="view" id="view-daily">
       <div class="report-top">
         <div class="report-title">📅 Daily Report</div>
-        <div class="date-row">
-          <input type="date" id="daily-date" onchange="loadDailyReport()">
-          <button class="btn btn-ghost btn-sm" onclick="loadDailyReport()">Load</button>
+        <div class="date-nav-row">
+          <button class="date-nav-btn" onclick="stepDailyDate(-1)" title="Previous day">◀</button>
+          <div class="date-nav-label" id="daily-date-label">—</div>
+          <button class="date-nav-btn" onclick="stepDailyDate(1)" id="daily-next-btn" title="Next day">▶</button>
+          <button class="date-nav-today" onclick="jumpDailyToday()">Today</button>
         </div>
+        <input type="hidden" id="daily-date">
       </div>
       <div class="report-content">
-        <div id="daily-content"><div class="empty-state">Select a date to view submissions.</div></div>
+        <div id="daily-content"><div class="empty-state">Loading…</div></div>
       </div>
     </div>
 
@@ -2251,7 +2276,12 @@ async function showAppScreen() {
 function switchTab(tab) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
   document.querySelectorAll('.view').forEach(v  => v.classList.toggle('active', v.id === 'view-' + tab));
-  if (tab === 'daily')  loadDailyReport();
+  if (tab === 'daily') {
+    if (!document.getElementById('daily-date').value) {
+      document.getElementById('daily-date').value = new Date().toISOString().slice(0, 10);
+    }
+    loadDailyReport();
+  }
   if (tab === 'weekly') loadWeeklyReport();
 }
 
@@ -3441,10 +3471,34 @@ async function deleteTask(roomId, idx) {
 // ================================================================
 //  DAILY REPORT
 // ================================================================
+function stepDailyDate(delta) {
+  const inp = document.getElementById('daily-date');
+  const cur = inp.value ? new Date(inp.value + 'T12:00:00') : new Date();
+  cur.setDate(cur.getDate() + delta);
+  inp.value = cur.toISOString().slice(0, 10);
+  loadDailyReport();
+}
+
+function jumpDailyToday() {
+  document.getElementById('daily-date').value = new Date().toISOString().slice(0, 10);
+  loadDailyReport();
+}
+
 async function loadDailyReport() {
   const date = document.getElementById('daily-date').value;
   const wrap = document.getElementById('daily-content');
   if (!date || !currentData) return;
+
+  const today = new Date().toISOString().slice(0, 10);
+  const d     = new Date(date + 'T12:00:00');
+  const label = date === today
+    ? 'Today · ' + d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
+    : d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  const labelEl = document.getElementById('daily-date-label');
+  if (labelEl) labelEl.textContent = label;
+  const nextBtn = document.getElementById('daily-next-btn');
+  if (nextBtn) nextBtn.disabled = date >= today;
+
   wrap.innerHTML = '<div class="empty-state">Loading…</div>';
   try {
     const snap = await db.collection('submissions').where('date', '==', date).get();
