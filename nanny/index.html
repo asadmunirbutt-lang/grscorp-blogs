@@ -936,6 +936,16 @@
     }
     .sub-name { font-weight: 800; font-size: 0.92rem; }
     .sub-meta { color: var(--muted); font-size: 0.74rem; margin-top: 2px; }
+    .sub-avatar {
+      width: 38px; height: 38px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+      border: 2px solid var(--border2);
+    }
+    .sub-avatar-init {
+      width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--lavender), var(--blue));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.78rem; font-weight: 800; color: #fff; border: 2px solid var(--border2);
+    }
     .sub-pill {
       background: var(--card2);
       border-radius: 20px;
@@ -2645,14 +2655,15 @@ async function submitRoomTasks() {
   try {
     const batch = db.batch();
     batch.set(db.collection('submissions').doc(), {
-      userId:    currentUser.uid,
-      userName:  currentData?.name || currentUser.email,
-      userEmail: currentUser.email,
-      facility:  currentData?.facility || FACILITY,
-      room:      selectedRoom.name,
-      roomId:    selectedRoom.id,
-      shift:     selectedShift,
-      date:      new Date().toISOString().slice(0, 10),
+      userId:       currentUser.uid,
+      userName:     currentData?.name || currentUser.email,
+      userEmail:    currentUser.email,
+      userPhotoURL: currentData?.photoURL || null,
+      facility:     currentData?.facility || FACILITY,
+      room:         selectedRoom.name,
+      roomId:       selectedRoom.id,
+      shift:        selectedShift,
+      date:         new Date().toISOString().slice(0, 10),
       tasks: tasks.map(t => ({
         name: t.name, status: t.status,
         markedAt: t.markedAt,
@@ -3517,8 +3528,24 @@ async function loadDailyReport() {
 
     wrap.innerHTML = '';
 
+    // Build userId → photoURL map (from submissions, then fallback to users collection)
+    const photoMap = {};
+    dailyDocs.forEach(doc => {
+      const d = doc.data();
+      if (d.userId && d.userPhotoURL) photoMap[d.userId] = d.userPhotoURL;
+    });
+    const missingPhotoIds = [...new Set(dailyDocs.map(doc => doc.data().userId).filter(id => id && !photoMap[id]))];
+    if (missingPhotoIds.length) {
+      await Promise.all(missingPhotoIds.map(async uid => {
+        try {
+          const uDoc = await db.collection('users').doc(uid).get();
+          if (uDoc.exists && uDoc.data().photoURL) photoMap[uid] = uDoc.data().photoURL;
+        } catch (_) {}
+      }));
+    }
+
     // ── Completed submissions ──
-    const submittedRoomIds = new Set(dailyDocs.map(doc => doc.data().roomId).filter(Boolean));
+    const submittedRoomIds   = new Set(dailyDocs.map(doc => doc.data().roomId).filter(Boolean));
     const submittedRoomNames = new Set(dailyDocs.map(doc => doc.data().room).filter(Boolean));
 
     if (dailyDocs.length) {
@@ -3532,7 +3559,7 @@ async function loadDailyReport() {
         const done = (d.tasks||[]).filter(t => t.status === 'yes').length;
         const time = ts.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'});
         wrap.appendChild(buildSubCard(d.userName, `${d.room} · ${d.shift} Shift · ${time}`,
-          `${done}/${(d.tasks||[]).length} Done`, d.tasks || []));
+          `${done}/${(d.tasks||[]).length} Done`, d.tasks || [], photoMap[d.userId]));
       });
     }
 
@@ -3591,15 +3618,30 @@ async function loadWeeklyReport() {
     if (!weekDocs.length) { wrap.innerHTML = '<div class="empty-state">No submissions for this week.</div>'; return; }
 
     const byStaff = {};
+    const weekPhotoMap = {};
     weekDocs.forEach(doc => {
       const d = doc.data();
-      if (!byStaff[d.userName]) byStaff[d.userName] = {};
-      if (!byStaff[d.userName][d.date]) byStaff[d.userName][d.date] = [];
-      byStaff[d.userName][d.date].push(d);
+      if (!byStaff[d.userName]) byStaff[d.userName] = { days: {}, userId: d.userId };
+      if (!byStaff[d.userName].days[d.date]) byStaff[d.userName].days[d.date] = [];
+      byStaff[d.userName].days[d.date].push(d);
+      if (d.userId && d.userPhotoURL) weekPhotoMap[d.userId] = d.userPhotoURL;
     });
+    const weekMissingIds = [...new Set(
+      Object.values(byStaff).map(s => s.userId).filter(id => id && !weekPhotoMap[id])
+    )];
+    if (weekMissingIds.length) {
+      await Promise.all(weekMissingIds.map(async uid => {
+        try {
+          const uDoc = await db.collection('users').doc(uid).get();
+          if (uDoc.exists && uDoc.data().photoURL) weekPhotoMap[uid] = uDoc.data().photoURL;
+        } catch (_) {}
+      }));
+    }
 
     wrap.innerHTML = '';
-    Object.entries(byStaff).forEach(([staffName, days]) => {
+    Object.entries(byStaff).forEach(([staffName, staffData]) => {
+      const { days, userId } = staffData;
+      const staffPhoto = weekPhotoMap[userId];
       let totalYes = 0, totalAll = 0;
       const rows = dates.map(date => {
         const subs = days[date] || [];
@@ -3618,7 +3660,8 @@ async function loadWeeklyReport() {
       card.className = 'sub-card';
       card.innerHTML = `
         <div class="sub-header">
-          <div><div class="sub-name">${staffName}</div><div class="sub-meta">Weekly Summary</div></div>
+          ${buildAvatarHtml(staffName, staffPhoto)}
+          <div style="flex:1;min-width:0;margin-left:10px"><div class="sub-name">${staffName}</div><div class="sub-meta">Weekly Summary</div></div>
           <span class="sub-pill" style="color:${wCol}">${wPct}% Done</span>
         </div>
         <div class="sub-tasks">
@@ -3634,7 +3677,15 @@ async function loadWeeklyReport() {
   } catch (e) { wrap.innerHTML = `<div style="color:#ff6b6b;font-size:0.85rem">${e.message}</div>`; }
 }
 
-function buildSubCard(name, meta, pill, tasks) {
+function buildAvatarHtml(name, photoURL) {
+  const initials = (name || '?').split(/\s+/).map(w => w[0]).join('').toUpperCase().slice(0, 2);
+  if (photoURL) {
+    return `<img src="${photoURL}" class="sub-avatar" alt="${initials}" onerror="this.outerHTML='<div class=\\"sub-avatar-init sub-avatar\\">${initials}</div>'">`;
+  }
+  return `<div class="sub-avatar sub-avatar-init">${initials}</div>`;
+}
+
+function buildSubCard(name, meta, pill, tasks, photoURL) {
   const el = document.createElement('div');
   el.className = 'sub-card';
   const taskHTML = tasks.map(t => {
@@ -3644,7 +3695,8 @@ function buildSubCard(name, meta, pill, tasks) {
   }).join('');
   el.innerHTML = `
     <div class="sub-header">
-      <div><div class="sub-name">${name}</div><div class="sub-meta">${meta}</div></div>
+      ${buildAvatarHtml(name, photoURL)}
+      <div style="flex:1;min-width:0;margin-left:10px"><div class="sub-name">${name}</div><div class="sub-meta">${meta}</div></div>
       <span class="sub-pill">${pill}</span>
     </div>
     <div class="sub-tasks">${taskHTML}</div>`;
