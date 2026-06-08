@@ -911,6 +911,14 @@
     .date-nav-today:hover { opacity: 0.85; }
 
     .report-content { padding: 0 16px; }
+    .daily-section-hdr {
+      font-size: 0.78rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px;
+      color: #1dd1a1; padding: 10px 4px 6px; margin-top: 4px;
+    }
+    .daily-section-hdr span { font-weight: 400; opacity: 0.7; }
+    .daily-section-hdr.missed { color: #ff6b6b; }
+    .sub-card-missed { border-left: 3px solid #ff6b6b; opacity: 0.85; }
+    .sub-pill-missed { color: #ff6b6b !important; background: rgba(255,107,107,0.1); }
 
     .sub-card {
       background: var(--surface);
@@ -3506,16 +3514,53 @@ async function loadDailyReport() {
     const dailyDocs = snap.docs
       .filter(d => d.data().facility === myFac)
       .sort((a,b) => (b.data().timestamp?.toMillis?.() || 0) - (a.data().timestamp?.toMillis?.() || 0));
-    if (!dailyDocs.length) { wrap.innerHTML = '<div class="empty-state">No submissions for this date.</div>'; return; }
+
     wrap.innerHTML = '';
-    dailyDocs.forEach(doc => {
-      const d    = doc.data();
-      const ts   = d.timestamp?.toDate?.() || new Date();
-      const done = (d.tasks||[]).filter(t => t.status === 'yes').length;
-      const time = ts.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'});
-      wrap.appendChild(buildSubCard(d.userName, `${d.room} · ${d.shift} Shift · ${time}`,
-        `${done}/${(d.tasks||[]).length} Done`, d.tasks || []));
-    });
+
+    // ── Completed submissions ──
+    const submittedRoomIds = new Set(dailyDocs.map(doc => doc.data().roomId).filter(Boolean));
+    const submittedRoomNames = new Set(dailyDocs.map(doc => doc.data().room).filter(Boolean));
+
+    if (dailyDocs.length) {
+      const doneHeader = document.createElement('div');
+      doneHeader.className = 'daily-section-hdr';
+      doneHeader.innerHTML = `✅ Submitted <span>(${dailyDocs.length})</span>`;
+      wrap.appendChild(doneHeader);
+      dailyDocs.forEach(doc => {
+        const d    = doc.data();
+        const ts   = d.timestamp?.toDate?.() || new Date();
+        const done = (d.tasks||[]).filter(t => t.status === 'yes').length;
+        const time = ts.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'});
+        wrap.appendChild(buildSubCard(d.userName, `${d.room} · ${d.shift} Shift · ${time}`,
+          `${done}/${(d.tasks||[]).length} Done`, d.tasks || []));
+      });
+    }
+
+    // ── Missed rooms ──
+    const missedRooms = (rooms || []).filter(r =>
+      !submittedRoomIds.has(r.id) && !submittedRoomNames.has(r.name)
+    );
+    if (missedRooms.length) {
+      const missHeader = document.createElement('div');
+      missHeader.className = 'daily-section-hdr missed';
+      missHeader.innerHTML = `❌ Not Submitted <span>(${missedRooms.length})</span>`;
+      wrap.appendChild(missHeader);
+      missedRooms.forEach(r => {
+        const el = document.createElement('div');
+        el.className = 'sub-card sub-card-missed';
+        el.innerHTML = `
+          <div class="sub-header">
+            <div><div class="sub-name">${r.emoji || '🏠'} ${r.name}</div>
+              <div class="sub-meta">${r.floor === 'upstairs' ? '🔼 Upstairs' : '🔽 Downstairs'}</div></div>
+            <span class="sub-pill sub-pill-missed">Not submitted</span>
+          </div>`;
+        wrap.appendChild(el);
+      });
+    }
+
+    if (!dailyDocs.length && !missedRooms.length) {
+      wrap.innerHTML = '<div class="empty-state">No data for this date.</div>';
+    }
   } catch (e) { wrap.innerHTML = `<div style="color:#ff6b6b;font-size:0.85rem">${e.message}</div>`; }
 }
 
