@@ -1119,6 +1119,21 @@
     .laundry-controls { padding: 10px 14px 4px; }
     .lcat-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
     .ltype-row { display: flex; gap: 6px; margin-bottom: 2px; }
+    .fg-input, .fg-select {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      color: var(--text);
+      padding: 9px 12px;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+      -webkit-appearance: none;
+    }
+    .fg-input:focus, .fg-select:focus {
+      border-color: var(--lavender);
+      background: rgba(255,255,255,0.09);
+    }
+    .fg-select option { background: #1e1648; }
     .lcat-row .lcat-btn { flex: 1; text-align: center; justify-content: center; font-size: 0.74rem; padding: 6px 6px; }
     .ltype-row .ltype-btn { flex: 1; text-align: center; justify-content: center; font-size: 0.78rem; padding: 9px 6px; }
     .laundry-hist-panel {
@@ -1553,27 +1568,34 @@
         <!-- RIGHT: food → notes → supplies -->
         <div class="col-right">
           <!-- Azlan's Food Log -->
-          <div class="section-block" id="sec-food">
-            <div class="sec-heading food-head">
-              <span class="sec-icon">🍽️</span> Azlan's Food Log
-            </div>
-            <div class="input-row">
-              <div class="fg">
-                <select id="food-meal" style="background:var(--card);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);padding:10px 12px;outline:none;-webkit-appearance:none;appearance:none;width:100%">
-                  <option value="">— Select meal —</option>
-                  <option value="Noodles">🍜 Noodles</option>
-                  <option value="Nuggets">🍗 Nuggets</option>
-                  <option value="Fries">🍟 Fries</option>
-                  <option value="Chocolate Toast">🍞 Chocolate Toast</option>
-                  <option value="Snacks">🍪 Snacks</option>
-                </select>
+          <div class="laundry-inline" id="sec-food" style="margin-top:14px">
+            <div class="laundry-inline-hdr" style="border-bottom-color:rgba(255,64,129,0.2)">
+              <span style="color:#ff4081">🍽️ Azlan's Food Log</span>
+              <div style="display:flex;gap:6px">
+                <button class="laundry-log-toggle" id="food-log-toggle" onclick="toggleSection('food')" style="background:rgba(255,64,129,0.12);border-color:rgba(255,64,129,0.35);color:#ff4081">+ Log Entry</button>
+                <button class="laundry-hist-toggle" id="food-hist-toggle" onclick="toggleSectionHistory('food')">📋 History</button>
               </div>
-              <div class="fg qty-f"><input type="number" id="food-qty" placeholder="Qty" min="1" value="1" style="background:var(--card);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);padding:10px 12px;outline:none;width:100%"></div>
             </div>
-            <div class="fg" style="margin-bottom:10px"><input type="text" id="food-notes" placeholder="Notes (e.g. what snacks, extras…)" style="background:var(--card);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);padding:10px 12px;outline:none;width:100%"></div>
-            <button class="btn btn-ghost btn-sm btn-block" onclick="logFood()" style="margin-bottom:14px">🍽️ Log Meal</button>
-            <div id="food-log-list"></div>
-            <div style="height:16px"></div>
+            <div class="laundry-controls" id="food-controls" style="display:none">
+              <div class="input-row">
+                <div class="fg" style="margin-bottom:0">
+                  <select id="food-meal" class="fg-select">
+                    <option value="">— Select meal —</option>
+                    <option value="Noodles">🍜 Noodles</option>
+                    <option value="Nuggets">🍗 Nuggets</option>
+                    <option value="Fries">🍟 Fries</option>
+                    <option value="Chocolate Toast">🍞 Chocolate Toast</option>
+                    <option value="Snacks">🍪 Snacks</option>
+                  </select>
+                </div>
+                <div class="fg qty-f" style="margin-bottom:0"><input type="number" id="food-qty" placeholder="Qty" min="1" value="1" class="fg-input"></div>
+              </div>
+              <input type="text" id="food-notes" placeholder="Notes (e.g. snacks, extras…)" class="fg-input" style="width:100%;margin:8px 0">
+              <button class="ltype-btn" style="width:100%;justify-content:center;color:#ff4081;border-color:rgba(255,64,129,0.4);margin-bottom:4px" onclick="logFood()">🍽️ Log Meal</button>
+            </div>
+            <div class="laundry-hist-panel" id="food-hist-panel" style="display:none">
+              <div id="food-log-list"></div>
+            </div>
           </div>
 
           <!-- Notes -->
@@ -1598,48 +1620,69 @@
           </div>
 
           <!-- Supplies -->
-          <div class="section-block" id="sec-supplies">
-            <div class="sec-heading supplies-head">
-              <span class="sec-icon">🛒</span> Supplies Needed
+          <div class="laundry-inline" id="sec-supplies">
+            <div class="laundry-inline-hdr" style="border-bottom-color:rgba(255,140,0,0.2)">
+              <span style="color:var(--orange)">🛒 Supplies Needed</span>
+              <div style="display:flex;gap:6px">
+                <button class="laundry-log-toggle" id="sup-log-toggle" onclick="toggleSection('sup')" style="background:rgba(255,140,0,0.12);border-color:rgba(255,140,0,0.35);color:var(--orange)">+ Request</button>
+                <button class="laundry-hist-toggle" id="sup-hist-toggle" onclick="toggleSectionHistory('sup')">📋 List</button>
+              </div>
             </div>
-            <div class="input-row">
-              <div class="fg"><input type="text" id="sup-name" placeholder="Supply name"></div>
-              <div class="fg qty-f"><input type="number" id="sup-qty" placeholder="Qty" min="1" value="1"></div>
+            <div class="laundry-controls" id="sup-controls" style="display:none">
+              <div class="input-row">
+                <div class="fg" style="margin-bottom:0"><input type="text" id="sup-name" placeholder="Supply name" class="fg-input"></div>
+                <div class="fg qty-f" style="margin-bottom:0"><input type="number" id="sup-qty" placeholder="Qty" min="1" value="1" class="fg-input"></div>
+              </div>
+              <button class="ltype-btn" style="width:100%;justify-content:center;color:var(--orange);border-color:rgba(255,140,0,0.4);margin-top:8px;margin-bottom:4px" onclick="submitSupply()">🛒 Add Request</button>
             </div>
-            <button class="btn btn-ghost btn-sm btn-block" onclick="submitSupply()" style="margin-bottom:14px">Add Supply Request</button>
-            <div id="supplies-list"></div>
-            <div style="height:20px"></div>
+            <div class="laundry-hist-panel" id="sup-hist-panel" style="display:none">
+              <div id="supplies-list"></div>
+            </div>
           </div>
 
           <!-- Medication Log (admin only) -->
-          <div class="section-block" id="sec-meds" style="display:none">
-            <div class="sec-heading meds-head">
-              <span class="sec-icon">💊</span> Azlan's Medication Log
+          <div class="laundry-inline" id="sec-meds" style="display:none">
+            <div class="laundry-inline-hdr" style="border-bottom-color:rgba(0,188,212,0.2)">
+              <span style="color:#00bcd4">💊 Medication Log</span>
+              <div style="display:flex;gap:6px">
+                <button class="laundry-log-toggle" id="med-log-toggle" onclick="toggleSection('med')" style="background:rgba(0,188,212,0.12);border-color:rgba(0,188,212,0.35);color:#00bcd4">+ Log Entry</button>
+                <button class="laundry-hist-toggle" id="med-hist-toggle" onclick="toggleSectionHistory('med')">📋 History</button>
+              </div>
             </div>
-            <div class="input-row">
-              <div class="fg"><input type="text" id="med-name" placeholder="Medication name"></div>
-              <div class="fg qty-f"><input type="text" id="med-dose" placeholder="Dose (e.g. 5ml)"></div>
+            <div class="laundry-controls" id="med-controls" style="display:none">
+              <div class="input-row">
+                <div class="fg" style="margin-bottom:0"><input type="text" id="med-name" placeholder="Medication name" class="fg-input"></div>
+                <div class="fg qty-f" style="margin-bottom:0"><input type="text" id="med-dose" placeholder="Dose (5ml)" class="fg-input"></div>
+              </div>
+              <input type="text" id="med-notes" placeholder="Notes (optional)" class="fg-input" style="width:100%;margin:8px 0">
+              <button class="ltype-btn" style="width:100%;justify-content:center;color:#00bcd4;border-color:rgba(0,188,212,0.4);margin-bottom:4px" onclick="logMedication()">💊 Log Medication</button>
             </div>
-            <div class="fg" style="margin-bottom:10px"><input type="text" id="med-notes" placeholder="Notes (optional)"></div>
-            <button class="btn btn-ghost btn-sm btn-block" onclick="logMedication()" style="margin-bottom:14px;border-color:rgba(0,188,212,0.4);color:#00bcd4">💊 Log Medication</button>
-            <div id="meds-list"></div>
-            <div style="height:20px"></div>
+            <div class="laundry-hist-panel" id="med-hist-panel" style="display:none">
+              <div id="meds-list"></div>
+            </div>
           </div>
 
-          <!-- Incidents / Poop Log (admin only) -->
-          <div class="section-block" id="sec-incidents" style="display:none">
-            <div class="sec-heading incidents-head">
-              <span class="sec-icon">📋</span> Azlan's Incidents Log
+          <!-- Incidents Log (admin only) -->
+          <div class="laundry-inline" id="sec-incidents" style="display:none">
+            <div class="laundry-inline-hdr" style="border-bottom-color:rgba(255,140,0,0.2)">
+              <span style="color:var(--orange)">📋 Incidents Log</span>
+              <div style="display:flex;gap:6px">
+                <button class="laundry-log-toggle" id="inc-log-toggle" onclick="toggleSection('inc')" style="background:rgba(255,140,0,0.12);border-color:rgba(255,140,0,0.35);color:var(--orange)">+ Log Entry</button>
+                <button class="laundry-hist-toggle" id="inc-hist-toggle" onclick="toggleSectionHistory('inc')">📋 History</button>
+              </div>
             </div>
-            <div class="incident-type-row">
-              <button class="inc-type-btn active" id="inc-poop-btn"     onclick="setIncidentType('poop',this)">💩 Poop</button>
-              <button class="inc-type-btn"         id="inc-accident-btn" onclick="setIncidentType('accident',this)">💧 Accident</button>
-              <button class="inc-type-btn"         id="inc-other-btn"   onclick="setIncidentType('other',this)">📌 Other</button>
+            <div class="laundry-controls" id="inc-controls" style="display:none">
+              <div class="incident-type-row">
+                <button class="inc-type-btn active" id="inc-poop-btn"     onclick="setIncidentType('poop',this)">💩 Poop</button>
+                <button class="inc-type-btn"         id="inc-accident-btn" onclick="setIncidentType('accident',this)">💧 Accident</button>
+                <button class="inc-type-btn"         id="inc-other-btn"   onclick="setIncidentType('other',this)">📌 Other</button>
+              </div>
+              <input type="text" id="inc-notes" placeholder="Notes (optional)" class="fg-input" style="width:100%;margin:8px 0">
+              <button class="ltype-btn" style="width:100%;justify-content:center;color:var(--orange);border-color:rgba(255,140,0,0.4);margin-bottom:4px" onclick="logIncident()">📋 Log Incident</button>
             </div>
-            <div class="fg" style="margin-bottom:10px"><input type="text" id="inc-notes" placeholder="Notes (optional)"></div>
-            <button class="btn btn-ghost btn-sm btn-block" onclick="logIncident()" style="margin-bottom:14px;border-color:rgba(255,140,0,0.4);color:var(--orange)">📋 Log Incident</button>
-            <div id="incidents-list"></div>
-            <div style="height:20px"></div>
+            <div class="laundry-hist-panel" id="inc-hist-panel" style="display:none">
+              <div id="incidents-list"></div>
+            </div>
           </div>
         </div>
 
@@ -2671,6 +2714,14 @@ async function loadSupplies() {
         ${isAdmin ? `<button class="x-btn" onclick="deleteSupply('${doc.id}')">✕</button>` : ''}`;
       return el;
     };
+    const sHistBtn = document.getElementById('sup-hist-toggle');
+    const total = allDocs.length;
+    if (!total) {
+      list.innerHTML = '<div class="empty-state" style="font-size:0.82rem;padding:10px 14px">No supply requests yet</div>';
+      if (sHistBtn) sHistBtn.textContent = '📋 List';
+      return;
+    }
+    if (sHistBtn) sHistBtn.textContent = `📋 List (${total})`;
     pending.forEach(doc => list.appendChild(buildItem(doc)));
     if (ordered.length) {
       const divider = document.createElement('div');
@@ -2697,6 +2748,10 @@ async function submitSupply() {
     document.getElementById('sup-name').value = '';
     document.getElementById('sup-qty').value  = '1';
     showToast('🛒 Supply request added');
+    const sControls = document.getElementById('sup-controls');
+    const sBtn      = document.getElementById('sup-log-toggle');
+    if (sControls) sControls.style.display = 'none';
+    if (sBtn) sBtn.classList.remove('active');
     loadSupplies();
   } catch (e) { showToast(e.message, true); }
 }
@@ -2741,6 +2796,24 @@ function toggleLaundryControls() {
 function toggleLaundryHistory() {
   const panel = document.getElementById('laundry-hist-panel');
   const btn   = document.getElementById('laundry-hist-toggle');
+  if (!panel) return;
+  const nowOpen = panel.style.display !== 'none' && panel.style.display !== '';
+  panel.style.display = nowOpen ? 'none' : 'block';
+  if (btn) btn.classList.toggle('active', !nowOpen);
+}
+
+function toggleSection(prefix) {
+  const controls = document.getElementById(prefix + '-controls');
+  const btn      = document.getElementById(prefix + '-log-toggle');
+  if (!controls) return;
+  const nowOpen = controls.style.display !== 'none' && controls.style.display !== '';
+  controls.style.display = nowOpen ? 'none' : 'block';
+  if (btn) btn.classList.toggle('active', !nowOpen);
+}
+
+function toggleSectionHistory(prefix) {
+  const panel = document.getElementById(prefix + '-hist-panel');
+  const btn   = document.getElementById(prefix + '-hist-toggle');
   if (!panel) return;
   const nowOpen = panel.style.display !== 'none' && panel.style.display !== '';
   panel.style.display = nowOpen ? 'none' : 'block';
@@ -2871,6 +2944,10 @@ async function logFood() {
     document.getElementById('food-qty').value   = 1;
     document.getElementById('food-notes').value = '';
     showToast('🍽️ Meal logged');
+    const fControls = document.getElementById('food-controls');
+    const fBtn      = document.getElementById('food-log-toggle');
+    if (fControls) fControls.style.display = 'none';
+    if (fBtn) fBtn.classList.remove('active');
     loadFoodLog();
   } catch (e) { showToast(e.message, true); }
 }
@@ -2884,7 +2961,13 @@ async function loadFoodLog() {
     const snap    = await db.collection('foodlog').orderBy('timestamp','desc').limit(50).get();
     const myFac   = currentData?.facility || FACILITY;
     const entries = snap.docs.filter(d => d.data().facility === myFac).map(d => ({ id: d.id, ...d.data() }));
-    if (!entries.length) { list.innerHTML = '<div class="empty-state" style="font-size:0.82rem">No meals logged yet</div>'; return; }
+    const fHistBtn = document.getElementById('food-hist-toggle');
+    if (!entries.length) {
+      list.innerHTML = '<div class="empty-state" style="font-size:0.82rem">No meals logged yet</div>';
+      if (fHistBtn) fHistBtn.textContent = '📋 History';
+      return;
+    }
+    if (fHistBtn) fHistBtn.textContent = `📋 History (${entries.length})`;
     list.innerHTML = entries.map(e => {
       const ts  = e.timestamp?.toDate?.() || new Date();
       const time = ts.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
@@ -2919,6 +3002,10 @@ async function logMedication() {
     document.getElementById('med-dose').value  = '';
     document.getElementById('med-notes').value = '';
     showToast('💊 Medication logged');
+    const mControls = document.getElementById('med-controls');
+    const mBtn      = document.getElementById('med-log-toggle');
+    if (mControls) mControls.style.display = 'none';
+    if (mBtn) mBtn.classList.remove('active');
     loadMedications();
   } catch (e) { showToast(e.message, true); }
 }
@@ -2930,7 +3017,13 @@ async function loadMedications() {
     const snap    = await db.collection('medications').orderBy('timestamp','desc').limit(50).get();
     const myFac   = currentData?.facility || FACILITY;
     const entries = snap.docs.filter(d => d.data().facility === myFac).map(d => ({ id: d.id, ...d.data() }));
-    if (!entries.length) { list.innerHTML = '<div class="empty-state" style="font-size:0.82rem">No medications logged yet</div>'; return; }
+    const mHistBtn = document.getElementById('med-hist-toggle');
+    if (!entries.length) {
+      list.innerHTML = '<div class="empty-state" style="font-size:0.82rem">No medications logged yet</div>';
+      if (mHistBtn) mHistBtn.textContent = '📋 History';
+      return;
+    }
+    if (mHistBtn) mHistBtn.textContent = `📋 History (${entries.length})`;
     const today = new Date().toISOString().slice(0,10);
     list.innerHTML = entries.map(e => {
       const ts   = e.timestamp?.toDate?.() || new Date();
@@ -2981,6 +3074,10 @@ async function logIncident() {
     });
     document.getElementById('inc-notes').value = '';
     showToast(labels[incidentType] + ' logged');
+    const iControls = document.getElementById('inc-controls');
+    const iBtn      = document.getElementById('inc-log-toggle');
+    if (iControls) iControls.style.display = 'none';
+    if (iBtn) iBtn.classList.remove('active');
     loadIncidents();
   } catch (e) { showToast(e.message, true); }
 }
@@ -2992,7 +3089,13 @@ async function loadIncidents() {
     const snap    = await db.collection('incidents').orderBy('timestamp','desc').limit(50).get();
     const myFac   = currentData?.facility || FACILITY;
     const entries = snap.docs.filter(d => d.data().facility === myFac).map(d => ({ id: d.id, ...d.data() }));
-    if (!entries.length) { list.innerHTML = '<div class="empty-state" style="font-size:0.82rem">No incidents logged yet</div>'; return; }
+    const iHistBtn = document.getElementById('inc-hist-toggle');
+    if (!entries.length) {
+      list.innerHTML = '<div class="empty-state" style="font-size:0.82rem">No incidents logged yet</div>';
+      if (iHistBtn) iHistBtn.textContent = '📋 History';
+      return;
+    }
+    if (iHistBtn) iHistBtn.textContent = `📋 History (${entries.length})`;
     const today = new Date().toISOString().slice(0,10);
     list.innerHTML = entries.map(e => {
       const ts   = e.timestamp?.toDate?.() || new Date();

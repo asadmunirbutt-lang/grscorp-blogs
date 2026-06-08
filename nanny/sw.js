@@ -1,4 +1,4 @@
-const CACHE = 'hn-v2';
+const CACHE = 'hn-v3';
 const SHELL = ['/nanny/', '/nanny/index.html'];
 
 self.addEventListener('install', e => {
