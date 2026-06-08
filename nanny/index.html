@@ -680,6 +680,65 @@
     .note-author { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .note-body { display: none; padding: 0 12px 10px; color: var(--muted); font-size: 0.84rem; line-height: 1.55; }
     .note-body.open { display: block; }
+    .notes-date-group { margin-bottom: 6px; }
+    .notes-date-hdr {
+      background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+      color: var(--text); cursor: pointer; font-size: 0.76rem; font-weight: 700;
+      padding: 7px 12px; display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 4px; user-select: none; transition: background 0.15s;
+      border-left: 3px solid #2979ff;
+    }
+    .notes-date-hdr:hover { background: var(--card2); }
+    .ndh-arrow { transition: transform 0.15s; font-size: 0.58rem; }
+    .ndh-arrow.open { transform: rotate(90deg); }
+    .notes-date-entries { display: none; }
+    .notes-date-entries.open { display: block; }
+
+    /* ═══════════════ SHIFT ACK MODAL ═══════════════ */
+    #shift-ack-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9000;
+      background: rgba(5,3,18,0.88); backdrop-filter: blur(6px);
+      align-items: center; justify-content: center; padding: 16px;
+    }
+    #shift-ack-overlay.open { display: flex; }
+    #shift-ack-modal {
+      background: var(--surface); border: 1px solid rgba(41,121,255,0.35);
+      border-radius: 18px; width: 100%; max-width: 480px; max-height: 80vh;
+      display: flex; flex-direction: column; box-shadow: 0 8px 48px rgba(0,0,0,0.6);
+    }
+    .sam-header {
+      padding: 18px 20px 12px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+    .sam-title { font-size: 1rem; font-weight: 800; color: var(--text); }
+    .sam-subtitle { font-size: 0.76rem; color: var(--muted); margin-top: 2px; }
+    .sam-body { overflow-y: auto; padding: 14px 16px; flex: 1; }
+    .sam-note {
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 3px solid #2979ff; border-radius: 10px;
+      padding: 10px 12px; margin-bottom: 8px;
+    }
+    .sam-note-meta { font-size: 0.72rem; color: #2979ff; font-weight: 600; margin-bottom: 4px; }
+    .sam-note-text { font-size: 0.84rem; color: var(--muted); line-height: 1.5; }
+    .sam-note-img { max-width: 100%; border-radius: 8px; margin-top: 8px; cursor: pointer; }
+    .sam-note.critical { border-left-color: #ff5252; }
+    .sam-note.critical .sam-note-meta { color: #ff5252; }
+    .sam-empty { text-align: center; color: var(--dim); font-size: 0.84rem; padding: 24px 0; }
+    .sam-footer {
+      padding: 14px 16px; border-top: 1px solid var(--border); flex-shrink: 0;
+      display: flex; gap: 10px;
+    }
+    .sam-ack-btn {
+      flex: 1; padding: 13px; border-radius: 10px; border: none; cursor: pointer;
+      font-size: 0.9rem; font-weight: 800; letter-spacing: 0.3px;
+      background: linear-gradient(135deg, #2979ff, #00bcd4);
+      color: #fff; transition: opacity 0.15s;
+    }
+    .sam-ack-btn:hover { opacity: 0.88; }
+    .sam-date-label {
+      font-size: 0.7rem; font-weight: 700; color: var(--dim); text-transform: uppercase;
+      letter-spacing: 0.8px; padding: 6px 0 4px; margin-top: 4px;
+    }
 
     .x-btn {
       background: none; border: none; color: var(--dim);
@@ -1789,6 +1848,22 @@
 
 <div id="toast"></div>
 
+<!-- Shift Acknowledgment Modal -->
+<div id="shift-ack-overlay">
+  <div id="shift-ack-modal">
+    <div class="sam-header">
+      <div>
+        <div class="sam-title">📋 Notes from Previous Shift</div>
+        <div class="sam-subtitle">Please read and acknowledge before starting your shift</div>
+      </div>
+    </div>
+    <div class="sam-body" id="sam-body"></div>
+    <div class="sam-footer">
+      <button class="sam-ack-btn" onclick="confirmShiftAck()">✅ I've Read These Notes — Start Shift</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ================================================================
 //  FIREBASE CONFIGURATION
@@ -2248,9 +2323,20 @@ function onFloorChange() {
   document.getElementById('room-content').innerHTML = '';
 }
 
+let _pendingShift = null;
+
 function selectShift(shiftId, el, group) {
   const isAdmin = currentData?.role === 'admin';
   if (shiftLocked && !isAdmin) return;
+  _pendingShift = { shiftId, el, group };
+  showShiftAckModal();
+}
+
+function finalizeShiftSelect() {
+  if (!_pendingShift) return;
+  const { shiftId, el, group } = _pendingShift;
+  _pendingShift = null;
+  const isAdmin = currentData?.role === 'admin';
   selectedShift = shiftId;
   document.querySelectorAll('.shift-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
@@ -2261,6 +2347,58 @@ function selectShift(shiftId, el, group) {
     if (other) other.style.display = 'none';
     document.getElementById('shift-locked-badge').style.display = 'block';
   }
+}
+
+async function showShiftAckModal() {
+  const overlay = document.getElementById('shift-ack-overlay');
+  const body    = document.getElementById('sam-body');
+  body.innerHTML = '<div class="sam-empty">Loading notes…</div>';
+  overlay.classList.add('open');
+  try {
+    const myFacility = currentData?.facility || FACILITY;
+    const cutoff = new Date(Date.now() - 48 * 60 * 60 * 1000);
+    const snap = await db.collection('notes').orderBy('timestamp', 'desc').limit(60).get();
+    const docs = snap.docs.filter(doc => {
+      const d  = doc.data();
+      const ts = d.timestamp?.toDate?.() || new Date(0);
+      return d.facility === myFacility && ts >= cutoff;
+    });
+    if (!docs.length) {
+      body.innerHTML = '<div class="sam-empty">No notes from the past 48 hours.<br>All clear — you\'re good to start!</div>';
+    } else {
+      const today = new Date().toLocaleDateString('en-CA');
+      const byDate = {};
+      docs.forEach(doc => {
+        const d  = doc.data();
+        const ts = d.timestamp?.toDate?.() || new Date();
+        const dk = ts.toLocaleDateString('en-CA');
+        if (!byDate[dk]) byDate[dk] = [];
+        byDate[dk].push({ ...d, _ts: ts });
+      });
+      body.innerHTML = Object.entries(byDate).map(([dk, items]) => {
+        const label = dk === today ? 'Today' : new Date(dk + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+        const noteCards = items.map(item => {
+          const tsStr = item._ts.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          const imgHtml = item.imageUrl ? `<img src="${item.imageUrl}" class="sam-note-img" onclick="window.open('${item.imageUrl}','_blank')">` : '';
+          const critClass = item.critical ? ' critical' : '';
+          const critTag   = item.critical ? ' 🚨' : '';
+          return `<div class="sam-note${critClass}">
+            <div class="sam-note-meta">${escHtml(item.userName || 'Unknown')}${critTag} · ${tsStr}</div>
+            ${item.text ? `<div class="sam-note-text">${escHtml(item.text)}</div>` : ''}
+            ${imgHtml}
+          </div>`;
+        }).join('');
+        return `<div class="sam-date-label">${label}</div>${noteCards}`;
+      }).join('');
+    }
+  } catch (e) {
+    body.innerHTML = '<div class="sam-empty">Could not load notes. You may proceed.</div>';
+  }
+}
+
+function confirmShiftAck() {
+  document.getElementById('shift-ack-overlay').classList.remove('open');
+  finalizeShiftSelect();
 }
 
 function onRoomChange() {
@@ -2513,24 +2651,49 @@ async function loadNotes() {
   try {
     const myFacility = currentData?.facility || FACILITY;
     const snap = await db.collection('notes').orderBy('timestamp', 'desc').limit(50).get();
-    snap.docs.filter(d => d.data().facility === myFacility).forEach(doc => {
-      const d = doc.data();
+    const docs = snap.docs.filter(d => d.data().facility === myFacility);
+    if (!docs.length) return;
+    const today = new Date().toLocaleDateString('en-CA');
+    const byDate = {};
+    docs.forEach(doc => {
+      const d  = doc.data();
       const ts = d.timestamp?.toDate?.() || new Date();
-      list.appendChild(buildNoteEl(doc.id, d.userName, ts, d.text, d.imageUrl));
+      const dk = ts.toLocaleDateString('en-CA');
+      if (!byDate[dk]) byDate[dk] = [];
+      byDate[dk].push({ id: doc.id, ...d, _ts: ts });
+    });
+    Object.entries(byDate).forEach(([dateKey, items]) => {
+      const isToday = dateKey === today;
+      const label   = isToday ? 'Today' : new Date(dateKey + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      const group   = document.createElement('div');
+      group.className    = 'notes-date-group';
+      group.dataset.date = dateKey;
+      const notesHtml = items.map(item => buildNoteElHtml(item.id, item.userName, item._ts, item.text, item.imageUrl)).join('');
+      group.innerHTML = `
+        <div class="notes-date-hdr" onclick="toggleNotesGroup(this)">
+          <span>${label} <span style="color:var(--muted);font-weight:400">(${items.length})</span></span>
+          <span class="ndh-arrow ${isToday ? 'open' : ''}">▶</span>
+        </div>
+        <div class="notes-date-entries ${isToday ? 'open' : ''}">${notesHtml}</div>`;
+      list.appendChild(group);
     });
   } catch (e) { console.warn('Notes:', e.message); }
 }
 
-function buildNoteEl(id, author, ts, text, imageUrl) {
-  const el    = document.createElement('div');
-  el.className = 'note-item';
+function toggleNotesGroup(hdr) {
+  const entries = hdr.nextElementSibling;
+  const arrow   = hdr.querySelector('.ndh-arrow');
+  const open    = entries.classList.toggle('open');
+  arrow.classList.toggle('open', open);
+}
+
+function buildNoteElHtml(id, author, ts, text, imageUrl) {
   const tsStr  = ts.toLocaleDateString('en-US') + ', ' + ts.toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'});
   const imgHTML = imageUrl
     ? `<img src="${imageUrl}" class="note-img" onclick="window.open('${imageUrl}','_blank')" title="Tap to view full size">`
     : '';
-  const hasContent = text || imageUrl;
   const delBtn = (currentData?.role === 'admin') ? `<button class="x-btn" onclick="deleteNote('${id}',event)">✕</button>` : '';
-  el.innerHTML = `
+  return `<div class="note-item" id="note-${id}">
     <div class="note-header" onclick="toggleNote(this)">
       <div class="note-header-left">
         <span class="note-arrow">▶</span>
@@ -2538,8 +2701,14 @@ function buildNoteEl(id, author, ts, text, imageUrl) {
       </div>
       ${delBtn}
     </div>
-    <div class="note-body">${text || ''}${imgHTML}</div>`;
-  return el;
+    <div class="note-body">${text || ''}${imgHTML}</div>
+  </div>`;
+}
+
+function buildNoteEl(id, author, ts, text, imageUrl) {
+  const el = document.createElement('div');
+  el.innerHTML = buildNoteElHtml(id, author, ts, text, imageUrl);
+  return el.firstElementChild;
 }
 
 function toggleNote(header) {
@@ -2601,10 +2770,28 @@ async function submitNote() {
     const critBtn = document.getElementById('note-critical-btn');
     if (critBtn) { critBtn.textContent = '⚠️ Mark as Critical'; critBtn.classList.remove('active'); }
     showToast(isCrit ? '🚨 Critical note posted' : '📝 Note posted');
-    const list   = document.getElementById('notes-list');
-    const author = currentData?.name || currentUser.email;
-    const newEl  = buildNoteEl(docRef.id, author, new Date(), txt, imageUrl);
-    list.insertBefore(newEl, list.firstChild);
+    const author  = currentData?.name || currentUser.email;
+    const now     = new Date();
+    const todayKey = now.toLocaleDateString('en-CA');
+    const list    = document.getElementById('notes-list');
+    let todayGroup = list.querySelector(`.notes-date-group[data-date="${todayKey}"]`);
+    if (!todayGroup) {
+      todayGroup = document.createElement('div');
+      todayGroup.className    = 'notes-date-group';
+      todayGroup.dataset.date = todayKey;
+      todayGroup.innerHTML    = `
+        <div class="notes-date-hdr" onclick="toggleNotesGroup(this)">
+          <span>Today <span style="color:var(--muted);font-weight:400">(0)</span></span>
+          <span class="ndh-arrow open">▶</span>
+        </div>
+        <div class="notes-date-entries open"></div>`;
+      list.insertBefore(todayGroup, list.firstChild);
+    }
+    const entriesDiv = todayGroup.querySelector('.notes-date-entries');
+    const newEl = buildNoteEl(docRef.id, author, now, txt, imageUrl);
+    entriesDiv.insertBefore(newEl, entriesDiv.firstChild);
+    const countSpan = todayGroup.querySelector('.notes-date-hdr span span');
+    if (countSpan) countSpan.textContent = `(${entriesDiv.children.length})`;
     if (isCrit) loadCriticalBanners();
   } catch (e) {
     progressEl.style.display = 'none';
