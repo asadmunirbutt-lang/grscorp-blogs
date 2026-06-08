@@ -1883,7 +1883,7 @@ const FACILITY     = 'grscorp';
 // ================================================================
 //  DEFAULT DATA  (rooms with emojis)
 // ================================================================
-const ROOMS_VERSION = 3;
+const ROOMS_VERSION = 4;
 const DEFAULT_ROOMS = [
   // ── UPSTAIRS ──
   { id:'azlans-room', floor:'upstairs', emoji:'🛏️', name:"Azlan's Room", tasks:[
@@ -1892,7 +1892,6 @@ const DEFAULT_ROOMS = [
     {id:'ar3', name:'Check laundry basket', desc:'Put any dirty laundry in the laundry room'},
     {id:'ar4', name:'Put clothes/stuff back in place'},
     {id:'ar5', name:'Steam vacuum floors'},
-    {id:'ar6', name:'Steam mop floor'},
     {id:'ar7', name:'Change trash bag'},
     {id:'ar8', name:'Dust & disinfect furniture'},
     {id:'ar9', name:'Clean windows/glass/mirror'},
@@ -1937,7 +1936,6 @@ const DEFAULT_ROOMS = [
     {id:'hu2', name:'Steam mop'},
     {id:'hu3', name:'Put stuff back in place'},
     {id:'hu4', name:'Dust furniture'},
-    {id:'hu5', name:'Clean windows'},
     {id:'hu6', name:'Spot wall cleaning'},
     {id:'hu7', name:'Clean railings', desc:'Tuesday Morning & Thursday Evening only', tueThuOnly:true},
   ]},
@@ -1947,15 +1945,12 @@ const DEFAULT_ROOMS = [
     {id:'hd2', name:'Steam mop'},
     {id:'hd3', name:'Put stuff back in place'},
     {id:'hd4', name:'Dust furniture'},
-    {id:'hd5', name:'Clean windows'},
     {id:'hd6', name:'Spot wall cleaning'},
     {id:'hd7', name:"Coco's sitting area cleaned"},
   ]},
   { id:'stairs', floor:'downstairs', emoji:'🪜', name:'Stairs', tasks:[
     {id:'st1', name:'Sweep/broom floor'},
-    {id:'st2', name:'Steam mop'},
     {id:'st3', name:'Handrail wiped'},
-    {id:'st4', name:'Spot wall cleaning'},
   ]},
   { id:'study-room', floor:'downstairs', emoji:'📚', name:'Study Room', tasks:[
     {id:'sr0', name:'Vacuum carpet'},
@@ -2022,7 +2017,6 @@ const DEFAULT_ROOMS = [
     {id:'db5', name:'Sweep/broom floor'},
     {id:'db6', name:'Steam mop'},
     {id:'db7', name:'Change trash bag'},
-    {id:'db8', name:'Clean windows'},
     {id:'db9', name:'Spot wall cleaning'},
   ]},
   { id:'final-checks', floor:'downstairs', emoji:'✅', name:'Final Checks', tasks:[
