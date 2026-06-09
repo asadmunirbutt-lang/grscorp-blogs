@@ -740,6 +740,101 @@
       letter-spacing: 0.8px; padding: 6px 0 4px; margin-top: 4px;
     }
 
+    /* ═══════════════ AI BOT ═══════════════ */
+    #bot-btn {
+      position: fixed; bottom: 24px; right: 20px; z-index: 8500;
+      width: 56px; height: 56px; border-radius: 50%; border: none;
+      background: linear-gradient(135deg, var(--lavender), var(--blue));
+      color: #fff; font-size: 1.4rem; cursor: pointer;
+      box-shadow: 0 4px 24px rgba(41,121,255,0.5);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: none; align-items: center; justify-content: center;
+    }
+    #bot-btn.visible { display: flex; }
+    #bot-btn:hover   { transform: scale(1.08); box-shadow: 0 6px 32px rgba(41,121,255,0.65); }
+    #bot-btn.open    { background: linear-gradient(135deg, var(--coral), var(--orange)); }
+    #bot-panel {
+      position: fixed; bottom: 92px; right: 20px; z-index: 8500;
+      width: 340px; max-width: calc(100vw - 32px);
+      background: var(--surface); border: 1px solid rgba(41,121,255,0.3);
+      border-radius: 18px; box-shadow: 0 8px 48px rgba(0,0,0,0.65);
+      display: none; flex-direction: column; max-height: 520px;
+      animation: botSlideIn 0.2s ease;
+    }
+    #bot-panel.open { display: flex; }
+    @keyframes botSlideIn {
+      from { opacity: 0; transform: translateY(14px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .bot-header {
+      padding: 13px 16px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(135deg, rgba(41,121,255,0.1), rgba(180,78,255,0.1));
+      border-radius: 18px 18px 0 0; flex-shrink: 0;
+    }
+    .bot-header-left { display: flex; align-items: center; gap: 10px; }
+    .bot-avatar-icon {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--lavender), var(--blue));
+      display: flex; align-items: center; justify-content: center; font-size: 0.95rem;
+    }
+    .bot-title    { font-weight: 800; font-size: 0.88rem; color: var(--text); }
+    .bot-subtitle { font-size: 0.68rem; color: var(--mint); margin-top: 1px; }
+    .bot-close {
+      background: none; border: none; color: var(--dim); cursor: pointer;
+      font-size: 1rem; padding: 4px 6px; border-radius: 6px; transition: color 0.15s;
+    }
+    .bot-close:hover { color: var(--text); }
+    .bot-messages {
+      flex: 1; overflow-y: auto; padding: 12px 12px 6px; display: flex;
+      flex-direction: column; gap: 9px; scroll-behavior: smooth;
+    }
+    .bot-msg {
+      max-width: 88%; padding: 9px 12px; border-radius: 14px;
+      font-size: 0.82rem; line-height: 1.55; word-break: break-word;
+    }
+    .bot-msg.bot  {
+      background: var(--card); border: 1px solid var(--border);
+      border-bottom-left-radius: 4px; align-self: flex-start; color: var(--text);
+    }
+    .bot-msg.user {
+      background: linear-gradient(135deg, var(--blue), var(--lavender));
+      border-bottom-right-radius: 4px; align-self: flex-end; color: #fff;
+    }
+    .bot-typing-wrap {
+      background: var(--card); border: 1px solid var(--border); border-bottom-left-radius: 4px;
+      align-self: flex-start; border-radius: 14px; padding: 11px 14px;
+      display: flex; gap: 5px; align-items: center;
+    }
+    .bot-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--muted);
+      animation: botDot 1.2s infinite;
+    }
+    .bot-dot:nth-child(2) { animation-delay: 0.18s; }
+    .bot-dot:nth-child(3) { animation-delay: 0.36s; }
+    @keyframes botDot {
+      0%,60%,100% { transform: translateY(0); opacity: 0.45; }
+      30%          { transform: translateY(-5px); opacity: 1; }
+    }
+    .bot-input-row {
+      display: flex; gap: 8px; padding: 10px 12px;
+      border-top: 1px solid var(--border); flex-shrink: 0;
+    }
+    .bot-input {
+      flex: 1; background: var(--card); border: 1.5px solid var(--border2);
+      border-radius: 10px; color: var(--text); font-size: 0.84rem; padding: 8px 10px;
+      resize: none; outline: none; font-family: inherit; max-height: 80px;
+      transition: border-color 0.2s; line-height: 1.4;
+    }
+    .bot-input:focus { border-color: var(--lavender); }
+    .bot-send {
+      background: linear-gradient(135deg, var(--blue), var(--lavender));
+      border: none; border-radius: 10px; color: #fff; cursor: pointer;
+      font-size: 1rem; padding: 8px 13px; transition: opacity 0.15s;
+      flex-shrink: 0; align-self: flex-end;
+    }
+    .bot-send:hover { opacity: 0.85; }
+
     .x-btn {
       background: none; border: none; color: var(--dim);
       cursor: pointer; font-size: 1rem; padding: 3px 5px; line-height: 1;
@@ -1887,6 +1982,28 @@
     </div>
 
   </div><!-- app-content -->
+
+  <!-- ── AI Bot ── -->
+  <button id="bot-btn" onclick="toggleBot()" title="Ask Nanny Assistant">💬</button>
+  <div id="bot-panel">
+    <div class="bot-header">
+      <div class="bot-header-left">
+        <div class="bot-avatar-icon">🤖</div>
+        <div>
+          <div class="bot-title">Nanny Assistant</div>
+          <div class="bot-subtitle">Ask me anything</div>
+        </div>
+      </div>
+      <button class="bot-close" onclick="toggleBot()">✕</button>
+    </div>
+    <div id="bot-messages" class="bot-messages"></div>
+    <div class="bot-input-row">
+      <textarea id="bot-input" class="bot-input" placeholder="Ask a question…" rows="1"
+        onkeydown="botInputKeydown(event)" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+      <button class="bot-send" onclick="sendBotMessage()">➤</button>
+    </div>
+  </div>
+
 </div><!-- app-screen -->
 
 <div id="toast"></div>
@@ -2255,6 +2372,8 @@ function showRegForm() {
 async function showAppScreen() {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-screen').style.display   = 'flex';
+  const botBtn = document.getElementById('bot-btn');
+  if (botBtn) botBtn.classList.add('visible');
 
   const isAdmin  = currentData?.role === 'admin';
   document.getElementById('admin-tab').style.display = isAdmin ? 'flex' : 'none';
@@ -3808,6 +3927,163 @@ async function triggerInstall() {
     if (tabBtn) tabBtn.style.display = 'none';
   }
 }
+
+// ================================================================
+//  NANNY ASSISTANT BOT
+// ================================================================
+const BOT_KB = [
+  // ── APP USAGE ──
+  { k:['shift','morning shift','mid shift','night shift','weekend','a shift','b shift','which shift','my shift'],
+    a:`**Available shifts:**\n• Weekdays: Morning ☀️ · Mid 🌤 · Night 🌙\n• Weekends: A Shift 🅰 · B Shift 🅱\n\nTap your shift card at the top of the checklist screen. Once you select it, your shift locks so it can be tracked — admin can change it if needed.` },
+
+  { k:['checklist','how to use','how do i','submit room','complete room','task','room','rooms','start shift'],
+    a:`**Checklist flow:**\n1. Select your shift at the top\n2. Pick a room from the dropdown\n3. Mark each task: ✅ Yes · 🚫 Not Needed · ⏳ Later\n4. Tap **Submit Room** when done\n\nThere are 17 rooms across 2 floors. Work through as many as your shift covers.` },
+
+  { k:['later','carry over','carry-over','purple badge','red badge','critical badge','not done task'],
+    a:`Marking a task ⏳ **Later** requires a short note explaining why.\n\nIt then becomes a carry-over:\n• 1 carry-over → 🟣 purple badge (heads up for next shift)\n• 2+ carry-overs → 🔴 red CRITICAL badge (must be resolved that shift!)` },
+
+  { k:['note','notes','add note','write note','photo note','critical note','post note'],
+    a:`**Notes** are in the right column. Type your message and optionally attach a photo.\n\nMark a note 🚨 **Critical** for urgent issues — it shows as a red banner visible to all staff. The next shift will see your notes and must acknowledge them before starting.` },
+
+  { k:['supply','supplies','request supply','order','item needed','running low'],
+    a:`Use the **Supplies** section (right column, below Notes). Enter the item name and quantity. Admin will update the status to Ordered once placed.` },
+
+  { k:['laundry','wash','dryer','fold','linen','clothes','cleaning cloth'],
+    a:`**Laundry Tracker** (left column):\n1. Choose a category: Wearable Clothes · Cleaning Cloths · Linen & Bed Sheets\n2. Choose type: Wash 🫧 · Dryer 🌀 · Fold 👕\n3. Tap **Log Load**\n\nHistory is grouped by date — today's entries are shown expanded.` },
+
+  { k:['pet','parakeet','pigeon','tortoise','coco','dove','bird','animal','feed pet'],
+    a:`**Pet Care** is a room in the Upstairs checklist 🐾. Tasks cover feeding and watering all animals:\n• Parakeets 🦜 · Pigeons 🕊️ · Tortoise 🐢 · Coco 🐕 · Doves\n\nComplete these tasks every shift.` },
+
+  { k:['medication','medicine','dose','meds','pill','log med'],
+    a:`To log a medication given to Azlan, use the **Medication Log** section in the app (visible in the checklist tab). Enter the medication name, dose, and any notes.\n\nFor Azlan's specific medications and schedule, please ask your admin — this is kept private and shared during onboarding.` },
+
+  { k:['incident','log incident','poop','accident','fall','hurt'],
+    a:`To log an incident:\n1. Find **Incidents Log** in the checklist tab\n2. Select type: 💩 Poop · 💧 Accident · 📌 Other\n3. Add a note about what happened\n4. Tap **Log Incident**\n\nAlways log every incident — this data is reviewed by admin.` },
+
+  { k:['food log','log food','log meal','meal','lunch','dinner','breakfast','snack','log eating'],
+    a:`Use **Azlan's Food Log** in the checklist tab. Enter the meal name, quantity, and any notes. This helps admin track Azlan's nutrition and eating patterns.` },
+
+  { k:['upstairs','downstairs','floor','which floor','what rooms','list of rooms'],
+    a:`**Upstairs rooms:** Azlan's Room 🛏️ · Azlan's Bathroom 🛁 · Asad's Room 🛏️ · Asad's Bathroom 🛁 · Hallways Upstairs 🚪 · Pet Care 🐾\n\n**Downstairs rooms:** Hallways 🚪 · Stairs 🪜 · Study Room 📚 · Living Room 🛋️ · Dining Area 🍽️ · Kitchen 🍳 · Office 💼 · Bathroom 🛁 · Final Checks ✅` },
+
+  { k:['daily report','weekly report','analytics','history','past shifts','report tab'],
+    a:`**Reports** are in the 📅 Daily and 📊 Weekly tabs (admin only).\n\n• Daily: use ◀ ▶ arrows to browse any past date — shows all submitted rooms and any rooms that were missed\n• Weekly: shows a completion summary per staff member` },
+
+  // ── ABOUT AZLAN (admin: fill these in) ──
+  { k:['azlan','who is azlan','about azlan','tell me about azlan'],
+    a:`Azlan is the child in your care at the GRSCorp household. Detailed information about Azlan's background, personality, and needs is shared during your in-person onboarding by your admin. Please reach out to admin directly if you haven't received this.` },
+
+  { k:['routine','schedule','daily routine','bedtime','wake up','sleep time','nap time','morning routine'],
+    a:`Azlan's daily routine details — wake time, meal times, activity schedule, and bedtime — are provided by admin during onboarding. Please ask your admin before your first shift if you haven't received the routine guide.` },
+
+  { k:['allerg','dietary','diet','cannot eat',"can't eat",'avoid food','food restriction'],
+    a:`⚠️ Azlan's dietary restrictions and allergies are important safety information. Please confirm these with your admin before preparing any food. **When in doubt, do not feed Azlan anything without checking first.**` },
+
+  { k:['communication','talk to azlan','speak','language','verbal','nonverbal','interact'],
+    a:`Information about how to communicate with Azlan — including any speech, AAC devices, or behavioural strategies — is covered during onboarding. Please ask your admin for a communication guide before your first shift.` },
+
+  // ── EMERGENCY ──
+  { k:['emergency','911','ambulance','hospital','medical emergency','call for help','life threatening','not breathing','unconscious'],
+    a:`🚨 **EMERGENCY STEPS:**\n1. **Call 911 immediately** for any life-threatening situation\n2. Stay with Azlan — keep them calm and safe\n3. Call admin right away\n4. Log the incident in the app after the situation is stable\n\nEmergency contact numbers are provided during onboarding — keep them saved in your phone.` },
+
+  { k:['emergency contact','who to call','contact number','admin number','phone number'],
+    a:`Emergency contact numbers are provided by admin during onboarding. If you don't have them yet, ask admin before your first shift. Always call 911 first in a life-threatening situation.` },
+
+  // ── GENERAL ──
+  { k:['house rule','rules','expectations','policy','dos and donts','dos and don',"don't",'behaviour','phone use'],
+    a:`Key expectations for all staff:\n• Keep the app updated throughout your shift\n• Log everything: meals, incidents, carry-overs\n• Notes section is your main communication channel\n• Phone usage during shift: ask admin for the policy\n• If unsure about anything — ask before acting\n• Emergency: always call 911 first` },
+
+  { k:['manual','guide','handbook','team guide','documentation','where is guide'],
+    a:`There's a full **Team Guide** (manual.html) with everything you need. Ask your admin for the direct link, or look for the Guide link in the app. It covers all features and house expectations in detail.` },
+
+  { k:['contact admin','reach admin','supervisor','manager','who to contact','ask admin'],
+    a:`For urgent issues, call admin directly (number given during onboarding). For non-urgent questions, post a Note in the app — admin checks notes regularly. You can also mark notes 🚨 Critical if you need a faster response.` },
+
+  { k:['new','first shift','first day','just started','onboarding','getting started'],
+    a:`Welcome! Here's how to get started:\n1. Select your shift at the top of the checklist tab\n2. Work through each room and mark tasks\n3. Use Notes for anything important\n4. Submit each room when done\n\nCheck the Team Guide and ask your admin for Azlan's personal care details before your first shift. Don't hesitate to ask questions! 👋` },
+];
+
+const BOT_WELCOME = `👋 Hi! I'm the **Nanny Assistant**.\n\nI can help with:\n• How to use the app\n• Azlan's routines & care\n• House rules & what to expect\n• Emergency steps\n\nWhat would you like to know?`;
+
+let botOpen    = false;
+let botGreeted = false;
+
+function toggleBot() {
+  botOpen = !botOpen;
+  const panel = document.getElementById('bot-panel');
+  const btn   = document.getElementById('bot-btn');
+  panel.classList.toggle('open', botOpen);
+  btn.classList.toggle('open', botOpen);
+  btn.textContent = botOpen ? '✕' : '💬';
+  if (botOpen && !botGreeted) {
+    botGreeted = true;
+    appendBotMsg(BOT_WELCOME, 'bot');
+  }
+  if (botOpen) setTimeout(() => document.getElementById('bot-input')?.focus(), 100);
+}
+
+function botInputKeydown(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendBotMessage(); }
+}
+
+async function sendBotMessage() {
+  const input = document.getElementById('bot-input');
+  const text  = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  input.style.height = 'auto';
+  appendBotMsg(text, 'user');
+  const typing = appendBotTyping();
+  const delay  = 500 + Math.random() * 500;
+  await new Promise(r => setTimeout(r, delay));
+  typing.remove();
+  const reply = getBotReply(text);
+  appendBotMsg(reply, 'bot');
+}
+
+function getBotReply(msg) {
+  const lower = msg.toLowerCase();
+  for (const entry of BOT_KB) {
+    if (entry.k.some(kw => lower.includes(kw))) return entry.a;
+  }
+  return `I'm not sure about that — try rephrasing, or post a **Note** in the app so your admin sees it. You can also check the full **Team Guide** for detailed information.`;
+}
+
+function appendBotMsg(text, role) {
+  const msgs = document.getElementById('bot-messages');
+  const div  = document.createElement('div');
+  div.className = `bot-msg ${role}`;
+  div.innerHTML = text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\n/g,'<br>');
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+function appendBotTyping() {
+  const msgs = document.getElementById('bot-messages');
+  const div  = document.createElement('div');
+  div.className = 'bot-typing-wrap';
+  div.innerHTML = '<div class="bot-dot"></div><div class="bot-dot"></div><div class="bot-dot"></div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+  return div;
+}
+
+// ── AI INTEGRATION — wire up when ready ──────────────────────────
+// Replace getBotReply() with an async version that calls your AI:
+//
+// Azure OpenAI:
+//   POST https://YOUR_RESOURCE.openai.azure.com/openai/deployments/YOUR_MODEL/chat/completions?api-version=2024-02-01
+//   Headers: { 'api-key': 'YOUR_KEY', 'Content-Type': 'application/json' }
+//   Body: { messages: [{ role:'system', content: BOT_SYSTEM_PROMPT }, { role:'user', content: userMessage }] }
+//
+// Claude API (via Azure Function proxy to keep key server-side):
+//   POST https://YOUR_FUNCTION.azurewebsites.net/api/chat
+//   Body: { message: userMessage, systemPrompt: BOT_SYSTEM_PROMPT }
+// ────────────────────────────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', () => {
   // Service worker for PWA
