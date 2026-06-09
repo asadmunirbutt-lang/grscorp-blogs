@@ -3198,16 +3198,32 @@ async function loadFoodLog() {
       return;
     }
     if (fHistBtn) fHistBtn.textContent = `📋 History (${entries.length})`;
-    list.innerHTML = entries.map(e => {
-      const ts  = e.timestamp?.toDate?.() || new Date();
-      const time = ts.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-      const del  = isAdmin ? `<button class="x-btn" style="float:right;margin:-2px -4px 0 0" onclick="deleteFoodEntry('${e.id}')">✕</button>` : '';
-      return `<div class="food-log-entry" id="fe-${e.id}">
-        ${del}
-        <div class="food-log-meal">${escHtml(e.meal)} × ${e.qty}${e.notes ? ` — <span style="font-weight:400;color:var(--muted)">${escHtml(e.notes)}</span>` : ''}</div>
-        <div class="food-log-meta">By ${escHtml(e.userName)} · ${time} · ${e.date === today ? 'Today' : e.date}</div>
-      </div>`;
-    }).join('');
+    const byDate = {};
+    entries.forEach(e => { const dk = e.date || '?'; if (!byDate[dk]) byDate[dk] = []; byDate[dk].push(e); });
+    list.innerHTML = '';
+    Object.entries(byDate).forEach(([date, items]) => {
+      const isToday = date === today;
+      const label   = isToday ? 'Today' : new Date(date + 'T12:00:00').toLocaleDateString('en-US', {weekday:'short',month:'short',day:'numeric'});
+      const group   = document.createElement('div');
+      group.className = 'laundry-date-group';
+      const rows = items.map(e => {
+        const ts   = e.timestamp?.toDate?.() || new Date();
+        const time = ts.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+        const del  = isAdmin ? `<button class="x-btn" style="float:right;margin:-2px -4px 0 0" onclick="deleteFoodEntry('${e.id}')">✕</button>` : '';
+        return `<div class="food-log-entry" id="fe-${e.id}">
+          ${del}
+          <div class="food-log-meal">${escHtml(e.meal)} × ${e.qty}${e.notes ? ` — <span style="font-weight:400;color:var(--muted)">${escHtml(e.notes)}</span>` : ''}</div>
+          <div class="food-log-meta">By ${escHtml(e.userName)} · ${time}</div>
+        </div>`;
+      }).join('');
+      group.innerHTML = `
+        <div class="laundry-date-hdr" onclick="toggleLaundryGroup(this)">
+          <span>${label} <span style="color:var(--muted);font-weight:400">(${items.length})</span></span>
+          <span class="ldh-arrow ${isToday ? 'open' : ''}">▶</span>
+        </div>
+        <div class="laundry-date-entries ${isToday ? 'open' : ''}">${rows}</div>`;
+      list.appendChild(group);
+    });
   } catch (e) { console.warn('FoodLog:', e.message); }
 }
 
@@ -3244,6 +3260,7 @@ async function loadMedications() {
   const list = document.getElementById('meds-list');
   if (!list) return;
   try {
+    const today   = new Date().toISOString().slice(0,10);
     const snap    = await db.collection('medications').orderBy('timestamp','desc').limit(50).get();
     const myFac   = currentData?.facility || FACILITY;
     const entries = snap.docs.filter(d => d.data().facility === myFac).map(d => ({ id: d.id, ...d.data() }));
@@ -3254,20 +3271,34 @@ async function loadMedications() {
       return;
     }
     if (mHistBtn) mHistBtn.textContent = `📋 History (${entries.length})`;
-    const today = new Date().toISOString().slice(0,10);
-    list.innerHTML = entries.map(e => {
-      const ts   = e.timestamp?.toDate?.() || new Date();
-      const time = ts.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-      const when = e.date === today ? 'Today' : e.date;
-      return `<div class="med-entry" id="med-${e.id}">
-        <div class="med-entry-info">
-          <div class="med-name">${escHtml(e.name)}<span class="med-dose">${escHtml(e.dose)}</span></div>
-          ${e.notes ? `<div style="color:var(--muted);font-size:0.78rem;margin-top:2px">${escHtml(e.notes)}</div>` : ''}
-          <div class="med-meta">By ${escHtml(e.userName)} · ${time} · ${when}</div>
+    const byDate = {};
+    entries.forEach(e => { const dk = e.date || '?'; if (!byDate[dk]) byDate[dk] = []; byDate[dk].push(e); });
+    list.innerHTML = '';
+    Object.entries(byDate).forEach(([date, items]) => {
+      const isToday = date === today;
+      const label   = isToday ? 'Today' : new Date(date + 'T12:00:00').toLocaleDateString('en-US', {weekday:'short',month:'short',day:'numeric'});
+      const group   = document.createElement('div');
+      group.className = 'laundry-date-group';
+      const rows = items.map(e => {
+        const ts   = e.timestamp?.toDate?.() || new Date();
+        const time = ts.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+        return `<div class="med-entry" id="med-${e.id}">
+          <div class="med-entry-info">
+            <div class="med-name">${escHtml(e.name)}<span class="med-dose">${escHtml(e.dose)}</span></div>
+            ${e.notes ? `<div style="color:var(--muted);font-size:0.78rem;margin-top:2px">${escHtml(e.notes)}</div>` : ''}
+            <div class="med-meta">By ${escHtml(e.userName)} · ${time}</div>
+          </div>
+          <button class="x-btn" onclick="deleteMedication('${e.id}')">✕</button>
+        </div>`;
+      }).join('');
+      group.innerHTML = `
+        <div class="laundry-date-hdr" onclick="toggleLaundryGroup(this)">
+          <span>${label} <span style="color:var(--muted);font-weight:400">(${items.length})</span></span>
+          <span class="ldh-arrow ${isToday ? 'open' : ''}">▶</span>
         </div>
-        <button class="x-btn" onclick="deleteMedication('${e.id}')">✕</button>
-      </div>`;
-    }).join('');
+        <div class="laundry-date-entries ${isToday ? 'open' : ''}">${rows}</div>`;
+      list.appendChild(group);
+    });
   } catch (e) { console.warn('Medications:', e.message); }
 }
 
@@ -3327,20 +3358,35 @@ async function loadIncidents() {
     }
     if (iHistBtn) iHistBtn.textContent = `📋 History (${entries.length})`;
     const today = new Date().toISOString().slice(0,10);
-    list.innerHTML = entries.map(e => {
-      const ts   = e.timestamp?.toDate?.() || new Date();
-      const time = ts.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-      const when = e.date === today ? 'Today' : e.date;
-      const cls  = e.type === 'poop' ? 'inc-poop' : e.type === 'accident' ? 'inc-accident' : 'inc-other';
-      return `<div class="incident-entry" id="inc-${e.id}">
-        <div class="inc-entry-info">
-          <span class="inc-type-pill ${cls}">${e.typeLabel}</span>
-          ${e.notes ? `<div style="color:var(--muted);font-size:0.82rem;margin-top:3px">${escHtml(e.notes)}</div>` : ''}
-          <div class="inc-meta">By ${escHtml(e.userName)} · ${time} · ${when}</div>
+    const byDate = {};
+    entries.forEach(e => { const dk = e.date || '?'; if (!byDate[dk]) byDate[dk] = []; byDate[dk].push(e); });
+    list.innerHTML = '';
+    Object.entries(byDate).forEach(([date, items]) => {
+      const isToday = date === today;
+      const label   = isToday ? 'Today' : new Date(date + 'T12:00:00').toLocaleDateString('en-US', {weekday:'short',month:'short',day:'numeric'});
+      const group   = document.createElement('div');
+      group.className = 'laundry-date-group';
+      const rows = items.map(e => {
+        const ts   = e.timestamp?.toDate?.() || new Date();
+        const time = ts.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+        const cls  = e.type === 'poop' ? 'inc-poop' : e.type === 'accident' ? 'inc-accident' : 'inc-other';
+        return `<div class="incident-entry" id="inc-${e.id}">
+          <div class="inc-entry-info">
+            <span class="inc-type-pill ${cls}">${e.typeLabel}</span>
+            ${e.notes ? `<div style="color:var(--muted);font-size:0.82rem;margin-top:3px">${escHtml(e.notes)}</div>` : ''}
+            <div class="inc-meta">By ${escHtml(e.userName)} · ${time}</div>
+          </div>
+          <button class="x-btn" onclick="deleteIncident('${e.id}')">✕</button>
+        </div>`;
+      }).join('');
+      group.innerHTML = `
+        <div class="laundry-date-hdr" onclick="toggleLaundryGroup(this)">
+          <span>${label} <span style="color:var(--muted);font-weight:400">(${items.length})</span></span>
+          <span class="ldh-arrow ${isToday ? 'open' : ''}">▶</span>
         </div>
-        <button class="x-btn" onclick="deleteIncident('${e.id}')">✕</button>
-      </div>`;
-    }).join('');
+        <div class="laundry-date-entries ${isToday ? 'open' : ''}">${rows}</div>`;
+      list.appendChild(group);
+    });
   } catch (e) { console.warn('Incidents:', e.message); }
 }
 
