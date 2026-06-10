@@ -1413,6 +1413,19 @@
     .task-ts { color: var(--dim); font-size: 0.65rem; margin-top: 5px; display: none; }
     .task-ts.visible { display: block; }
 
+    /* ═══════════════ CALL-OUTS ═══════════════ */
+    .callout-entry {
+      background: var(--card); border: 1px solid var(--border);
+      border-left: 3px solid var(--coral); border-radius: 10px;
+      padding: 9px 12px; margin-bottom: 6px;
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+    }
+    .co-info { flex: 1; min-width: 0; }
+    .co-name { font-weight: 700; font-size: 0.87rem; color: var(--text); display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .co-shift { font-size: 0.72rem; font-weight: 600; color: var(--coral); background: rgba(255,82,82,0.12); border-radius: 6px; padding: 2px 7px; }
+    .co-reason { color: var(--muted); font-size: 0.8rem; margin-top: 3px; }
+    .co-meta { color: var(--dim); font-size: 0.7rem; margin-top: 4px; }
+
     /* ═══════════════ FOOD LOG ═══════════════ */
     .sec-heading.food-head { color: #ff4081; text-shadow: 0 0 20px rgba(255,64,129,0.4); }
     .food-log-entry {
@@ -1890,6 +1903,7 @@
         <div class="admin-sub-tabs">
           <button class="asub-btn active" onclick="switchAdminTab('staff')">👥 Staff</button>
           <button class="asub-btn" onclick="switchAdminTab('tasks')">📋 Tasks</button>
+          <button class="asub-btn" onclick="switchAdminTab('callouts')">📵 Call-Outs</button>
         </div>
       </div>
 
@@ -1944,6 +1958,43 @@
         <div class="panel-card">
           <h3>Tasks in Selected Room</h3>
           <div id="ar-tasks-list"><div class="empty-state">Select a room above</div></div>
+        </div>
+      </div>
+
+      <!-- Call-Outs -->
+      <div class="admin-panel" id="ap-callouts">
+        <div class="panel-card">
+          <h3>📵 Log a Call-Out</h3>
+          <div class="fg">
+            <label>Staff Member</label>
+            <select id="co-staff-sel">
+              <option value="">— Select Staff —</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Date</label>
+            <input type="date" id="co-date">
+          </div>
+          <div class="fg">
+            <label>Shift</label>
+            <select id="co-shift">
+              <option value="morning">Morning ☀️</option>
+              <option value="mid">Mid 🌤</option>
+              <option value="night">Night 🌙</option>
+              <option value="saturday">A Shift 🅰 (Weekend)</option>
+              <option value="sunday">B Shift 🅱 (Weekend)</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Reason <span style="color:var(--muted);font-weight:400">(optional)</span></label>
+            <input type="text" id="co-reason" placeholder="e.g. Sick, family emergency…">
+          </div>
+          <button class="btn btn-primary btn-block" onclick="logCallOut()">Log Call-Out</button>
+        </div>
+        <div class="panel-card">
+          <h3>📋 Call-Out History</h3>
+          <div id="co-summary" style="font-size:0.78rem;color:var(--muted);margin-bottom:10px"></div>
+          <div id="callouts-list"><div class="empty-state">No call-outs logged yet</div></div>
         </div>
       </div>
 
@@ -2234,6 +2285,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const today = new Date().toISOString().slice(0, 10);
   document.getElementById('daily-date').value  = today;
   document.getElementById('weekly-date').value = today;
+  document.getElementById('co-date').value     = today;
 
   if (!isConfigured()) { renderSetupBanner(); return; }
 
@@ -2407,7 +2459,7 @@ async function showAppScreen() {
   loadFoodLog();
   loadCriticalBanners();
 
-  if (isAdmin) { loadStaffList(); populateAdminRoomSel(); loadMedications(); loadIncidents(); }
+  if (isAdmin) { loadStaffList(); populateAdminRoomSel(); loadMedications(); loadIncidents(); populateCallOutStaffSel(); }
 }
 
 function switchTab(tab) {
@@ -2423,10 +2475,10 @@ function switchTab(tab) {
 }
 
 function switchAdminTab(tab) {
-  document.querySelectorAll('.asub-btn').forEach((b, i) =>
-    b.classList.toggle('active', (tab==='staff'&&i===0)||(tab==='tasks'&&i===1)));
-  document.getElementById('ap-staff').classList.toggle('active', tab === 'staff');
-  document.getElementById('ap-tasks').classList.toggle('active', tab === 'tasks');
+  const tabs = ['staff','tasks','callouts'];
+  document.querySelectorAll('.asub-btn').forEach((b, i) => b.classList.toggle('active', tabs[i] === tab));
+  tabs.forEach(t => document.getElementById('ap-' + t)?.classList.toggle('active', t === tab));
+  if (tab === 'callouts') loadCallOuts();
 }
 
 // ================================================================
@@ -3926,6 +3978,109 @@ async function triggerInstall() {
     if (wrap)   wrap.style.display   = 'none';
     if (tabBtn) tabBtn.style.display = 'none';
   }
+}
+
+// ================================================================
+//  CALL-OUT REPOSITORY
+// ================================================================
+async function populateCallOutStaffSel() {
+  const sel = document.getElementById('co-staff-sel');
+  if (!sel) return;
+  try {
+    const snap = await db.collection('staff').where('facility','==', currentData?.facility || FACILITY).get();
+    snap.docs.forEach(doc => {
+      const opt = document.createElement('option');
+      opt.value = doc.data().name;
+      opt.textContent = doc.data().name;
+      sel.appendChild(opt);
+    });
+  } catch (e) { console.warn('CallOut staff sel:', e.message); }
+}
+
+async function logCallOut() {
+  const staffName = document.getElementById('co-staff-sel').value;
+  const date      = document.getElementById('co-date').value;
+  const shift     = document.getElementById('co-shift').value;
+  const reason    = document.getElementById('co-reason').value.trim();
+  if (!staffName) { showToast('Select a staff member', true); return; }
+  if (!date)      { showToast('Select a date', true); return; }
+  const shiftLabels = { morning:'Morning ☀️', mid:'Mid 🌤', night:'Night 🌙', saturday:'A Shift 🅰', sunday:'B Shift 🅱' };
+  try {
+    await db.collection('callouts').add({
+      staffName,
+      shift, shiftLabel: shiftLabels[shift] || shift,
+      reason: reason || null,
+      date,
+      loggedBy:   currentData?.name || currentUser.email,
+      facility:   currentData?.facility || FACILITY,
+      timestamp:  firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('co-reason').value = '';
+    document.getElementById('co-staff-sel').value = '';
+    document.getElementById('co-date').value = new Date().toISOString().slice(0,10);
+    showToast('📵 Call-out logged');
+    loadCallOuts();
+  } catch (e) { showToast(e.message, true); }
+}
+
+async function loadCallOuts() {
+  const list = document.getElementById('callouts-list');
+  const summary = document.getElementById('co-summary');
+  if (!list) return;
+  try {
+    const snap = await db.collection('callouts').orderBy('timestamp','desc').limit(100).get();
+    const myFac = currentData?.facility || FACILITY;
+    const entries = snap.docs.filter(d => d.data().facility === myFac).map(d => ({ id: d.id, ...d.data() }));
+    if (!entries.length) {
+      list.innerHTML = '<div class="empty-state">No call-outs logged yet</div>';
+      if (summary) summary.textContent = '';
+      return;
+    }
+    // Summary counts per staff member
+    const counts = {};
+    entries.forEach(e => { counts[e.staffName] = (counts[e.staffName] || 0) + 1; });
+    const summaryParts = Object.entries(counts)
+      .sort((a,b) => b[1] - a[1])
+      .map(([name, n]) => `${name}: ${n}`);
+    if (summary) summary.textContent = `Total: ${entries.length} call-out${entries.length !== 1 ? 's' : ''} · ${summaryParts.join(' · ')}`;
+    // Group by date
+    const today = new Date().toISOString().slice(0,10);
+    const byDate = {};
+    entries.forEach(e => { const dk = e.date || '?'; if (!byDate[dk]) byDate[dk] = []; byDate[dk].push(e); });
+    list.innerHTML = '';
+    Object.entries(byDate).forEach(([date, items]) => {
+      const isToday = date === today;
+      const label   = isToday ? 'Today' : new Date(date + 'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+      const group   = document.createElement('div');
+      group.className = 'laundry-date-group';
+      const rows = items.map(e => {
+        const ts   = e.timestamp?.toDate?.() || new Date();
+        const time = ts.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+        return `<div class="callout-entry" id="co-${e.id}">
+          <div class="co-info">
+            <div class="co-name">📵 ${escHtml(e.staffName)}<span class="co-shift">${escHtml(e.shiftLabel)}</span></div>
+            ${e.reason ? `<div class="co-reason">${escHtml(e.reason)}</div>` : ''}
+            <div class="co-meta">Logged by ${escHtml(e.loggedBy)} · ${time}</div>
+          </div>
+          <button class="x-btn" onclick="deleteCallOut('${e.id}')">✕</button>
+        </div>`;
+      }).join('');
+      group.innerHTML = `
+        <div class="laundry-date-hdr" onclick="toggleLaundryGroup(this)">
+          <span>${label} <span style="color:var(--muted);font-weight:400">(${items.length})</span></span>
+          <span class="ldh-arrow ${isToday ? 'open' : ''}">▶</span>
+        </div>
+        <div class="laundry-date-entries ${isToday ? 'open' : ''}">${rows}</div>`;
+      list.appendChild(group);
+    });
+  } catch (e) { console.warn('CallOuts:', e.message); }
+}
+
+async function deleteCallOut(id) {
+  const el = document.getElementById('co-' + id);
+  if (el) el.style.opacity = '0.4';
+  try { await db.collection('callouts').doc(id).delete(); loadCallOuts(); }
+  catch (e) { if (el) el.style.opacity = '1'; showToast('Error', true); }
 }
 
 // ================================================================
