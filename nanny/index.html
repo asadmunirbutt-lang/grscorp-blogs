@@ -2282,7 +2282,7 @@ function isConfigured() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localDateStr();
   document.getElementById('daily-date').value  = today;
   document.getElementById('weekly-date').value = today;
   document.getElementById('co-date').value     = today;
@@ -2467,7 +2467,7 @@ function switchTab(tab) {
   document.querySelectorAll('.view').forEach(v  => v.classList.toggle('active', v.id === 'view-' + tab));
   if (tab === 'daily') {
     if (!document.getElementById('daily-date').value) {
-      document.getElementById('daily-date').value = new Date().toISOString().slice(0, 10);
+      document.getElementById('daily-date').value = localDateStr();
     }
     loadDailyReport();
   }
@@ -2834,7 +2834,7 @@ async function submitRoomTasks() {
       room:         selectedRoom.name,
       roomId:       selectedRoom.id,
       shift:        selectedShift,
-      date:         new Date().toISOString().slice(0, 10),
+      date:         localDateStr(),
       tasks: tasks.map(t => ({
         name: t.name, status: t.status,
         markedAt: t.markedAt,
@@ -3230,7 +3230,7 @@ async function logLaundry(type) {
       typeLabel: typeLabels[type], catLabel: catLabels[laundryCat],
       userId: currentUser.uid, userName: currentData?.name || currentUser.email,
       facility: currentData?.facility || FACILITY,
-      date: new Date().toISOString().slice(0, 10),
+      date: localDateStr(),
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
     showToast(typeLabels[type] + ' logged');
@@ -3259,7 +3259,7 @@ async function loadLaundryLog() {
     if (toggleBtn) toggleBtn.textContent = `📋 History (${entries.length})`;
     const byDate = {};
     entries.forEach(e => { const dt = e.date || '?'; if (!byDate[dt]) byDate[dt] = []; byDate[dt].push(e); });
-    const today = new Date().toISOString().slice(0, 10);
+    const today = localDateStr();
     logEl.innerHTML = '';
     Object.entries(byDate).forEach(([date, items]) => {
       const isToday = date === today;
@@ -3338,7 +3338,7 @@ async function logFood() {
       userId:   currentUser.uid,
       userName: currentData?.name || currentUser.email,
       facility: currentData?.facility || FACILITY,
-      date:     new Date().toISOString().slice(0, 10),
+      date:     localDateStr(),
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
     document.getElementById('food-meal').value  = '';
@@ -3357,7 +3357,7 @@ async function loadFoodLog() {
   const list = document.getElementById('food-log-list');
   if (!list) return;
   try {
-    const today   = new Date().toISOString().slice(0, 10);
+    const today   = localDateStr();
     const isAdmin = currentData?.role === 'admin';
     const snap    = await db.collection('foodlog').orderBy('timestamp','desc').limit(50).get();
     const myFac   = currentData?.facility || FACILITY;
@@ -3412,7 +3412,7 @@ async function logMedication() {
       userId:   currentUser.uid,
       userName: currentData?.name || currentUser.email,
       facility: currentData?.facility || FACILITY,
-      date:     new Date().toISOString().slice(0,10),
+      date:     localDateStr(),
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
     document.getElementById('med-name').value  = '';
@@ -3431,7 +3431,7 @@ async function loadMedications() {
   const list = document.getElementById('meds-list');
   if (!list) return;
   try {
-    const today   = new Date().toISOString().slice(0,10);
+    const today   = localDateStr();
     const snap    = await db.collection('medications').orderBy('timestamp','desc').limit(50).get();
     const myFac   = currentData?.facility || FACILITY;
     const entries = snap.docs.filter(d => d.data().facility === myFac).map(d => ({ id: d.id, ...d.data() }));
@@ -3501,7 +3501,7 @@ async function logIncident() {
       userId:   currentUser.uid,
       userName: currentData?.name || currentUser.email,
       facility: currentData?.facility || FACILITY,
-      date:     new Date().toISOString().slice(0,10),
+      date:     localDateStr(),
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
     document.getElementById('inc-notes').value = '';
@@ -3528,7 +3528,7 @@ async function loadIncidents() {
       return;
     }
     if (iHistBtn) iHistBtn.textContent = `📋 History (${entries.length})`;
-    const today = new Date().toISOString().slice(0,10);
+    const today = localDateStr();
     const byDate = {};
     entries.forEach(e => { const dk = e.date || '?'; if (!byDate[dk]) byDate[dk] = []; byDate[dk].push(e); });
     list.innerHTML = '';
@@ -3711,12 +3711,12 @@ function stepDailyDate(delta) {
   const inp = document.getElementById('daily-date');
   const cur = inp.value ? new Date(inp.value + 'T12:00:00') : new Date();
   cur.setDate(cur.getDate() + delta);
-  inp.value = cur.toISOString().slice(0, 10);
+  inp.value = localDateStr(cur);
   loadDailyReport();
 }
 
 function jumpDailyToday() {
-  document.getElementById('daily-date').value = new Date().toISOString().slice(0, 10);
+  document.getElementById('daily-date').value = localDateStr();
   loadDailyReport();
 }
 
@@ -3725,7 +3725,7 @@ async function loadDailyReport() {
   const wrap = document.getElementById('daily-content');
   if (!date || !currentData) return;
 
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localDateStr();
   const d     = new Date(date + 'T12:00:00');
   const label = date === today
     ? 'Today · ' + d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
@@ -3819,7 +3819,7 @@ async function loadWeeklyReport() {
 
   const dates = [];
   const start = new Date(startStr + 'T00:00:00');
-  for (let i = 0; i < 7; i++) { const d = new Date(start); d.setDate(d.getDate()+i); dates.push(d.toISOString().slice(0,10)); }
+  for (let i = 0; i < 7; i++) { const d = new Date(start); d.setDate(d.getDate()+i); dates.push(localDateStr(d)); }
 
   try {
     const snap = await db.collection('submissions')
@@ -3923,6 +3923,10 @@ function buildSubCard(name, meta, pill, tasks, photoURL) {
 // ================================================================
 //  UTILITIES
 // ================================================================
+function localDateStr(d = new Date()) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
 function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -4017,7 +4021,7 @@ async function logCallOut() {
     });
     document.getElementById('co-reason').value = '';
     document.getElementById('co-staff-sel').value = '';
-    document.getElementById('co-date').value = new Date().toISOString().slice(0,10);
+    document.getElementById('co-date').value = localDateStr();
     showToast('📵 Call-out logged');
     loadCallOuts();
   } catch (e) { showToast(e.message, true); }
@@ -4044,7 +4048,7 @@ async function loadCallOuts() {
       .map(([name, n]) => `${name}: ${n}`);
     if (summary) summary.textContent = `Total: ${entries.length} call-out${entries.length !== 1 ? 's' : ''} · ${summaryParts.join(' · ')}`;
     // Group by date
-    const today = new Date().toISOString().slice(0,10);
+    const today = localDateStr();
     const byDate = {};
     entries.forEach(e => { const dk = e.date || '?'; if (!byDate[dk]) byDate[dk] = []; byDate[dk].push(e); });
     list.innerHTML = '';
