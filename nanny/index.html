@@ -2551,6 +2551,7 @@ function finalizeShiftSelect() {
   _pendingShift = null;
   const isAdmin = currentData?.role === 'admin';
   selectedShift = shiftId;
+  restoreDraft(shiftId);
   document.querySelectorAll('.shift-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   if (!isAdmin) {
@@ -2560,6 +2561,24 @@ function finalizeShiftSelect() {
     if (other) other.style.display = 'none';
     document.getElementById('shift-locked-badge').style.display = 'block';
   }
+}
+
+function saveDraft() {
+  if (!currentUser || !selectedShift) return;
+  const key = `nanny_draft_${currentUser.uid}_${localDateStr()}_${selectedShift}`;
+  try { localStorage.setItem(key, JSON.stringify({ allRoomStatuses, submittedRooms })); } catch (e) {}
+}
+
+function restoreDraft(shift) {
+  if (!currentUser) return;
+  const key = `nanny_draft_${currentUser.uid}_${localDateStr()}_${shift}`;
+  const raw = localStorage.getItem(key);
+  if (!raw) return;
+  try {
+    const saved = JSON.parse(raw);
+    allRoomStatuses = saved.allRoomStatuses || {};
+    submittedRooms  = saved.submittedRooms  || {};
+  } catch (e) {}
 }
 
 async function showShiftAckModal() {
@@ -2773,6 +2792,7 @@ function setStatus(taskId, status) {
       submitSection.innerHTML = `<button class="submit-btn" onclick="submitRoomTasks()">✅ Submit Room Tasks</button>`;
     }
   }
+  saveDraft();
   updateProgress();
 }
 
@@ -2851,6 +2871,7 @@ async function submitRoomTasks() {
     const mins = Math.round((submitTime - firstClick) / 60000);
     const submitStr = new Date(submitTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
     submittedRooms[selectedRoom.id] = { submitStr, mins };
+    saveDraft();
     renderTasks();
     showToast('✅ Submitted at ' + submitStr);
   } catch (e) { showToast('Error: ' + e.message, true); }
