@@ -2369,6 +2369,9 @@ async function doRegister() {
 }
 
 async function doLogout() {
+  if (currentUser) {
+    try { localStorage.removeItem(`nanny_draft_${currentUser.uid}_${localDateStr()}`); } catch(e) {}
+  }
   selectedShift = null; shiftLocked = false;
   currentUser   = null; currentData  = null; regPhotoFile = null;
   taskStatuses = {}; allRoomStatuses = {}; submittedRooms = {}; selectedRoom = null;
@@ -2453,6 +2456,7 @@ async function showAppScreen() {
   document.getElementById('user-welcome').textContent = 'Welcome back, ' + name.split(' ')[0] + '! 👋';
 
   await loadRooms();
+  applyRestoredShiftUI();
   loadNotes();
   loadSupplies();
   loadLaundryLog();
@@ -2550,35 +2554,63 @@ function finalizeShiftSelect() {
   const { shiftId, el, group } = _pendingShift;
   _pendingShift = null;
   const isAdmin = currentData?.role === 'admin';
+  // Switching to a different shift — clear any in-progress work for the old shift
+  if (shiftId !== selectedShift) {
+    allRoomStatuses = {}; submittedRooms = {}; taskStatuses = {};
+  }
   selectedShift = shiftId;
-  restoreDraft(shiftId);
+  shiftLocked   = !isAdmin;
   document.querySelectorAll('.shift-card').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
   if (!isAdmin) {
-    shiftLocked = true;
     document.querySelectorAll('.shift-card').forEach(c => { c.disabled = true; });
     const other = document.getElementById('sg-' + (group === 'weekdays' ? 'weekends' : 'weekdays'));
     if (other) other.style.display = 'none';
     document.getElementById('shift-locked-badge').style.display = 'block';
   }
+  saveDraft();
 }
 
 function saveDraft() {
   if (!currentUser || !selectedShift) return;
-  const key = `nanny_draft_${currentUser.uid}_${localDateStr()}_${selectedShift}`;
-  try { localStorage.setItem(key, JSON.stringify({ allRoomStatuses, submittedRooms })); } catch (e) {}
+  const key = `nanny_draft_${currentUser.uid}_${localDateStr()}`;
+  try {
+    localStorage.setItem(key, JSON.stringify({ selectedShift, shiftLocked, allRoomStatuses, submittedRooms }));
+  } catch (e) {}
 }
 
-function restoreDraft(shift) {
-  if (!currentUser) return;
-  const key = `nanny_draft_${currentUser.uid}_${localDateStr()}_${shift}`;
+function restoreDraft() {
+  if (!currentUser) return null;
+  const key = `nanny_draft_${currentUser.uid}_${localDateStr()}`;
   const raw = localStorage.getItem(key);
-  if (!raw) return;
+  if (!raw) return null;
   try {
-    const saved = JSON.parse(raw);
-    allRoomStatuses = saved.allRoomStatuses || {};
-    submittedRooms  = saved.submittedRooms  || {};
-  } catch (e) {}
+    const s = JSON.parse(raw);
+    if (!s.selectedShift) return null;
+    selectedShift   = s.selectedShift;
+    shiftLocked     = !!s.shiftLocked;
+    allRoomStatuses = s.allRoomStatuses || {};
+    submittedRooms  = s.submittedRooms  || {};
+    return s;
+  } catch (e) { return null; }
+}
+
+function applyRestoredShiftUI() {
+  const draft = restoreDraft();
+  if (!draft) return;
+  const isAdmin = currentData?.role === 'admin';
+  document.querySelectorAll('.shift-card').forEach(c => {
+    const oc = c.getAttribute('onclick') || '';
+    if (oc.includes(`'${draft.selectedShift}'`)) c.classList.add('selected');
+    if (!isAdmin && draft.shiftLocked) c.disabled = true;
+  });
+  if (!isAdmin && draft.shiftLocked) {
+    const group = ['morning','midday','night'].includes(draft.selectedShift) ? 'weekdays' : 'weekends';
+    const other = document.getElementById('sg-' + (group === 'weekdays' ? 'weekends' : 'weekdays'));
+    if (other) other.style.display = 'none';
+    const badge = document.getElementById('shift-locked-badge');
+    if (badge) badge.style.display = 'block';
+  }
 }
 
 async function showShiftAckModal() {
