@@ -1662,6 +1662,7 @@
           <span class="field-label">Select Your Shift</span>
           <span class="shift-locked-badge" id="shift-locked-badge">🔒 Locked</span>
           <span class="shift-admin-badge"  id="shift-admin-badge">⚡ Tap to switch</span>
+          <button id="shift-reset-btn" onclick="resetShift()" style="display:none;background:none;border:1px solid rgba(255,82,82,0.4);color:#ff5252;font-size:0.7rem;padding:3px 10px;border-radius:12px;cursor:pointer;font-weight:600">↺ Wrong shift?</button>
         </div>
 
         <div id="sg-weekdays" class="shift-group">
@@ -2566,7 +2567,10 @@ function finalizeShiftSelect() {
     document.querySelectorAll('.shift-card').forEach(c => { c.disabled = true; });
     const other = document.getElementById('sg-' + (group === 'weekdays' ? 'weekends' : 'weekdays'));
     if (other) other.style.display = 'none';
-    document.getElementById('shift-locked-badge').style.display = 'block';
+    const lb = document.getElementById('shift-locked-badge');
+    const rb = document.getElementById('shift-reset-btn');
+    if (lb) lb.style.display = 'block';
+    if (rb) rb.style.display = 'inline-block';
   }
   saveDraft();
 }
@@ -2609,8 +2613,30 @@ function applyRestoredShiftUI() {
     const other = document.getElementById('sg-' + (group === 'weekdays' ? 'weekends' : 'weekdays'));
     if (other) other.style.display = 'none';
     const badge = document.getElementById('shift-locked-badge');
+    const reset = document.getElementById('shift-reset-btn');
     if (badge) badge.style.display = 'block';
+    if (reset) reset.style.display = 'inline-block';
   }
+}
+
+function resetShift() {
+  if (!confirm('Clear your current shift and start over? Any unmarked task progress will be lost.')) return;
+  if (currentUser) {
+    try { localStorage.removeItem(`nanny_draft_${currentUser.uid}_${localDateStr()}`); } catch(e) {}
+  }
+  selectedShift = null; shiftLocked = false;
+  allRoomStatuses = {}; submittedRooms = {}; taskStatuses = {}; selectedRoom = null;
+  document.querySelectorAll('.shift-card').forEach(c => { c.classList.remove('selected'); c.disabled = false; });
+  ['sg-weekdays','sg-weekends'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = '';
+  });
+  const lb = document.getElementById('shift-locked-badge');
+  const rb = document.getElementById('shift-reset-btn');
+  if (lb) lb.style.display = 'none';
+  if (rb) rb.style.display = 'none';
+  document.getElementById('room-sel').value = '';
+  document.getElementById('room-content').innerHTML = '';
 }
 
 async function showShiftAckModal() {
