@@ -10,27 +10,18 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-542W6ZTYH8');
     </script>
     <link rel="stylesheet" href="/blogs/assets/css/style.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', 'Trebuchet MS', sans-serif;
             line-height: 1.8;
             color: #2d3436;
             background: #f5f6f7;
         }
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
         header {
             background: linear-gradient(135deg, #0f3a5c 0%, #1e5a96 100%);
             color: white;
@@ -38,29 +29,12 @@
             text-align: center;
             margin-bottom: 50px;
         }
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        .subtitle {
-            font-size: 1.1em;
-            opacity: 0.95;
-        }
-        .back-link {
-            margin-bottom: 30px;
-        }
-        .back-link a {
-            color: #1e5a96;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .back-link a:hover {
-            text-decoration: underline;
-        }
-        .blog-grid {
-            display: grid;
-            gap: 25px;
-        }
+        h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .subtitle { font-size: 1.1em; opacity: 0.95; }
+        .back-link { margin-bottom: 30px; }
+        .back-link a { color: #1e5a96; text-decoration: none; font-weight: 600; }
+        .back-link a:hover { text-decoration: underline; }
+        .blog-grid { display: grid; gap: 25px; }
         .blog-card {
             background: white;
             padding: 30px;
@@ -69,53 +43,38 @@
             transition: all 0.3s ease;
         }
         .blog-card:hover {
-            box-shadow: 0 4px 16px rgba(30, 90, 150, 0.15);
+            box-shadow: 0 4px 16px rgba(30,90,150,0.15);
             transform: translateY(-2px);
         }
         .blog-card h2 {
             color: #0f3a5c;
-            font-size: 1.6em;
+            font-size: 1.5em;
             margin-bottom: 12px;
             line-height: 1.3;
         }
-        .blog-card a {
-            color: #1e5a96;
-            text-decoration: none;
-            font-weight: 600;
-        }
-        .blog-card a:hover {
-            text-decoration: underline;
-        }
+        .blog-card a { color: #1e5a96; text-decoration: none; font-weight: 600; }
+        .blog-card a:hover { text-decoration: underline; }
         .blog-meta {
             display: flex;
-            gap: 20px;
-            margin-bottom: 15px;
-            font-size: 0.95em;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 12px;
+            font-size: 0.9em;
             color: #666;
         }
-        .blog-meta-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .blog-excerpt {
-            color: #444;
-            line-height: 1.7;
-            margin-bottom: 15px;
-        }
-        .read-more {
+        .blog-excerpt { color: #444; line-height: 1.7; margin-bottom: 15px; }
+        .read-more { display: inline-block; color: #1e5a96; font-weight: 600; text-decoration: none; }
+        .read-more:hover { text-decoration: underline; }
+        .new-badge {
             display: inline-block;
-            color: #1e5a96;
-            font-weight: 600;
-            text-decoration: none;
-        }
-        .read-more:hover {
-            text-decoration: underline;
-        }
-        .no-posts {
-            text-align: center;
-            padding: 60px 20px;
-            color: #888;
+            background: #0d7377;
+            color: white;
+            font-size: 0.75em;
+            font-weight: 700;
+            padding: 2px 9px;
+            border-radius: 12px;
+            margin-left: 8px;
+            vertical-align: middle;
         }
     </style>
 </head>
@@ -127,46 +86,89 @@
 
     <div class="container">
         <div class="back-link">
-            <a href="https://grscorp.us">← Back to GRSCorp</a>
+            <a href="https://grscorp.us">&#8592; Back to GRSCorp</a>
         </div>
 
-        <div style="background: linear-gradient(135deg, #e8a020 0%, #ffc107 100%); color: #fff; padding: 30px; border-radius: 8px; margin-bottom: 40px; text-align: center;">
-            <h2 style="margin-bottom: 10px; color: #fff;">Free Autism Self-Assessment Tool</h2>
-            <p style="margin-bottom: 15px; opacity: 0.95;">Take a quick 10-question screening to explore whether professional evaluation might be beneficial.</p>
-            <a href="/autism-screening-test.html" style="display: inline-block; background: #fff; color: #0f3a5c; padding: 12px 28px; border-radius: 6px; font-weight: 600; text-decoration: none; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">Start Screening Tool →</a>
+        <div style="background:linear-gradient(135deg,#e8a020 0%,#ffc107 100%);color:#fff;padding:30px;border-radius:8px;margin-bottom:40px;text-align:center;">
+            <h2 style="margin-bottom:10px;color:#fff;">Free Autism Self-Assessment Tool</h2>
+            <p style="margin-bottom:15px;opacity:0.95;">Take a quick 10-question screening to explore whether professional evaluation might be beneficial.</p>
+            <a href="/autism-screening-test.html" style="display:inline-block;background:#fff;color:#0f3a5c;padding:12px 28px;border-radius:6px;font-weight:600;text-decoration:none;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">Start Screening Tool &rarr;</a>
         </div>
 
-        <div class="blog-grid" id="blog-list">
-            <div class="no-posts">
-                <p>Blog posts coming soon!</p>
+        <div class="blog-grid">
+
+            <div class="blog-card">
+                <h2><a href="/blogs/posts/10-best-sensory-toys-autism.html">10 Best Sensory Toys for Individuals with Autism: A Parent Resource Guide</a><span class="new-badge">NEW</span></h2>
+                <div class="blog-meta">
+                    <span><strong>June 22, 2026</strong></span>
+                    <span>GRSCorp Team</span>
+                    <span>Parent Resources &amp; Sensory Support</span>
+                </div>
+                <p class="blog-excerpt">Expert-reviewed guide to the 10 best sensory tools spanning tactile, vestibular, auditory, and proprioceptive categories — with clinical benefits, usage tips, and a CSR partnership with Sensory Harbor that funds GRS Corp's global programs with every purchase.</p>
+                <a href="/blogs/posts/10-best-sensory-toys-autism.html" class="read-more">Read More &rarr;</a>
             </div>
+
+            <div class="blog-card">
+                <h2><a href="/blogs/posts/signs-of-autism-in-adults.html">Signs of Autism in Adults: Late Diagnosis &amp; What to Do Next</a></h2>
+                <div class="blog-meta">
+                    <span><strong>June 8, 2026</strong></span>
+                    <span>GRSCorp Team</span>
+                    <span>Diagnosis &amp; Awareness</span>
+                </div>
+                <p class="blog-excerpt">Many adults go undiagnosed for decades. Learn the key signs of autism in adults, how late diagnosis differs from childhood diagnosis, and how to navigate the path to formal evaluation and post-diagnosis support.</p>
+                <a href="/blogs/posts/signs-of-autism-in-adults.html" class="read-more">Read More &rarr;</a>
+            </div>
+
+            <div class="blog-card">
+                <h2><a href="/blogs/posts/how-to-get-autism-evaluation.html">How to Get an Autism Evaluation: A Step-by-Step Guide</a></h2>
+                <div class="blog-meta">
+                    <span><strong>June 2, 2026</strong></span>
+                    <span>GRSCorp Team</span>
+                    <span>Diagnosis &amp; Advocacy</span>
+                </div>
+                <p class="blog-excerpt">Navigating the autism evaluation process can feel daunting. This step-by-step guide walks families through requesting an evaluation, what to expect at each stage, and how to advocate for a thorough and timely assessment.</p>
+                <a href="/blogs/posts/how-to-get-autism-evaluation.html" class="read-more">Read More &rarr;</a>
+            </div>
+
+            <div class="blog-card">
+                <h2><a href="/blogs/posts/autism-iep-guide.html">Autism &amp; IEPs: A Parent's Guide to School Rights &amp; Advocacy</a></h2>
+                <div class="blog-meta">
+                    <span><strong>May 31, 2026</strong></span>
+                    <span>GRSCorp Team</span>
+                    <span>Education &amp; Advocacy</span>
+                </div>
+                <p class="blog-excerpt">A complete guide to Individualized Education Programs (IEPs) for autistic students — covering parent rights, how to advocate effectively, key accommodations to request, and what to do when the system is not working for your child.</p>
+                <a href="/blogs/posts/autism-iep-guide.html" class="read-more">Read More &rarr;</a>
+            </div>
+
+            <div class="blog-card">
+                <h2><a href="/blogs/posts/nys-autism-school-resources.html">New York State Autism School Resources: A Complete Parent Guide</a></h2>
+                <div class="blog-meta">
+                    <span><strong>May 30, 2026</strong></span>
+                    <span>GRSCorp Team</span>
+                    <span>Education &amp; State Resources</span>
+                </div>
+                <p class="blog-excerpt">A comprehensive guide to autism education resources, services, and programs available across New York State — from Early Intervention through college and post-secondary transition support.</p>
+                <a href="/blogs/posts/nys-autism-school-resources.html" class="read-more">Read More &rarr;</a>
+            </div>
+
+            <div class="blog-card">
+                <h2><a href="/blogs/posts/early-signs-autism-young-children.html">Early Signs of Autism in Young Children</a></h2>
+                <div class="blog-meta">
+                    <span><strong>May 25, 2026</strong></span>
+                    <span>GRSCorp Team</span>
+                    <span>Early Intervention</span>
+                </div>
+                <p class="blog-excerpt">Early identification of autism can make a profound difference in outcomes. Learn the developmental milestones to watch for and the early signs of autism in children from 12 months through 5 years of age.</p>
+                <a href="/blogs/posts/early-signs-autism-young-children.html" class="read-more">Read More &rarr;</a>
+            </div>
+
         </div>
     </div>
 
-    <script>
-        // Blog posts data will be loaded here
-        // This is a placeholder - posts will be added via GitHub
-
-        // Sample structure for when posts are added:
-        /*
-        const posts = [
-            {
-                title: "Post Title",
-                date: "Month DD, YYYY",
-                author: "Author Name",
-                excerpt: "Brief description...",
-                url: "/blogs/posts/post-slug.html"
-            }
-        ];
-        */
-
-        function loadBlogsList() {
-            const listContainer = document.getElementById('blog-list');
-            // Posts will be dynamically loaded here
-            // For now, showing placeholder
-        }
-
-        loadBlogsList();
-    </script>
+    <footer>
+        <p>&copy; 2026 Global Relief And Support Corporation. All rights reserved.</p>
+        <p><a href="https://grscorp.us">Visit GRSCorp.us</a></p>
+    </footer>
 </body>
 </html>
