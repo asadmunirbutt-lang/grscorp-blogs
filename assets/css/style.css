@@ -344,6 +344,288 @@ footer a:hover {
     color: var(--white);
 }
 
+/* ============================================
+   Site Header / Navigation
+   ============================================ */
+.site-header {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 500;
+    box-shadow: 0 1px 6px rgba(15,58,92,0.06);
+}
+
+.site-header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.site-logo {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-weight: 800;
+    font-size: 1.3em;
+    color: var(--primary) !important;
+    text-decoration: none !important;
+    white-space: nowrap;
+}
+
+.site-logo .logo-mark {
+    background: var(--primary);
+    color: var(--white);
+    padding: 3px 9px;
+    border-radius: 6px;
+    font-size: 0.75em;
+    letter-spacing: 0.5px;
+}
+
+.site-logo .logo-sub {
+    font-weight: 500;
+    font-size: 0.62em;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.site-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.site-nav > a, .nav-dropdown-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.92em;
+    color: var(--text) !important;
+    text-decoration: none !important;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.site-nav > a:hover, .nav-dropdown-toggle:hover, .nav-dropdown.open .nav-dropdown-toggle {
+    background: var(--bg);
+    color: var(--primary) !important;
+}
+
+.nav-dropdown-toggle svg {
+    width: 10px;
+    height: 10px;
+    transition: transform 0.2s ease;
+}
+
+.nav-dropdown.open .nav-dropdown-toggle svg {
+    transform: rotate(180deg);
+}
+
+.nav-dropdown {
+    position: relative;
+}
+
+.nav-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(15,58,92,0.14);
+    min-width: 240px;
+    padding: 8px;
+    z-index: 600;
+}
+
+.nav-dropdown.open .nav-dropdown-menu {
+    display: block;
+}
+
+.nav-dropdown-menu a {
+    display: block;
+    padding: 9px 12px;
+    border-radius: 6px;
+    color: var(--text) !important;
+    text-decoration: none !important;
+    font-size: 0.92em;
+    font-weight: 500;
+}
+
+.nav-dropdown-menu a:hover {
+    background: var(--bg);
+    color: var(--primary) !important;
+}
+
+.nav-donate-btn {
+    background: var(--accent) !important;
+    color: var(--white) !important;
+    padding: 9px 18px !important;
+    border-radius: 20px;
+    font-weight: 700 !important;
+}
+
+.nav-donate-btn:hover {
+    background: #e85555 !important;
+    color: var(--white) !important;
+}
+
+.nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: var(--primary);
+}
+
+@media (max-width: 900px) {
+    .site-nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--white);
+        flex-direction: column;
+        align-items: stretch;
+        padding: 10px 20px 20px;
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 8px 24px rgba(15,58,92,0.1);
+    }
+    .site-nav.mobile-open {
+        display: flex;
+    }
+    .site-nav > a, .nav-dropdown-toggle {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .nav-dropdown-menu {
+        position: static;
+        box-shadow: none;
+        border: none;
+        padding-left: 12px;
+        min-width: 0;
+    }
+    .nav-toggle {
+        display: block;
+    }
+}
+
+/* ============================================
+   Site Footer (rich, multi-column)
+   ============================================ */
+.site-footer-grid {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    gap: 30px;
+    text-align: left;
+    padding-bottom: 30px;
+}
+
+.site-footer-grid h4 {
+    color: var(--white) !important;
+    font-size: 0.95em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 14px;
+    opacity: 0.9;
+}
+
+.site-footer-grid ul {
+    list-style: none;
+}
+
+.site-footer-grid li {
+    margin-bottom: 9px;
+}
+
+.site-footer-grid p {
+    opacity: 0.85;
+    font-size: 0.92em;
+    line-height: 1.7;
+}
+
+.site-footer-bottom {
+    max-width: 1100px;
+    margin: 0 auto;
+    border-top: 1px solid rgba(255,255,255,0.15);
+    padding-top: 20px;
+    font-size: 0.85em;
+    opacity: 0.75;
+}
+
+@media (max-width: 768px) {
+    .site-footer-grid {
+        grid-template-columns: 1fr 1fr;
+        text-align: left;
+    }
+}
+
+/* ============================================
+   Related posts widget (appended to post pages)
+   ============================================ */
+.related-posts {
+    margin-top: 45px;
+    padding-top: 30px;
+    border-top: 2px solid var(--border);
+}
+
+.related-posts h3 {
+    margin-bottom: 16px;
+}
+
+.related-posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.related-post-card {
+    display: block;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    text-decoration: none !important;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.related-post-card:hover {
+    box-shadow: 0 6px 18px rgba(15,58,92,0.12);
+    transform: translateY(-2px);
+}
+
+.related-post-card .rpc-label {
+    display: block;
+    font-size: 0.75em;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.related-post-card .rpc-title {
+    display: block;
+    color: var(--primary) !important;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     header h1 {

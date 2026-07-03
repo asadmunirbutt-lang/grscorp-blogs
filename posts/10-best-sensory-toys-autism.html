@@ -232,9 +232,44 @@
     </style>
 </head>
 <body>
-    <header>
-        <h1>Blog</h1>
-        <p class="subtitle">Insights and resources from GRSCorp</p>
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="/" class="site-logo"><span class="logo-mark">GRS</span> Corp <span class="logo-sub">Blog</span></a>
+            <nav class="site-nav" id="siteNav">
+                <a href="/">Home</a>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-toggle" type="button">Blog <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 7l5 5 5-5"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="/">All Posts</a>
+                        <a href="/posts/10-best-sensory-toys-autism.html">Sensory Resources</a>
+                        <a href="/posts/autism-iep-guide.html">School &amp; IEP Advocacy</a>
+                        <a href="/posts/signs-of-autism-in-adults.html">Diagnosis &amp; Signs</a>
+                        <a href="/posts/nys-autism-school-resources.html">NYS Family Resources</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-toggle" type="button">What is Autism? <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 7l5 5 5-5"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="https://grscorp.us/what-causes-autism/" target="_blank" rel="noopener">What Causes Autism</a>
+                        <a href="https://grscorp.us/learn-the-sign-of-autism/" target="_blank" rel="noopener">Learn the Signs</a>
+                        <a href="https://grscorp.us/what-are-symptoms-of-autism/" target="_blank" rel="noopener">Symptoms of Autism</a>
+                        <a href="https://grscorp.us/sensory-issues/" target="_blank" rel="noopener">Sensory Issues</a>
+                        <a href="https://grscorp.us/autism-diagnosis-criteria/" target="_blank" rel="noopener">Diagnosis Criteria</a>
+                    </div>
+                </div>
+                <a href="/autism-screening-test.html">Free Screening Tool</a>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-toggle" type="button">About GRS Corp <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 7l5 5 5-5"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="https://grscorp.us/" target="_blank" rel="noopener">Our Mission &amp; Vision</a>
+                        <a href="https://grscorp.us/core-values/" target="_blank" rel="noopener">Core Values</a>
+                        <a href="https://grscorp.us/board-members/" target="_blank" rel="noopener">Board Members</a>
+                    </div>
+                </div>
+                <a href="https://grscorp.us/donate/" class="nav-donate-btn" target="_blank" rel="noopener">Donate</a>
+            </nav>
+            <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu">&#9776;</button>
+        </div>
     </header>
 
     <div class="container">
@@ -508,6 +543,24 @@
             </div>
         </article>
 
+        <div class="related-posts">
+            <h3>Related Reading</h3>
+            <div class="related-posts-grid">
+                <a class="related-post-card" href="/posts/understanding-self-injurious-behavior-autism.html">
+                    <span class="rpc-label">Behavior &amp; Family Support</span>
+                    <span class="rpc-title">Understanding Self-Injurious Behavior in Autism</span>
+                </a>
+                <a class="related-post-card" href="/posts/autism-ai-apps-special-needs-families.html">
+                    <span class="rpc-label">Technology &amp; Inclusion</span>
+                    <span class="rpc-title">Autism + AI: New Apps for Special Needs Families</span>
+                </a>
+                <a class="related-post-card" href="/posts/signs-of-autism-in-adults.html">
+                    <span class="rpc-label">Diagnosis &amp; Awareness</span>
+                    <span class="rpc-title">Signs of Autism in Adults</span>
+                </a>
+            </div>
+        </div>
+
         <div class="mission-banner">
             <h3>GRS Corp — Global Relief &amp; Family Support</h3>
             <p>Global Relief And Support Corporation provides advocacy, resources, and direct support to families affected by autism and developmental differences worldwide. Every Sensory Harbor purchase through this page directly funds our programs at no additional cost to you.</p>
@@ -520,8 +573,43 @@
     </div>
 
     <footer>
-        <p>&copy; 2026 Global Relief And Support Corporation. All rights reserved.</p>
-        <p><a href="https://grscorp.us">Visit GRSCorp.us</a></p>
+        <div class="site-footer-grid">
+            <div>
+                <h4>GRS Corp</h4>
+                <p>Global Relief And Support Corporation is a 501(c)(3) nonprofit based in Clifton Park, NY, dedicated to improving quality of life for individuals with autism and their families.</p>
+            </div>
+            <div>
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="/">Blog Home</a></li>
+                    <li><a href="/autism-screening-test.html">Free Screening Tool</a></li>
+                    <li><a href="https://grscorp.us/" target="_blank" rel="noopener">GRSCorp.us</a></li>
+                    <li><a href="https://grscorp.us/donate/" target="_blank" rel="noopener">Donate</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>About Autism</h4>
+                <ul>
+                    <li><a href="https://grscorp.us/learn-the-sign-of-autism/" target="_blank" rel="noopener">Signs of Autism</a></li>
+                    <li><a href="https://grscorp.us/what-are-symptoms-of-autism/" target="_blank" rel="noopener">Symptoms</a></li>
+                    <li><a href="https://grscorp.us/sensory-issues/" target="_blank" rel="noopener">Sensory Issues</a></li>
+                    <li><a href="https://grscorp.us/core-values/" target="_blank" rel="noopener">Our Core Values</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Get Involved</h4>
+                <ul>
+                    <li><a href="https://grscorp.us/volunteer/" target="_blank" rel="noopener">Volunteer</a></li>
+                    <li><a href="https://grscorp.us/contact/" target="_blank" rel="noopener">Contact Us</a></li>
+                    <li><a href="https://grscorp.us/board-members/" target="_blank" rel="noopener">Board Members</a></li>
+                    <li><a href="http://charityshop.grscorp.us/" target="_blank" rel="noopener">Shop Our Cause</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="site-footer-bottom">
+            <p>&copy; 2026 Global Relief And Support Corporation. All rights reserved. GRS Corp is a registered 501(c)(3) nonprofit organization.</p>
+        </div>
     </footer>
+    <script src="/assets/js/site-nav.js"></script>
 </body>
 </html>

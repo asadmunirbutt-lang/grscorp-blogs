@@ -537,6 +537,45 @@
     </style>
 </head>
 <body>
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="/" class="site-logo"><span class="logo-mark">GRS</span> Corp <span class="logo-sub">Blog</span></a>
+            <nav class="site-nav" id="siteNav">
+                <a href="/">Home</a>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-toggle" type="button">Blog <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 7l5 5 5-5"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="/">All Posts</a>
+                        <a href="/posts/10-best-sensory-toys-autism.html">Sensory Resources</a>
+                        <a href="/posts/autism-iep-guide.html">School &amp; IEP Advocacy</a>
+                        <a href="/posts/signs-of-autism-in-adults.html">Diagnosis &amp; Signs</a>
+                        <a href="/posts/nys-autism-school-resources.html">NYS Family Resources</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-toggle" type="button">What is Autism? <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 7l5 5 5-5"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="https://grscorp.us/what-causes-autism/" target="_blank" rel="noopener">What Causes Autism</a>
+                        <a href="https://grscorp.us/learn-the-sign-of-autism/" target="_blank" rel="noopener">Learn the Signs</a>
+                        <a href="https://grscorp.us/what-are-symptoms-of-autism/" target="_blank" rel="noopener">Symptoms of Autism</a>
+                        <a href="https://grscorp.us/sensory-issues/" target="_blank" rel="noopener">Sensory Issues</a>
+                        <a href="https://grscorp.us/autism-diagnosis-criteria/" target="_blank" rel="noopener">Diagnosis Criteria</a>
+                    </div>
+                </div>
+                <a href="/autism-screening-test.html">Free Screening Tool</a>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-toggle" type="button">About GRS Corp <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 7l5 5 5-5"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="https://grscorp.us/" target="_blank" rel="noopener">Our Mission &amp; Vision</a>
+                        <a href="https://grscorp.us/core-values/" target="_blank" rel="noopener">Core Values</a>
+                        <a href="https://grscorp.us/board-members/" target="_blank" rel="noopener">Board Members</a>
+                    </div>
+                </div>
+                <a href="https://grscorp.us/donate/" class="nav-donate-btn" target="_blank" rel="noopener">Donate</a>
+            </nav>
+            <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu">&#9776;</button>
+        </div>
+    </header>
     <div class="container">
         <div class="header">
             <h1>Autism Self-Assessment Tool</h1>
@@ -982,8 +1021,8 @@
         }
 
         function shareTestLink() {
-            const testLink = 'https://grscorp.org/autism-screening-test.html';
-            const message = `Take the Free Autism Self-Assessment Screening Tool. It's a quick 10-question quiz that takes 5-10 minutes. https://grscorp.org/autism-screening-test.html`;
+            const testLink = 'https://blogs.grscorp.us/autism-screening-test.html';
+            const message = `Take the Free Autism Self-Assessment Screening Tool. It's a quick 10-question quiz that takes 5-10 minutes. https://blogs.grscorp.us/autism-screening-test.html`;
             navigator.clipboard.writeText(message).then(() => {
                 alert('Test link copied! You can paste it in emails, messages, or social media to invite others.');
             }).catch(() => {
@@ -994,5 +1033,44 @@
         }
 
     </script>
+    <footer>
+        <div class="site-footer-grid">
+            <div>
+                <h4>GRS Corp</h4>
+                <p>Global Relief And Support Corporation is a 501(c)(3) nonprofit based in Clifton Park, NY, dedicated to improving quality of life for individuals with autism and their families.</p>
+            </div>
+            <div>
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="/">Blog Home</a></li>
+                    <li><a href="/autism-screening-test.html">Free Screening Tool</a></li>
+                    <li><a href="https://grscorp.us/" target="_blank" rel="noopener">GRSCorp.us</a></li>
+                    <li><a href="https://grscorp.us/donate/" target="_blank" rel="noopener">Donate</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>About Autism</h4>
+                <ul>
+                    <li><a href="https://grscorp.us/learn-the-sign-of-autism/" target="_blank" rel="noopener">Signs of Autism</a></li>
+                    <li><a href="https://grscorp.us/what-are-symptoms-of-autism/" target="_blank" rel="noopener">Symptoms</a></li>
+                    <li><a href="https://grscorp.us/sensory-issues/" target="_blank" rel="noopener">Sensory Issues</a></li>
+                    <li><a href="https://grscorp.us/core-values/" target="_blank" rel="noopener">Our Core Values</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Get Involved</h4>
+                <ul>
+                    <li><a href="https://grscorp.us/volunteer/" target="_blank" rel="noopener">Volunteer</a></li>
+                    <li><a href="https://grscorp.us/contact/" target="_blank" rel="noopener">Contact Us</a></li>
+                    <li><a href="https://grscorp.us/board-members/" target="_blank" rel="noopener">Board Members</a></li>
+                    <li><a href="http://charityshop.grscorp.us/" target="_blank" rel="noopener">Shop Our Cause</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="site-footer-bottom">
+            <p>&copy; 2026 Global Relief And Support Corporation. All rights reserved. GRS Corp is a registered 501(c)(3) nonprofit organization.</p>
+        </div>
+    </footer>
+    <script src="/assets/js/site-nav.js"></script>
 </body>
 </html>

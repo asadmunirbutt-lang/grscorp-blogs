@@ -21,20 +21,119 @@
             color: #2d3436;
             background: #f5f6f7;
         }
-        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
-        header {
-            background: linear-gradient(135deg, #0f3a5c 0%, #1e5a96 100%);
-            color: white;
-            padding: 60px 20px;
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        h1 { font-size: 2.5em; margin-bottom: 10px; }
-        .subtitle { font-size: 1.1em; opacity: 0.95; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
         .back-link { margin-bottom: 30px; }
         .back-link a { color: #1e5a96; text-decoration: none; font-weight: 600; }
         .back-link a:hover { text-decoration: underline; }
-        .blog-grid { display: grid; gap: 25px; }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #0f3a5c 0%, #1e5a96 60%, #2d7aad 100%);
+            color: white;
+            padding: 70px 20px 90px;
+            text-align: center;
+        }
+        .hero h1 { font-size: 2.7em; margin-bottom: 16px; line-height: 1.25; }
+        .hero p.hero-sub { font-size: 1.15em; opacity: 0.95; max-width: 680px; margin: 0 auto 30px; }
+        .hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+        .hero-cta a {
+            display: inline-block;
+            padding: 13px 28px;
+            border-radius: 8px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .hero-cta .btn-primary { background: #fff; color: #0f3a5c; }
+        .hero-cta .btn-primary:hover { background: #eef4fa; }
+        .hero-cta .btn-secondary { background: rgba(255,255,255,0.12); color: #fff; border: 2px solid rgba(255,255,255,0.5); }
+        .hero-cta .btn-secondary:hover { background: rgba(255,255,255,0.22); }
+
+        /* Stats strip (overlaps hero bottom) */
+        .stats-strip {
+            max-width: 1000px;
+            margin: -55px auto 40px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 0 20px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 22px 18px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(15,58,92,0.14);
+        }
+        .stat-card .num { display: block; font-size: 1.9em; font-weight: 800; color: #0d7377; }
+        .stat-card .lbl { font-size: 0.85em; color: #666; margin-top: 4px; }
+
+        /* Mission section */
+        .mission-section {
+            max-width: 1100px;
+            margin: 10px auto 50px;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 40px;
+            align-items: center;
+        }
+        .mission-section h2 { color: #0f3a5c; font-size: 1.7em; margin-bottom: 14px; }
+        .mission-section p { color: #444; margin-bottom: 14px; }
+        .mission-section .mission-link { font-weight: 700; color: #1e5a96; }
+        .values-box {
+            background: #fff;
+            border-radius: 10px;
+            padding: 26px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+        .values-box h3 { color: #0d7377; margin-bottom: 14px; font-size: 1.05em; text-transform: uppercase; letter-spacing: 0.5px; }
+        .values-box ul { list-style: none; }
+        .values-box li { padding: 8px 0; border-bottom: 1px solid #eee; color: #444; }
+        .values-box li:last-child { border-bottom: none; }
+        .values-box li strong { color: #0f3a5c; }
+        @media (max-width: 820px) {
+            .mission-section { grid-template-columns: 1fr; }
+            .stats-strip { grid-template-columns: 1fr; margin-top: -40px; }
+        }
+
+        /* Category chips */
+        .category-bar {
+            max-width: 1100px;
+            margin: 0 auto 30px;
+            padding: 0 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .cat-chip {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: #fff;
+            border: 1px solid #dde3ea;
+            color: #0f3a5c;
+            font-weight: 600;
+            font-size: 0.88em;
+            text-decoration: none;
+        }
+        .cat-chip:hover { background: #0f3a5c; color: #fff; border-color: #0f3a5c; text-decoration: none; }
+
+        .section-heading {
+            max-width: 1100px;
+            margin: 0 auto 20px;
+            padding: 0 20px;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+        }
+        .section-heading h2 { color: #0f3a5c; font-size: 1.5em; }
+        .section-heading span { color: #888; font-size: 0.9em; }
+
+        .blog-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px; }
+        @media (max-width: 820px) {
+            .blog-grid { grid-template-columns: 1fr; }
+        }
+        .read-time { color: #888; }
         .blog-card {
             background: white;
             padding: 30px;
@@ -79,20 +178,93 @@
     </style>
 </head>
 <body>
-    <header>
-        <h1>Blog</h1>
-        <p class="subtitle">Insights and resources from GRSCorp</p>
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="/" class="site-logo"><span class="logo-mark">GRS</span> Corp <span class="logo-sub">Blog</span></a>
+            <nav class="site-nav" id="siteNav">
+                <a href="/">Home</a>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-toggle" type="button">Blog <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 7l5 5 5-5"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="/">All Posts</a>
+                        <a href="/posts/10-best-sensory-toys-autism.html">Sensory Resources</a>
+                        <a href="/posts/autism-iep-guide.html">School &amp; IEP Advocacy</a>
+                        <a href="/posts/signs-of-autism-in-adults.html">Diagnosis &amp; Signs</a>
+                        <a href="/posts/nys-autism-school-resources.html">NYS Family Resources</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-toggle" type="button">What is Autism? <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 7l5 5 5-5"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="https://grscorp.us/what-causes-autism/" target="_blank" rel="noopener">What Causes Autism</a>
+                        <a href="https://grscorp.us/learn-the-sign-of-autism/" target="_blank" rel="noopener">Learn the Signs</a>
+                        <a href="https://grscorp.us/what-are-symptoms-of-autism/" target="_blank" rel="noopener">Symptoms of Autism</a>
+                        <a href="https://grscorp.us/sensory-issues/" target="_blank" rel="noopener">Sensory Issues</a>
+                        <a href="https://grscorp.us/autism-diagnosis-criteria/" target="_blank" rel="noopener">Diagnosis Criteria</a>
+                    </div>
+                </div>
+                <a href="/autism-screening-test.html">Free Screening Tool</a>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-toggle" type="button">About GRS Corp <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 7l5 5 5-5"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="https://grscorp.us/" target="_blank" rel="noopener">Our Mission &amp; Vision</a>
+                        <a href="https://grscorp.us/core-values/" target="_blank" rel="noopener">Core Values</a>
+                        <a href="https://grscorp.us/board-members/" target="_blank" rel="noopener">Board Members</a>
+                    </div>
+                </div>
+                <a href="https://grscorp.us/donate/" class="nav-donate-btn" target="_blank" rel="noopener">Donate</a>
+            </nav>
+            <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu">&#9776;</button>
+        </div>
     </header>
 
+    <section class="hero">
+        <h1>Resources, Guidance &amp; Hope for the Autism Community</h1>
+        <p class="hero-sub">GRS Corp publishes free, clinically-informed guides for parents, caregivers, and educators navigating autism — from early signs to sensory tools to school advocacy.</p>
+        <div class="hero-cta">
+            <a href="/autism-screening-test.html" class="btn-primary">Take the Free Screening Tool &rarr;</a>
+            <a href="https://grscorp.us/" target="_blank" rel="noopener" class="btn-secondary">Learn About Our Mission</a>
+        </div>
+    </section>
+
+    <div class="stats-strip">
+        <div class="stat-card"><span class="num">1 in 36</span><span class="lbl">U.S. children diagnosed with autism (CDC)</span></div>
+        <div class="stat-card"><span class="num">11</span><span class="lbl">Free in-depth guides &amp; resources</span></div>
+        <div class="stat-card"><span class="num">100%</span><span class="lbl">Free — nonprofit-run, no paywalls</span></div>
+    </div>
+
     <div class="container">
-        <div class="back-link">
-            <a href="https://grscorp.us">&#8592; Back to GRSCorp</a>
+
+        <section class="mission-section">
+            <div>
+                <h2>Our Mission</h2>
+                <p>At Global Relief And Support Corporation (GRS Corp), we're passionate about making a positive impact in the lives of individuals with autism, fostering community awareness, and creating bright opportunities for all.</p>
+                <p>Our goal is to enhance the quality of life for individuals with autism, enabling them to fully participate in their local communities — through free resources, advocacy, and direct family support.</p>
+                <a href="https://grscorp.us/" target="_blank" rel="noopener" class="mission-link">Read more about our mission &rarr;</a>
+            </div>
+            <div class="values-box">
+                <h3>Our Core Values</h3>
+                <ul>
+                    <li><strong>Compassion</strong> — meeting families where they are</li>
+                    <li><strong>Advocacy</strong> — fighting for every child's right to thrive</li>
+                    <li><strong>Community</strong> — building spaces of belonging</li>
+                    <li><strong>Transparency</strong> — clinically accurate, unbiased guidance</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="category-bar">
+            <a class="cat-chip" href="/posts/signs-of-autism-in-adults.html">Diagnosis &amp; Signs</a>
+            <a class="cat-chip" href="/posts/10-best-sensory-toys-autism.html">Sensory Support</a>
+            <a class="cat-chip" href="/posts/autism-iep-guide.html">School &amp; IEP Advocacy</a>
+            <a class="cat-chip" href="/posts/empowering-families-parent-to-parent-nys.html">Parent &amp; Family Resources</a>
+            <a class="cat-chip" href="/posts/nys-autism-school-resources.html">NYS Programs</a>
+            <a class="cat-chip" href="/autism-screening-test.html">Free Screening Tool</a>
         </div>
 
-        <div style="background:linear-gradient(135deg,#e8a020 0%,#ffc107 100%);color:#fff;padding:30px;border-radius:8px;margin-bottom:40px;text-align:center;">
-            <h2 style="margin-bottom:10px;color:#fff;">Free Autism Self-Assessment Tool</h2>
-            <p style="margin-bottom:15px;opacity:0.95;">Take a quick 10-question screening to explore whether professional evaluation might be beneficial.</p>
-            <a href="/autism-screening-test.html" style="display:inline-block;background:#fff;color:#0f3a5c;padding:12px 28px;border-radius:6px;font-weight:600;text-decoration:none;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.2)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">Start Screening Tool &rarr;</a>
+        <div class="section-heading">
+            <h2>Latest Guides &amp; Resources</h2>
+            <span>11 articles</span>
         </div>
 
         <div class="blog-grid">
@@ -102,10 +274,65 @@
                 <div class="blog-meta">
                     <span><strong>June 22, 2026</strong></span>
                     <span>GRSCorp Team</span>
-                    <span>Parent Resources &amp; Sensory Support</span>
+                    <span class="read-time">12 min read</span>
                 </div>
                 <p class="blog-excerpt">Expert-reviewed guide to the 10 best sensory tools spanning tactile, vestibular, auditory, and proprioceptive categories — with clinical benefits, usage tips, and a CSR partnership with Sensory Harbor that funds GRS Corp's global programs with every purchase.</p>
                 <a href="/posts/10-best-sensory-toys-autism.html" class="read-more">Read More &rarr;</a>
+            </div>
+
+            <div class="blog-card">
+                <h2><a href="/posts/autism-ai-apps-special-needs-families.html">Autism + AI: The New Apps Every Special Needs Family Should Know About</a><span class="new-badge">NEW</span></h2>
+                <div class="blog-meta">
+                    <span><strong>June 29, 2026</strong></span>
+                    <span>GRSCorp Team</span>
+                    <span class="read-time">10 min read</span>
+                </div>
+                <p class="blog-excerpt">When real intelligence meets real inclusion: how a new generation of AI-powered apps is helping autistic individuals learn, process emotions, and stay safe online — without overwhelming them.</p>
+                <a href="/posts/autism-ai-apps-special-needs-families.html" class="read-more">Read More &rarr;</a>
+            </div>
+
+            <div class="blog-card">
+                <h2><a href="/posts/understanding-self-injurious-behavior-autism.html">Understanding Self-Injurious Behavior (SIB) in Autism</a><span class="new-badge">NEW</span></h2>
+                <div class="blog-meta">
+                    <span><strong>June 29, 2026</strong></span>
+                    <span>GRSCorp Team</span>
+                    <span class="read-time">8 min read</span>
+                </div>
+                <p class="blog-excerpt">SIB is communication, not defiance. A compassionate guide to why self-injurious behavior happens, its emotional toll on families, and practical strategies that help.</p>
+                <a href="/posts/understanding-self-injurious-behavior-autism.html" class="read-more">Read More &rarr;</a>
+            </div>
+
+            <div class="blog-card">
+                <h2><a href="/posts/understanding-global-development-delay.html">Understanding Global Development Delay: Causes, Effects &amp; Solutions</a><span class="new-badge">NEW</span></h2>
+                <div class="blog-meta">
+                    <span><strong>June 29, 2026</strong></span>
+                    <span>GRSCorp Team</span>
+                    <span class="read-time">7 min read</span>
+                </div>
+                <p class="blog-excerpt">Global Development Delay affects 1-3% of children worldwide. Learn the causes, the impact on families, and how early intervention changes outcomes.</p>
+                <a href="/posts/understanding-global-development-delay.html" class="read-more">Read More &rarr;</a>
+            </div>
+
+            <div class="blog-card">
+                <h2><a href="/posts/homeschooling-autism-new-york-state.html">Homeschooling Children with Autism in New York State</a><span class="new-badge">NEW</span></h2>
+                <div class="blog-meta">
+                    <span><strong>June 29, 2026</strong></span>
+                    <span>GRSCorp Team</span>
+                    <span class="read-time">9 min read</span>
+                </div>
+                <p class="blog-excerpt">A comprehensive guide to NYS homeschooling law, OPWDD support services, ABA-informed teaching approaches, and building independence for autistic learners at home.</p>
+                <a href="/posts/homeschooling-autism-new-york-state.html" class="read-more">Read More &rarr;</a>
+            </div>
+
+            <div class="blog-card">
+                <h2><a href="/posts/empowering-families-parent-to-parent-nys.html">Empowering Families: Supporting Parents of Children with Disabilities in NYS</a><span class="new-badge">NEW</span></h2>
+                <div class="blog-meta">
+                    <span><strong>June 29, 2026</strong></span>
+                    <span>GRSCorp Team</span>
+                    <span class="read-time">9 min read</span>
+                </div>
+                <p class="blog-excerpt">Meet Parent to Parent of NYS — the peer-mentoring network helping families navigate diagnosis, IEP meetings, and isolation through trained parent advocates.</p>
+                <a href="/posts/empowering-families-parent-to-parent-nys.html" class="read-more">Read More &rarr;</a>
             </div>
 
             <div class="blog-card">
@@ -113,7 +340,7 @@
                 <div class="blog-meta">
                     <span><strong>June 8, 2026</strong></span>
                     <span>GRSCorp Team</span>
-                    <span>Diagnosis &amp; Awareness</span>
+                    <span class="read-time">7 min read</span>
                 </div>
                 <p class="blog-excerpt">Many adults go undiagnosed for decades. Learn the key signs of autism in adults, how late diagnosis differs from childhood diagnosis, and how to navigate the path to formal evaluation and post-diagnosis support.</p>
                 <a href="/posts/signs-of-autism-in-adults.html" class="read-more">Read More &rarr;</a>
@@ -124,7 +351,7 @@
                 <div class="blog-meta">
                     <span><strong>June 2, 2026</strong></span>
                     <span>GRSCorp Team</span>
-                    <span>Diagnosis &amp; Advocacy</span>
+                    <span class="read-time">6 min read</span>
                 </div>
                 <p class="blog-excerpt">Navigating the autism evaluation process can feel daunting. This step-by-step guide walks families through requesting an evaluation, what to expect at each stage, and how to advocate for a thorough and timely assessment.</p>
                 <a href="/posts/how-to-get-autism-evaluation.html" class="read-more">Read More &rarr;</a>
@@ -135,7 +362,7 @@
                 <div class="blog-meta">
                     <span><strong>May 31, 2026</strong></span>
                     <span>GRSCorp Team</span>
-                    <span>Education &amp; Advocacy</span>
+                    <span class="read-time">8 min read</span>
                 </div>
                 <p class="blog-excerpt">A complete guide to Individualized Education Programs (IEPs) for autistic students — covering parent rights, how to advocate effectively, key accommodations to request, and what to do when the system is not working for your child.</p>
                 <a href="/posts/autism-iep-guide.html" class="read-more">Read More &rarr;</a>
@@ -146,7 +373,7 @@
                 <div class="blog-meta">
                     <span><strong>May 30, 2026</strong></span>
                     <span>GRSCorp Team</span>
-                    <span>Education &amp; State Resources</span>
+                    <span class="read-time">10 min read</span>
                 </div>
                 <p class="blog-excerpt">A comprehensive guide to autism education resources, services, and programs available across New York State — from Early Intervention through college and post-secondary transition support.</p>
                 <a href="/posts/nys-autism-school-resources.html" class="read-more">Read More &rarr;</a>
@@ -157,7 +384,7 @@
                 <div class="blog-meta">
                     <span><strong>May 25, 2026</strong></span>
                     <span>GRSCorp Team</span>
-                    <span>Early Intervention</span>
+                    <span class="read-time">5 min read</span>
                 </div>
                 <p class="blog-excerpt">Early identification of autism can make a profound difference in outcomes. Learn the developmental milestones to watch for and the early signs of autism in children from 12 months through 5 years of age.</p>
                 <a href="/posts/early-signs-autism-young-children.html" class="read-more">Read More &rarr;</a>
@@ -167,8 +394,43 @@
     </div>
 
     <footer>
-        <p>&copy; 2026 Global Relief And Support Corporation. All rights reserved.</p>
-        <p><a href="https://grscorp.us">Visit GRSCorp.us</a></p>
+        <div class="site-footer-grid">
+            <div>
+                <h4>GRS Corp</h4>
+                <p>Global Relief And Support Corporation is a 501(c)(3) nonprofit based in Clifton Park, NY, dedicated to improving quality of life for individuals with autism and their families.</p>
+            </div>
+            <div>
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="/">Blog Home</a></li>
+                    <li><a href="/autism-screening-test.html">Free Screening Tool</a></li>
+                    <li><a href="https://grscorp.us/" target="_blank" rel="noopener">GRSCorp.us</a></li>
+                    <li><a href="https://grscorp.us/donate/" target="_blank" rel="noopener">Donate</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>About Autism</h4>
+                <ul>
+                    <li><a href="https://grscorp.us/learn-the-sign-of-autism/" target="_blank" rel="noopener">Signs of Autism</a></li>
+                    <li><a href="https://grscorp.us/what-are-symptoms-of-autism/" target="_blank" rel="noopener">Symptoms</a></li>
+                    <li><a href="https://grscorp.us/sensory-issues/" target="_blank" rel="noopener">Sensory Issues</a></li>
+                    <li><a href="https://grscorp.us/core-values/" target="_blank" rel="noopener">Our Core Values</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Get Involved</h4>
+                <ul>
+                    <li><a href="https://grscorp.us/volunteer/" target="_blank" rel="noopener">Volunteer</a></li>
+                    <li><a href="https://grscorp.us/contact/" target="_blank" rel="noopener">Contact Us</a></li>
+                    <li><a href="https://grscorp.us/board-members/" target="_blank" rel="noopener">Board Members</a></li>
+                    <li><a href="http://charityshop.grscorp.us/" target="_blank" rel="noopener">Shop Our Cause</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="site-footer-bottom">
+            <p>&copy; 2026 Global Relief And Support Corporation. All rights reserved. GRS Corp is a registered 501(c)(3) nonprofit organization.</p>
+        </div>
     </footer>
+    <script src="/assets/js/site-nav.js"></script>
 </body>
 </html>
