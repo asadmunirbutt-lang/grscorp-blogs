@@ -1754,36 +1754,10 @@
             </div>
           </div>
 
-          <!-- Laundry quick-log -->
-          <div class="laundry-inline" id="sec-laundry">
-            <div class="laundry-inline-hdr">
-              <span>🧺 Laundry Log</span>
-              <div style="display:flex;gap:6px">
-                <button class="laundry-log-toggle" id="laundry-log-toggle" onclick="toggleLaundryControls()">+ Log Entry</button>
-                <button class="laundry-hist-toggle" id="laundry-hist-toggle" onclick="toggleLaundryHistory()">📋 History</button>
-              </div>
-            </div>
-            <div class="laundry-controls" id="laundry-controls" style="display:none">
-              <div class="lcat-row">
-                <button class="lcat-btn active" onclick="setLaundryCat('wearable',this)">👕 Clothes</button>
-                <button class="lcat-btn" onclick="setLaundryCat('cleaning',this)">🧹 Cleaning</button>
-                <button class="lcat-btn" onclick="setLaundryCat('linen',this)">🛏️ Linen</button>
-              </div>
-              <div class="ltype-row">
-                <button class="ltype-btn lt-wash"  onclick="logLaundry('wash')">🫧 Wash</button>
-                <button class="ltype-btn lt-dryer" onclick="logLaundry('dryer')">🌀 Dryer</button>
-                <button class="ltype-btn lt-fold"  onclick="logLaundry('fold')">👕 Fold</button>
-              </div>
-            </div>
-            <div class="laundry-hist-panel" id="laundry-hist-panel">
-              <div id="laundry-log"><div class="laundry-empty">No laundry logged yet</div></div>
-            </div>
-          </div>
-
           <div class="room-content-wrap" id="room-content"></div>
         </div>
 
-        <!-- RIGHT: food → notes → supplies -->
+        <!-- RIGHT: food → laundry → notes → supplies -->
         <div class="col-right">
           <!-- Azlan's Food Log -->
           <div class="laundry-inline" id="sec-food" style="margin-top:14px">
@@ -1813,6 +1787,32 @@
             </div>
             <div class="laundry-hist-panel" id="food-hist-panel" style="display:none">
               <div id="food-log-list"></div>
+            </div>
+          </div>
+
+          <!-- Laundry Log -->
+          <div class="laundry-inline" id="sec-laundry">
+            <div class="laundry-inline-hdr">
+              <span>🧺 Laundry Log</span>
+              <div style="display:flex;gap:6px">
+                <button class="laundry-log-toggle" id="laundry-log-toggle" onclick="toggleLaundryControls()">+ Log Entry</button>
+                <button class="laundry-hist-toggle" id="laundry-hist-toggle" onclick="toggleLaundryHistory()">📋 History</button>
+              </div>
+            </div>
+            <div class="laundry-controls" id="laundry-controls" style="display:none">
+              <div class="lcat-row">
+                <button class="lcat-btn active" onclick="setLaundryCat('wearable',this)">👕 Clothes</button>
+                <button class="lcat-btn" onclick="setLaundryCat('cleaning',this)">🧹 Cleaning</button>
+                <button class="lcat-btn" onclick="setLaundryCat('linen',this)">🛏️ Linen</button>
+              </div>
+              <div class="ltype-row">
+                <button class="ltype-btn lt-wash"  onclick="logLaundry('wash')">🫧 Wash</button>
+                <button class="ltype-btn lt-dryer" onclick="logLaundry('dryer')">🌀 Dryer</button>
+                <button class="ltype-btn lt-fold"  onclick="logLaundry('fold')">👕 Fold</button>
+              </div>
+            </div>
+            <div class="laundry-hist-panel" id="laundry-hist-panel">
+              <div id="laundry-log"><div class="laundry-empty">No laundry logged yet</div></div>
             </div>
           </div>
 
