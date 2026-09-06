@@ -623,6 +623,16 @@
     .med-meta  { color: var(--muted); font-size: 0.72rem; margin-top: 2px; }
 
     .incident-type-row { display: flex; gap: 6px; margin-bottom: 8px; }
+    .med-type-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
+    .med-type-btn {
+      flex: 1; min-width: calc(33% - 4px);
+      border: 1px solid var(--border); border-radius: 8px;
+      background: var(--card2); color: var(--muted);
+      font-size: 0.74rem; font-weight: 700; padding: 7px 6px;
+      cursor: pointer; text-align: center; transition: all .15s;
+    }
+    .med-type-btn.active { background: rgba(0,188,212,0.15); border-color: var(--teal); color: var(--teal); }
+    .med-type-btn:hover  { background: var(--card2); color: var(--text); }
     .inc-type-btn {
       flex: 1; background: var(--card); border: 1.5px solid var(--border2);
       border-radius: 10px; color: var(--muted); cursor: pointer;
@@ -1704,17 +1714,26 @@
             <div class="laundry-inline-hdr" style="border-bottom-color:rgba(0,188,212,0.2)">
               <span style="color:#00bcd4">💊 Medication Log</span>
               <div style="display:flex;gap:6px">
-                <button class="laundry-log-toggle" id="med-log-toggle" onclick="toggleSection('med')" style="background:rgba(0,188,212,0.12);border-color:rgba(0,188,212,0.35);color:#00bcd4">+ Log Entry</button>
+                <button class="laundry-log-toggle" id="med-log-toggle" onclick="toggleSection('med');resetMedForm()" style="background:rgba(0,188,212,0.12);border-color:rgba(0,188,212,0.35);color:#00bcd4">+ Log Entry</button>
                 <button class="laundry-hist-toggle" id="med-hist-toggle" onclick="toggleSectionHistory('med')">📋 History</button>
               </div>
             </div>
             <div class="laundry-controls" id="med-controls" style="display:none">
-              <div class="input-row">
-                <div class="fg" style="margin-bottom:0"><input type="text" id="med-name" placeholder="Medication name" class="fg-input"></div>
-                <div class="fg qty-f" style="margin-bottom:0"><input type="text" id="med-dose" placeholder="Dose (5ml)" class="fg-input"></div>
+              <div class="med-type-row">
+                <button class="med-type-btn active" onclick="setMedType('Magnesium',this)">🧲 Magnesium</button>
+                <button class="med-type-btn" onclick="setMedType('Vraylar (Magic Potion)',this)">✨ Vraylar</button>
+                <button class="med-type-btn" onclick="setMedType('Clonidine',this)">🌙 Clonidine</button>
+                <button class="med-type-btn" onclick="setMedType('All power medication',this)">💪 Power Med</button>
+                <button class="med-type-btn" onclick="setMedType('Benadryl',this)">💤 Benadryl</button>
+                <button class="med-type-btn" onclick="setMedType('Prednisone',this)">🔴 Prednisone</button>
+                <button class="med-type-btn" id="med-other-btn" onclick="setMedType('other',this)">✏️ Other…</button>
               </div>
-              <input type="text" id="med-notes" placeholder="Notes (optional)" class="fg-input" style="width:100%;margin:8px 0">
-              <button class="ltype-btn" style="width:100%;justify-content:center;color:#00bcd4;border-color:rgba(0,188,212,0.4);margin-bottom:4px" onclick="logMedication()">💊 Log Medication</button>
+              <input type="text" id="med-name-other" placeholder="Medication name" class="fg-input" style="width:100%;display:none;margin-bottom:8px">
+              <div class="input-row">
+                <div class="fg" style="margin-bottom:0"><input type="number" id="med-dose" placeholder="Pills / dose" min="1" value="1" class="fg-input"></div>
+                <div class="fg" style="margin-bottom:0"><input type="text" id="med-notes" placeholder="Notes (optional)" class="fg-input"></div>
+              </div>
+              <button class="ltype-btn" style="width:100%;justify-content:center;color:#00bcd4;border-color:rgba(0,188,212,0.4);margin-top:8px;margin-bottom:4px" onclick="logMedication()">💊 Log Medication</button>
             </div>
             <div class="laundry-hist-panel" id="med-hist-panel" style="display:none">
               <div id="meds-list"></div>
@@ -3171,11 +3190,35 @@ async function loadFoodLog() {
 // ================================================================
 //  MEDICATION LOG
 // ================================================================
+let selectedMedName = 'Magnesium';
+
+function setMedType(name, el) {
+  selectedMedName = name;
+  document.querySelectorAll('.med-type-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const otherInput = document.getElementById('med-name-other');
+  if (otherInput) otherInput.style.display = name === 'other' ? 'block' : 'none';
+}
+
+function resetMedForm() {
+  selectedMedName = 'Magnesium';
+  document.querySelectorAll('.med-type-btn').forEach((b, i) => b.classList.toggle('active', i === 0));
+  const o = document.getElementById('med-name-other');
+  if (o) { o.value = ''; o.style.display = 'none'; }
+  const d = document.getElementById('med-dose');
+  if (d) d.value = '1';
+  const n = document.getElementById('med-notes');
+  if (n) n.value = '';
+}
+
 async function logMedication() {
-  const name  = document.getElementById('med-name').value.trim();
+  const name  = selectedMedName === 'other'
+    ? document.getElementById('med-name-other').value.trim()
+    : selectedMedName;
   const dose  = document.getElementById('med-dose').value.trim();
   const notes = document.getElementById('med-notes').value.trim();
-  if (!name || !dose) { showToast('Enter medication name and dose', true); return; }
+  if (!name) { showToast('Select or enter a medication name', true); return; }
+  if (!dose)  { showToast('Enter the dose / number of pills', true); return; }
   try {
     await db.collection('medications').add({
       name, dose, notes: notes || null,
@@ -3185,8 +3228,7 @@ async function logMedication() {
       date:     new Date().toISOString().slice(0,10),
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
     });
-    document.getElementById('med-name').value  = '';
-    document.getElementById('med-dose').value  = '';
+    document.getElementById('med-dose').value  = '1';
     document.getElementById('med-notes').value = '';
     showToast('💊 Medication logged');
     const mControls = document.getElementById('med-controls');
