@@ -1869,10 +1869,12 @@
             </div>
             <div class="laundry-controls" id="med-controls" style="display:none">
               <div class="med-type-row">
-                <button class="med-type-btn active" onclick="setMedType('Magnesium',this)">🧲 Magnesium</button>
-                <button class="med-type-btn" onclick="setMedType('Vraylar (Magic Potion)',this)">✨ Vraylar</button>
-                <button class="med-type-btn" onclick="setMedType('Clonidine',this)">🌙 Clonidine</button>
-                <button class="med-type-btn" onclick="setMedType('All power medication',this)">💪 Power Med</button>
+                <button class="med-type-btn active" onclick="setMedType('Magnesium 400 MG',this)">🧲 Magnesium 400 MG</button>
+                <button class="med-type-btn" onclick="setMedType('Clonodine HCL ER .1 MG',this)">🌙 Clonodine HCL ER .1 MG</button>
+                <button class="med-type-btn" onclick="setMedType('Vraylar 1.5 MG Cap',this)">✨ Vraylar 1.5 MG Cap</button>
+                <button class="med-type-btn" onclick="setMedType('Vitamin D',this)">🌞 Vitamin D</button>
+                <button class="med-type-btn" onclick="setMedType('Krill Oil',this)">🐟 Krill Oil</button>
+                <button class="med-type-btn" onclick="setMedType('Fiber Sup',this)">🌾 Fiber Sup</button>
                 <button class="med-type-btn" onclick="setMedType('Benadryl',this)">💤 Benadryl</button>
                 <button class="med-type-btn" onclick="setMedType('Prednisone',this)">🔴 Prednisone</button>
                 <button class="med-type-btn" id="med-other-btn" onclick="setMedType('other',this)">✏️ Other…</button>
@@ -3499,7 +3501,7 @@ async function loadFoodLog() {
 // ================================================================
 //  MEDICATION LOG
 // ================================================================
-let selectedMedName = 'Magnesium';
+let selectedMedName = 'Magnesium 400 MG';
 
 function setMedType(name, el) {
   selectedMedName = name;
