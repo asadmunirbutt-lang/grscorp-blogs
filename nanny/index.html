@@ -2293,6 +2293,7 @@ let selectedRoom  = null;
 let taskStatuses    = {};
 let allRoomStatuses = {};
 let submittedRooms  = {};
+let sheetsOverdue   = false; // true when Change sheets not done in 3+ days
 
 // ================================================================
 //  INIT
@@ -2729,7 +2730,9 @@ function onRoomChange() {
     if (stickyName) stickyName.textContent    = selectedRoom.name;
     if (stickyEmoji) stickyEmoji.textContent  = selectedRoom.emoji || '🏠';
   }
+  sheetsOverdue = false;
   renderTasks();
+  if (selectedRoom?.id === 'azlans-room') checkSheetsDue();
 }
 
 function scrollToSection(id) {
@@ -2747,12 +2750,35 @@ function getVisibleTasks(roomTasks) {
   const isSun    = day === 0;
   const isMon    = day === 1;
   return (roomTasks || []).filter(t => {
-    if (t.monFriOnly && !isMonFri) return false;
+    // Override monFriOnly for "Change sheets" when sheets are overdue
+    if (t.monFriOnly && !isMonFri && !(t.id === 'ar2' && sheetsOverdue)) return false;
     if (t.tueThuOnly && !isTueThu) return false;
     if (t.sunOnly    && !isSun)    return false;
     if (t.monOnly    && !isMon)    return false;
     return true;
   });
+}
+
+async function checkSheetsDue() {
+  sheetsOverdue = false;
+  try {
+    // Get date strings for yesterday, 2 days ago, 3 days ago
+    const dates = [1,2,3].map(n => {
+      const d = new Date(); d.setDate(d.getDate() - n);
+      return d.toISOString().slice(0,10);
+    });
+    const snap = await db.collection('submissions')
+      .orderBy('date','desc').limit(60).get();
+    const facility = currentData?.facility || FACILITY;
+    const relevant = snap.docs
+      .map(d => d.data())
+      .filter(s => s.facility === facility && s.roomId === 'azlans-room' && dates.includes(s.date));
+    const wasDone = relevant.some(s =>
+      (s.tasks || []).some(t => t.name === 'Change sheets' && t.status === 'yes')
+    );
+    sheetsOverdue = !wasDone;
+  } catch(e) { sheetsOverdue = false; }
+  renderTasks();
 }
 
 function renderTasks() {
@@ -2784,10 +2810,12 @@ function renderTasks() {
     const tsMs       = tsObj?.ts || null;
     const tsStr      = tsMs ? new Date(tsMs).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}) : '';
     const statusSuffix = status === 'carry-over' ? 'carry' : status;
-    const cardCls = (isCritical ? ' is-critical' : isCarry ? ' is-carry' : '') + (status ? ' done-' + statusSuffix : '');
+    const cardCls = (isCritical || (sheetsOverdue && task.id === 'ar2') ? ' is-critical' : isCarry ? ' is-carry' : '') + (status ? ' done-' + statusSuffix : '');
+    const isSheetsAlert = sheetsOverdue && task.id === 'ar2';
     const badge = isCritical
       ? `<span class="critical-badge">⚠️ CRITICAL (${carryCount} shifts)</span>`
-      : isCarry ? '<span class="carry-badge">↻ CARRY-OVER</span>' : '';
+      : isCarry ? '<span class="carry-badge">↻ CARRY-OVER</span>'
+      : isSheetsAlert ? '<span class="critical-badge">🚨 MUST DO TODAY</span>' : '';
     const yesCls   = status === 'yes'        ? ' sel-yes'   : '';
     const noCls    = status === 'no'         ? ' sel-no'    : '';
     const carryCls = status === 'carry-over' ? ' sel-carry' : '';
@@ -2799,6 +2827,7 @@ function renderTasks() {
           ${badge}
         </div>
         ${isCritical ? `<div style="font-size:0.72rem;color:#ff5252;margin-bottom:8px;padding:5px 8px;background:rgba(255,23,68,0.08);border-radius:6px">Not completed in last ${carryCount} shifts — previous note: <em>${carryData?.note || '—'}</em></div>` : ''}
+        ${isSheetsAlert && !isCritical ? `<div style="font-size:0.72rem;color:#ff5252;margin-bottom:8px;padding:5px 8px;background:rgba(255,23,68,0.08);border-radius:6px">Bed sheets have not been changed in 3+ days — must be done today.</div>` : ''}
         <div class="task-btns">
           <button class="tbtn${yesCls}" onclick="setStatus('${task.id}','yes')">
             <span class="tbtn-icon">✓</span> Yes
