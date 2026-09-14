@@ -454,6 +454,37 @@ footer a:hover {
     display: block;
 }
 
+/* Desktop: open on hover as well as click. The ::after bridge spans the 6px
+   gap under the toggle so the pointer can travel down to the menu without
+   crossing dead space and collapsing it. Gated on (hover: hover) so touch
+   devices keep click-only behavior instead of sticky hover. */
+@media (min-width: 901px) and (hover: hover) {
+    .nav-dropdown:hover::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        height: 8px;
+    }
+
+    .nav-dropdown:hover .nav-dropdown-menu,
+    .nav-dropdown:focus-within .nav-dropdown-menu {
+        display: block;
+    }
+
+    .nav-dropdown:hover .nav-dropdown-toggle,
+    .nav-dropdown:focus-within .nav-dropdown-toggle {
+        background: var(--bg);
+        color: var(--primary) !important;
+    }
+
+    .nav-dropdown:hover .nav-dropdown-toggle svg,
+    .nav-dropdown:focus-within .nav-dropdown-toggle svg {
+        transform: rotate(180deg);
+    }
+}
+
 .nav-dropdown-menu a {
     display: block;
     padding: 9px 12px;
