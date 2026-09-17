@@ -713,6 +713,13 @@
     .ndh-arrow.open { transform: rotate(90deg); }
     .notes-date-entries { display: none; }
     .notes-date-entries.open { display: block; }
+    .show-more-btn {
+      width: 100%; margin-top: 4px; padding: 8px;
+      background: var(--card2); border: 1px dashed var(--border2);
+      border-radius: 8px; color: var(--muted); font-size: 0.78rem;
+      cursor: pointer; font-weight: 600;
+    }
+    .show-more-btn:hover { color: var(--text); border-color: var(--lavender); }
 
     /* ═══════════════ SHIFT ACK MODAL ═══════════════ */
     #shift-ack-overlay {
@@ -1811,6 +1818,7 @@
 
       <!-- Quick nav shortcuts -->
       <div class="quick-nav">
+        <button class="qnav-btn" id="qnav-voice" onclick="startVoice()" style="background:rgba(180,78,255,0.18);border-color:var(--lavender);color:var(--lavender);flex-shrink:0">🎙️ Voice</button>
         <button class="qnav-btn" onclick="scrollToSection('sec-notes')">📝 Notes</button>
         <button class="qnav-btn" onclick="scrollToSection('sec-supplies')">🛒 Supplies</button>
         <button class="qnav-btn" onclick="scrollToSection('sec-food')">🍽️ Food Log</button>
@@ -3129,12 +3137,16 @@ async function loadNotes() {
       if (!byDate[dk]) byDate[dk] = [];
       byDate[dk].push({ id: doc.id, ...d, _ts: ts });
     });
-    Object.entries(byDate).forEach(([dateKey, items]) => {
-      const isToday = dateKey === today;
-      const label   = isToday ? 'Today' : new Date(dateKey + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-      const group   = document.createElement('div');
+    const dateEntries = Object.entries(byDate);
+    const SHOW_DAYS = 3;
+    dateEntries.forEach(([dateKey, items], idx) => {
+      const isToday  = dateKey === today;
+      const isOlder  = idx >= SHOW_DAYS;
+      const label    = isToday ? 'Today' : new Date(dateKey + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      const group    = document.createElement('div');
       group.className    = 'notes-date-group';
       group.dataset.date = dateKey;
+      if (isOlder) group.classList.add('notes-older');
       const notesHtml = items.map(item => buildNoteElHtml(item.id, item.userName, item._ts, item.text, item.imageUrl)).join('');
       group.innerHTML = `
         <div class="notes-date-hdr" onclick="toggleNotesGroup(this)">
@@ -3144,6 +3156,18 @@ async function loadNotes() {
         <div class="notes-date-entries ${isToday ? 'open' : ''}">${notesHtml}</div>`;
       list.appendChild(group);
     });
+    if (dateEntries.length > SHOW_DAYS) {
+      const older = list.querySelectorAll('.notes-older');
+      older.forEach(el => el.style.display = 'none');
+      const showMoreBtn = document.createElement('button');
+      showMoreBtn.className = 'show-more-btn';
+      showMoreBtn.textContent = `Show older (${dateEntries.length - SHOW_DAYS} more days)`;
+      showMoreBtn.onclick = () => {
+        older.forEach(el => el.style.display = '');
+        showMoreBtn.remove();
+      };
+      list.appendChild(showMoreBtn);
+    }
   } catch (e) { console.warn('Notes:', e.message); }
 }
 
@@ -4623,8 +4647,9 @@ function startVoice() {
   voiceRecognition.maxAlternatives = 1;
 
   const fab = document.getElementById('voice-fab');
-  fab.classList.add('listening');
-  fab.textContent = '🔴';
+  if (fab) { fab.classList.add('listening'); fab.textContent = '🔴'; }
+  const navBtn = document.getElementById('qnav-voice');
+  if (navBtn) { navBtn.textContent = '🔴 Listening…'; navBtn.style.color = 'var(--coral)'; navBtn.style.borderColor = 'var(--coral)'; }
 
   document.getElementById('voice-listening-txt').style.display = 'block';
   document.getElementById('voice-heard').textContent = '';
@@ -4776,6 +4801,8 @@ function voiceCancel() {
   if (voiceRecognition) { try { voiceRecognition.abort(); } catch(e) {} voiceRecognition = null; }
   const fab = document.getElementById('voice-fab');
   if (fab) { fab.classList.remove('listening'); fab.textContent = '🎙️'; }
+  const navBtn = document.getElementById('qnav-voice');
+  if (navBtn) { navBtn.textContent = '🎙️ Voice'; navBtn.style.color = 'var(--lavender)'; navBtn.style.borderColor = 'var(--lavender)'; }
   document.getElementById('voice-overlay').classList.remove('show');
   voiceParsed = null;
 }
