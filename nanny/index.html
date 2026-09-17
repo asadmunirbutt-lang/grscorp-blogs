@@ -4608,9 +4608,7 @@ let voiceParsed = null;
 
 function voiceShowFab() {
   const fab = document.getElementById('voice-fab');
-  if (fab && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
-    fab.style.display = 'flex';
-  }
+  if (fab) fab.style.display = 'flex';
 }
 
 function startVoice() {
