@@ -1173,6 +1173,91 @@
     }
     .qnav-btn:hover { background: var(--card2); color: var(--text); border-color: var(--lavender); }
 
+    /* ═══════════════ VOICE ENTRY ═══════════════ */
+    #voice-fab {
+      position: fixed;
+      bottom: 24px;
+      right: 18px;
+      z-index: 999;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      border: none;
+      background: var(--lavender);
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(180,78,255,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    #voice-fab.listening {
+      background: var(--coral);
+      box-shadow: 0 0 0 8px rgba(255,82,82,0.25);
+      animation: pulse-mic 1s infinite;
+    }
+    @keyframes pulse-mic {
+      0%,100% { box-shadow: 0 0 0 6px rgba(255,82,82,0.2); }
+      50%      { box-shadow: 0 0 0 14px rgba(255,82,82,0.08); }
+    }
+    #voice-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(10,8,24,0.88);
+      backdrop-filter: blur(8px);
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 90px;
+    }
+    #voice-overlay.show { display: flex; }
+    #voice-modal {
+      background: var(--card);
+      border: 1px solid rgba(180,78,255,0.3);
+      border-radius: 18px;
+      padding: 20px 18px;
+      width: calc(100% - 32px);
+      max-width: 480px;
+    }
+    #voice-heard {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+      min-height: 20px;
+      font-style: italic;
+    }
+    #voice-parsed {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      min-height: 24px;
+      line-height: 1.4;
+    }
+    .voice-actions { display: flex; gap: 8px; }
+    .voice-log-btn {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .voice-log-btn.confirm { background: var(--mint); color: #0a0818; }
+    .voice-log-btn.cancel  { background: var(--card2); color: var(--muted); }
+    #voice-listening-txt {
+      text-align: center;
+      color: var(--coral);
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      letter-spacing: 0.05em;
+    }
+
     /* ═══════════════ ROOM STICKY HEADER ═══════════════ */
     .room-sticky-hdr {
       position: sticky;
@@ -2521,6 +2606,7 @@ async function showAppScreen() {
   loadLaundryLog();
   loadFoodLog();
   loadSib();
+  voiceShowFab();
   loadCriticalBanners();
 
   if (isAdmin) { loadStaffList(); populateAdminRoomSel(); loadMedications(); loadIncidents(); populateCallOutStaffSel(); }
@@ -4514,6 +4600,186 @@ function appendBotTyping() {
 //   Body: { message: userMessage, systemPrompt: BOT_SYSTEM_PROMPT }
 // ────────────────────────────────────────────────────────────────
 
+// ================================================================
+// VOICE ENTRY
+// ================================================================
+let voiceRecognition = null;
+let voiceParsed = null;
+
+function voiceShowFab() {
+  const fab = document.getElementById('voice-fab');
+  if (fab && ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window)) {
+    fab.style.display = 'flex';
+  }
+}
+
+function startVoice() {
+  const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!Rec) { showToast('Voice not supported on this browser', true); return; }
+
+  voiceRecognition = new Rec();
+  voiceRecognition.lang = 'en-US';
+  voiceRecognition.interimResults = false;
+  voiceRecognition.maxAlternatives = 1;
+
+  const fab = document.getElementById('voice-fab');
+  fab.classList.add('listening');
+  fab.textContent = '🔴';
+
+  document.getElementById('voice-listening-txt').style.display = 'block';
+  document.getElementById('voice-heard').textContent = '';
+  document.getElementById('voice-parsed').textContent = '';
+  document.getElementById('voice-confirm-btn').style.display = 'none';
+  document.getElementById('voice-overlay').classList.add('show');
+  voiceParsed = null;
+
+  voiceRecognition.onresult = e => {
+    const transcript = e.results[0][0].transcript.toLowerCase().trim();
+    voiceHandleTranscript(transcript);
+  };
+  voiceRecognition.onerror = () => {
+    voiceCancel();
+    showToast('Could not hear — try again', true);
+  };
+  voiceRecognition.onend = () => {
+    fab.classList.remove('listening');
+    fab.textContent = '🎙️';
+    document.getElementById('voice-listening-txt').style.display = 'none';
+    if (!voiceParsed) {
+      setTimeout(voiceCancel, 2000);
+    }
+  };
+  voiceRecognition.start();
+}
+
+function voiceHandleTranscript(raw) {
+  document.getElementById('voice-heard').textContent = '"' + raw + '"';
+  const parsed = voiceParse(raw);
+  voiceParsed = parsed;
+  if (parsed) {
+    document.getElementById('voice-parsed').textContent = parsed.label;
+    document.getElementById('voice-confirm-btn').style.display = 'block';
+  } else {
+    document.getElementById('voice-parsed').textContent = '🤷 Not sure what to log — try again';
+    document.getElementById('voice-confirm-btn').style.display = 'none';
+    voiceParsed = null;
+  }
+}
+
+function voiceParse(t) {
+  // ── SIB / Elopement ──────────────────────────────────────
+  const sibMap = [
+    { keys: ['minor sib'], type: 'minor-sib', label: '⚡ Minor SIB' },
+    { keys: ['major sib', 'big sib'], type: 'major-sib', label: '🚨 Major SIB' },
+    { keys: ['meltdown', 'tantrum', 'freak out', 'freaked out', 'freaking out'], type: 'tantrum', label: '😤 Tantrum' },
+    { keys: ['elopement', 'eloped', 'elope', 'ran away', 'ran out', 'bolted', 'escaped'], type: 'elopement', label: '🏃 Elopement' },
+  ];
+  const hasSib = sibMap.find(s => s.keys.some(k => t.includes(k)));
+  if (hasSib) {
+    const durMatch = t.match(/(\d+)\s*(?:minute|min|minutes|mins)/);
+    const dur = durMatch ? parseInt(durMatch[1]) : null;
+    return { category: 'sib', type: hasSib.type, typeLabel: hasSib.label, duration: dur,
+      label: hasSib.label + (dur ? ' — ' + dur + ' min' : '') };
+  }
+
+  // ── Laundry ──────────────────────────────────────────────
+  if (/(laundry|wash|dryer|dry|fold|wearable|cloth|linen|sheet|bed sheet|clothing|clothes|rag)/.test(t)) {
+    let cat = 'wearable';
+    if (/(clean\s*cloth|cleaning\s*cloth|rag|cloth)/.test(t)) cat = 'cleaning';
+    else if (/(linen|sheet|bed)/.test(t)) cat = 'linen';
+    const catLabels = { wearable: '👕 Wearable', cleaning: '🧹 Cleaning Cloths', linen: '🛏️ Linen' };
+
+    let type = 'wash';
+    if (/(dryer|dry|dried)/.test(t)) type = 'dryer';
+    else if (/(fold|folding|folded)/.test(t)) type = 'fold';
+    const typeLabels = { wash: '🫧 Wash', dryer: '🌀 Dryer', fold: '👕 Fold' };
+
+    return { category: 'laundry', laundryCatKey: cat, laundryType: type,
+      label: 'Laundry — ' + catLabels[cat] + ' → ' + typeLabels[type],
+      catLabel: catLabels[cat], typeLabel: typeLabels[type] };
+  }
+
+  // ── Medication ───────────────────────────────────────────
+  const medMap = [
+    { keys: ['magnesium', 'mag'], name: 'Magnesium 400 MG', icon: '🧲' },
+    { keys: ['clonidine', 'clonodine', 'clon'], name: 'Clonodine HCL ER .1 MG', icon: '🌙' },
+    { keys: ['vraylar', 'vralar', 'vrarlay'], name: 'Vraylar 1.5 MG Cap', icon: '✨' },
+    { keys: ['krill'], name: 'Krill Oil', icon: '🐟' },
+    { keys: ['fiber'], name: 'Fiber Sup', icon: '🌾' },
+    { keys: ['vitamin d', 'vitamin'], name: 'Vitamin D', icon: '🌞' },
+  ];
+  const med = medMap.find(m => m.keys.some(k => t.includes(k)));
+  if (med) {
+    return { category: 'medication', medName: med.name, label: med.icon + ' Medication — ' + med.name };
+  }
+
+  // ── Food / Meal ───────────────────────────────────────────
+  if (/(food|ate|eat|meal|breakfast|lunch|dinner|snack|fed|feeding)/.test(t)) {
+    const foodNote = t.replace(/food|ate|eat|meal|breakfast|lunch|dinner|snack|fed|feeding/gi, '').replace(/^\W+|\W+$/g, '').trim();
+    return { category: 'food', foodNote,
+      label: '🍽️ Food Log' + (foodNote ? ' — ' + foodNote : '') };
+  }
+
+  return null;
+}
+
+async function voiceConfirm() {
+  const p = voiceParsed;
+  if (!p) return;
+  voiceCancel();
+  try {
+    if (p.category === 'sib') {
+      await db.collection('sib').add({
+        type: p.type, typeLabel: p.typeLabel,
+        duration: p.duration || null, notes: '(voice)',
+        userId: currentUser.uid, userName: currentData?.name || currentUser.email,
+        facility: currentData?.facility || FACILITY,
+        date: localDateStr(),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      showToast(p.typeLabel + ' logged');
+      loadSib();
+
+    } else if (p.category === 'laundry') {
+      await db.collection('laundry').add({
+        type: p.laundryType, category: p.laundryCatKey,
+        typeLabel: p.typeLabel, catLabel: p.catLabel,
+        userId: currentUser.uid, userName: currentData?.name || currentUser.email,
+        facility: currentData?.facility || FACILITY,
+        date: localDateStr(),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      showToast('Laundry — ' + p.catLabel + ' ' + p.typeLabel + ' logged');
+      loadLaundryLog();
+
+    } else if (p.category === 'medication') {
+      await db.collection('medications').add({
+        name: p.medName, dose: 1, notes: '(voice)',
+        userId: currentUser.uid, userName: currentData?.name || currentUser.email,
+        facility: currentData?.facility || FACILITY,
+        date: localDateStr(),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      showToast(p.medName + ' logged');
+      if (currentData?.role === 'admin') loadMedications();
+
+    } else if (p.category === 'food') {
+      const foodEl = document.getElementById('food-item');
+      if (foodEl && p.foodNote) foodEl.value = p.foodNote;
+      scrollToSection('sec-food');
+      showToast('Food section open — tap Log Meal to save');
+    }
+  } catch(e) { showToast(e.message, true); }
+}
+
+function voiceCancel() {
+  if (voiceRecognition) { try { voiceRecognition.abort(); } catch(e) {} voiceRecognition = null; }
+  const fab = document.getElementById('voice-fab');
+  if (fab) { fab.classList.remove('listening'); fab.textContent = '🎙️'; }
+  document.getElementById('voice-overlay').classList.remove('show');
+  voiceParsed = null;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // Service worker for PWA
   if ('serviceWorker' in navigator) {
@@ -4530,6 +4796,22 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 </script>
+<!-- Voice Entry FAB -->
+<button id="voice-fab" onclick="startVoice()" title="Voice Entry" style="display:none">🎙️</button>
+
+<!-- Voice Entry Modal -->
+<div id="voice-overlay">
+  <div id="voice-modal">
+    <div id="voice-listening-txt">🎙️ Listening…</div>
+    <div id="voice-heard"></div>
+    <div id="voice-parsed"></div>
+    <div class="voice-actions">
+      <button class="voice-log-btn confirm" id="voice-confirm-btn" onclick="voiceConfirm()">✓ Log It</button>
+      <button class="voice-log-btn cancel"  onclick="voiceCancel()">✕ Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div id="rainbow-border"></div>
 </body>
 </html>
