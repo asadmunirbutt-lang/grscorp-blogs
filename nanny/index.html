@@ -633,6 +633,16 @@
     }
     .med-type-btn.active { background: rgba(0,188,212,0.15); border-color: var(--teal); color: var(--teal); }
     .med-type-btn:hover  { background: var(--card2); color: var(--text); }
+    .sib-type-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
+    .sib-type-btn {
+      flex: 1; min-width: calc(50% - 3px);
+      border: 1px solid var(--border); border-radius: 8px;
+      background: var(--card2); color: var(--muted);
+      font-size: 0.78rem; font-weight: 700; padding: 8px 6px;
+      cursor: pointer; text-align: center; transition: all .15s;
+    }
+    .sib-type-btn.active { background: rgba(255,82,82,0.15); border-color: var(--coral); color: var(--coral); }
+    .sib-type-btn:hover  { background: var(--card2); color: var(--text); }
     .inc-type-btn {
       flex: 1; background: var(--card); border: 1.5px solid var(--border2);
       border-radius: 10px; color: var(--muted); cursor: pointer;
@@ -1722,6 +1732,7 @@
         <button class="qnav-btn" onclick="scrollToSection('sec-laundry')">🧺 Laundry</button>
         <button class="qnav-btn" id="qnav-meds"      style="display:none" onclick="scrollToSection('sec-meds')">💊 Meds</button>
         <button class="qnav-btn" id="qnav-incidents" style="display:none" onclick="scrollToSection('sec-incidents')">📋 Incidents</button>
+        <button class="qnav-btn" onclick="scrollToSection('sec-sib')">🧠 SIB/Elop</button>
       </div>
 
       <!-- Critical note banners -->
@@ -1909,6 +1920,33 @@
             </div>
             <div class="laundry-hist-panel" id="inc-hist-panel" style="display:none">
               <div id="incidents-list"></div>
+            </div>
+          </div>
+
+          <!-- SIB / Elopement Log (all staff) -->
+          <div class="laundry-inline" id="sec-sib">
+            <div class="laundry-inline-hdr" style="border-bottom-color:rgba(255,82,82,0.2)">
+              <span style="color:#ff5252">🧠 SIB / Elopement</span>
+              <div style="display:flex;gap:6px">
+                <button class="laundry-log-toggle" id="sib-log-toggle" onclick="toggleSection('sib')" style="background:rgba(255,82,82,0.12);border-color:rgba(255,82,82,0.35);color:#ff5252">+ Log Entry</button>
+                <button class="laundry-hist-toggle" id="sib-hist-toggle" onclick="toggleSectionHistory('sib')">📋 History</button>
+              </div>
+            </div>
+            <div class="laundry-controls" id="sib-controls" style="display:none">
+              <div class="sib-type-row">
+                <button class="sib-type-btn active" onclick="setSibType('minor-sib',this)">⚡ Minor SIB</button>
+                <button class="sib-type-btn" onclick="setSibType('major-sib',this)">🚨 Major SIB</button>
+                <button class="sib-type-btn" onclick="setSibType('tantrum',this)">😤 Tantrum</button>
+                <button class="sib-type-btn" onclick="setSibType('elopement',this)">🏃 Elopement</button>
+              </div>
+              <div class="input-row" style="margin:8px 0">
+                <div class="fg" style="margin-bottom:0"><input type="number" id="sib-duration" placeholder="Duration (mins)" min="1" class="fg-input"></div>
+                <div class="fg" style="margin-bottom:0"><input type="text" id="sib-notes" placeholder="Notes (optional)" class="fg-input"></div>
+              </div>
+              <button class="ltype-btn" style="width:100%;justify-content:center;color:#ff5252;border-color:rgba(255,82,82,0.4);margin-bottom:4px" onclick="logSib()">🧠 Log Event</button>
+            </div>
+            <div class="laundry-hist-panel" id="sib-hist-panel" style="display:none">
+              <div id="sib-list"></div>
             </div>
           </div>
         </div>
@@ -2482,6 +2520,7 @@ async function showAppScreen() {
   loadSupplies();
   loadLaundryLog();
   loadFoodLog();
+  loadSib();
   loadCriticalBanners();
 
   if (isAdmin) { loadStaffList(); populateAdminRoomSel(); loadMedications(); loadIncidents(); populateCallOutStaffSel(); }
@@ -3627,6 +3666,87 @@ async function deleteMedication(id) {
   const el = document.getElementById('med-' + id);
   if (el) el.style.opacity = '0.4';
   try { await db.collection('medications').doc(id).delete(); loadMedications(); }
+  catch (e) { if (el) el.style.opacity = '1'; showToast('Error', true); }
+}
+
+// ================================================================
+//  SIB / ELOPEMENT LOG
+// ================================================================
+let selectedSibType = 'minor-sib';
+
+function setSibType(type, el) {
+  selectedSibType = type;
+  document.querySelectorAll('.sib-type-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+async function logSib() {
+  const typeLabels = { 'minor-sib':'Minor SIB', 'major-sib':'Major SIB', 'tantrum':'Tantrum', 'elopement':'Elopement' };
+  const duration = document.getElementById('sib-duration').value.trim();
+  const notes    = document.getElementById('sib-notes').value.trim();
+  try {
+    await db.collection('sib').add({
+      type:      selectedSibType,
+      typeLabel: typeLabels[selectedSibType],
+      duration:  duration ? parseInt(duration) : null,
+      notes:     notes || null,
+      userId:    currentUser.uid,
+      userName:  currentData?.name || currentUser.email,
+      facility:  currentData?.facility || FACILITY,
+      date:      new Date().toISOString().slice(0,10),
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('sib-duration').value = '';
+    document.getElementById('sib-notes').value    = '';
+    showToast('🧠 Event logged');
+    const ctrl = document.getElementById('sib-controls');
+    const btn  = document.getElementById('sib-log-toggle');
+    if (ctrl) ctrl.style.display = 'none';
+    if (btn)  btn.classList.remove('active');
+    loadSib();
+  } catch (e) { showToast(e.message, true); }
+}
+
+async function loadSib() {
+  const list = document.getElementById('sib-list');
+  if (!list) return;
+  try {
+    const snap    = await db.collection('sib').orderBy('timestamp','desc').limit(50).get();
+    const myFac   = currentData?.facility || FACILITY;
+    const isAdmin = currentData?.role === 'admin';
+    const entries = snap.docs.filter(d => d.data().facility === myFac).map(d => ({ id: d.id, ...d.data() }));
+    const histBtn = document.getElementById('sib-hist-toggle');
+    if (!entries.length) {
+      list.innerHTML = '<div class="empty-state" style="font-size:0.82rem">No events logged yet</div>';
+      if (histBtn) histBtn.textContent = '📋 History';
+      return;
+    }
+    if (histBtn) histBtn.textContent = `📋 History (${entries.length})`;
+    const today    = new Date().toISOString().slice(0,10);
+    const typeEmoji = { 'minor-sib':'⚡','major-sib':'🚨','tantrum':'😤','elopement':'🏃' };
+    const typeColor = { 'minor-sib':'#ffd000','major-sib':'#ff5252','tantrum':'#ff8c00','elopement':'#b44eff' };
+    list.innerHTML = entries.map(e => {
+      const ts   = e.timestamp?.toDate?.() || new Date();
+      const time = ts.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+      const when = e.date === today ? 'Today' : e.date;
+      const col  = typeColor[e.type] || '#ff5252';
+      const emo  = typeEmoji[e.type] || '🧠';
+      return `<div class="med-entry" id="sib-${e.id}" style="border-left:3px solid ${col}">
+        <div class="med-entry-info">
+          <div class="med-name" style="color:${col}">${emo} ${escHtml(e.typeLabel||e.type)}${e.duration?`<span class="med-dose" style="color:var(--muted)">${e.duration} min</span>`:''}</div>
+          ${e.notes?`<div style="color:var(--muted);font-size:0.78rem;margin-top:2px">${escHtml(e.notes)}</div>`:''}
+          <div class="med-meta">By ${escHtml(e.userName)} · ${time} · ${when}</div>
+        </div>
+        ${isAdmin?`<button class="x-btn" onclick="deleteSib('${e.id}')">✕</button>`:''}
+      </div>`;
+    }).join('');
+  } catch (e) { console.warn('SIB:', e.message); }
+}
+
+async function deleteSib(id) {
+  const el = document.getElementById('sib-' + id);
+  if (el) el.style.opacity = '0.4';
+  try { await db.collection('sib').doc(id).delete(); loadSib(); }
   catch (e) { if (el) el.style.opacity = '1'; showToast('Error', true); }
 }
 
