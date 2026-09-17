@@ -2549,6 +2549,7 @@ async function onUserLogin(user) {
   } catch (e) {
     currentData = { name: user.email, role: isAdmin ? 'admin' : 'caretaker', facility: FACILITY };
   }
+  voiceShowFab();
   showAppScreen();
 }
 
@@ -4612,6 +4613,7 @@ function voiceShowFab() {
 }
 
 function startVoice() {
+  if (!currentUser) return;
   const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!Rec) { showToast('Voice not supported on this browser', true); return; }
 
