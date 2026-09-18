@@ -769,7 +769,7 @@
 
     /* ═══════════════ AI BOT ═══════════════ */
     #bot-btn {
-      position: fixed; bottom: 24px; right: 20px; z-index: 8500;
+      position: fixed; bottom: 24px; right: 88px; z-index: 8500;
       width: 56px; height: 56px; border-radius: 50%; border: none;
       background: linear-gradient(135deg, var(--lavender), var(--blue));
       color: #fff; font-size: 1.4rem; cursor: pointer;
@@ -781,7 +781,7 @@
     #bot-btn:hover   { transform: scale(1.08); box-shadow: 0 6px 32px rgba(41,121,255,0.65); }
     #bot-btn.open    { background: linear-gradient(135deg, var(--coral), var(--orange)); }
     #bot-panel {
-      position: fixed; bottom: 92px; right: 20px; z-index: 8500;
+      position: fixed; bottom: 92px; right: 88px; z-index: 8500;
       width: 340px; max-width: calc(100vw - 32px);
       background: var(--surface); border: 1px solid rgba(41,121,255,0.3);
       border-radius: 18px; box-shadow: 0 8px 48px rgba(0,0,0,0.65);
@@ -1184,22 +1184,23 @@
     #voice-fab {
       position: fixed;
       bottom: 24px;
-      right: 18px;
-      z-index: 999;
-      width: 58px;
-      height: 58px;
+      right: 20px;
+      z-index: 100001;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
       border: none;
       background: var(--lavender);
       color: #fff;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       cursor: pointer;
-      box-shadow: 0 4px 20px rgba(180,78,255,0.5);
-      display: flex;
+      box-shadow: 0 4px 24px rgba(180,78,255,0.55);
+      display: none;
       align-items: center;
       justify-content: center;
       transition: all 0.2s;
     }
+    #voice-fab.visible { display: flex; }
     #voice-fab.listening {
       background: var(--coral);
       box-shadow: 0 0 0 8px rgba(255,82,82,0.25);
@@ -4633,7 +4634,7 @@ let voiceParsed = null;
 
 function voiceShowFab() {
   const fab = document.getElementById('voice-fab');
-  if (fab) fab.style.display = 'flex';
+  if (fab) fab.classList.add('visible');
 }
 
 function startVoice() {
@@ -4692,57 +4693,85 @@ function voiceHandleTranscript(raw) {
 }
 
 function voiceParse(t) {
+  const durMatch = t.match(/(\d+)\s*(?:minute|min|minutes|mins)/);
+  const dur = durMatch ? parseInt(durMatch[1]) : null;
+
   // ── SIB / Elopement ──────────────────────────────────────
   const sibMap = [
-    { keys: ['minor sib'], type: 'minor-sib', label: '⚡ Minor SIB' },
-    { keys: ['major sib', 'big sib'], type: 'major-sib', label: '🚨 Major SIB' },
-    { keys: ['meltdown', 'tantrum', 'freak out', 'freaked out', 'freaking out'], type: 'tantrum', label: '😤 Tantrum' },
-    { keys: ['elopement', 'eloped', 'elope', 'ran away', 'ran out', 'bolted', 'escaped'], type: 'elopement', label: '🏃 Elopement' },
+    { keys: ['minor sib', 'mild sib', 'small sib', 'little sib'], type: 'minor-sib', label: '⚡ Minor SIB' },
+    { keys: ['major sib', 'big sib', 'severe sib', 'serious sib', 'bad sib'], type: 'major-sib', label: '🚨 Major SIB' },
+    { keys: ['meltdown', 'tantrum', 'freak out', 'freaked out', 'freaking out', 'melt down', 'crying fit', 'screaming'], type: 'tantrum', label: '😤 Tantrum' },
+    { keys: ['elopement', 'eloped', 'elope', 'ran away', 'ran out', 'bolted', 'escaped', 'took off', 'left the house', 'left building'], type: 'elopement', label: '🏃 Elopement' },
+    { keys: ['sib'], type: 'minor-sib', label: '⚡ Minor SIB' },
   ];
   const hasSib = sibMap.find(s => s.keys.some(k => t.includes(k)));
   if (hasSib) {
-    const durMatch = t.match(/(\d+)\s*(?:minute|min|minutes|mins)/);
-    const dur = durMatch ? parseInt(durMatch[1]) : null;
     return { category: 'sib', type: hasSib.type, typeLabel: hasSib.label, duration: dur,
       label: hasSib.label + (dur ? ' — ' + dur + ' min' : '') };
   }
 
   // ── Laundry ──────────────────────────────────────────────
-  if (/(laundry|wash|dryer|dry|fold|wearable|cloth|linen|sheet|bed sheet|clothing|clothes|rag)/.test(t)) {
+  if (/(laundry|wash|washer|dryer|dry|fold|folded|folding|wearable|cleaning cloth|clean cloth|linen|bed sheet|bedsheet|clothing|clothes|rag)/.test(t)) {
     let cat = 'wearable';
-    if (/(clean\s*cloth|cleaning\s*cloth|rag|cloth)/.test(t)) cat = 'cleaning';
-    else if (/(linen|sheet|bed)/.test(t)) cat = 'linen';
+    if (/(clean\s*cloth|cleaning\s*cloth|cleaning cloth|rag|dish cloth|dishcloth)/.test(t)) cat = 'cleaning';
+    else if (/(linen|sheet|bed sheet|bedsheet|pillow)/.test(t)) cat = 'linen';
     const catLabels = { wearable: '👕 Wearable', cleaning: '🧹 Cleaning Cloths', linen: '🛏️ Linen' };
-
     let type = 'wash';
-    if (/(dryer|dry|dried)/.test(t)) type = 'dryer';
+    if (/(dryer|dry|dried|tumble)/.test(t)) type = 'dryer';
     else if (/(fold|folding|folded)/.test(t)) type = 'fold';
     const typeLabels = { wash: '🫧 Wash', dryer: '🌀 Dryer', fold: '👕 Fold' };
-
     return { category: 'laundry', laundryCatKey: cat, laundryType: type,
       label: 'Laundry — ' + catLabels[cat] + ' → ' + typeLabels[type],
       catLabel: catLabels[cat], typeLabel: typeLabels[type] };
   }
 
+  // ── Incidents (poop / accident) ───────────────────────────
+  if (/(poop|pooped|pooping|bowel|bm\b|went potty|used bathroom|bathroom accident|accident|wet himself|wet herself|wet pants|soiled|wet accident|dirty diaper|diaper)/.test(t)) {
+    let type = 'poop', typeLabel = '💩 Poop';
+    if (/(accident|wet|urine|pee|peeing|peed|urinated|soiled|wet pants|wet himself|wet herself)/.test(t) && !/(poop|bm\b|bowel)/.test(t)) {
+      type = 'accident'; typeLabel = '💧 Accident';
+    }
+    const notes = t.replace(/(poop|pooped|accident|wet|bowel|bm|potty|bathroom|diaper|soiled)/gi,'').trim();
+    return { category: 'incident', incType: type, typeLabel, notes: notes || null,
+      label: typeLabel + (notes ? ' — ' + notes : '') };
+  }
+
   // ── Medication ───────────────────────────────────────────
   const medMap = [
-    { keys: ['magnesium', 'mag'], name: 'Magnesium 400 MG', icon: '🧲' },
-    { keys: ['clonidine', 'clonodine', 'clon'], name: 'Clonodine HCL ER .1 MG', icon: '🌙' },
-    { keys: ['vraylar', 'vralar', 'vrarlay'], name: 'Vraylar 1.5 MG Cap', icon: '✨' },
-    { keys: ['krill'], name: 'Krill Oil', icon: '🐟' },
-    { keys: ['fiber'], name: 'Fiber Sup', icon: '🌾' },
-    { keys: ['vitamin d', 'vitamin'], name: 'Vitamin D', icon: '🌞' },
+    { keys: ['magnesium', 'mag supplement', 'mag vitamin'], name: 'Magnesium 400 MG', icon: '🧲' },
+    { keys: ['clonidine', 'clonodine', 'clono', 'clonadin'], name: 'Clonodine HCL ER .1 MG', icon: '🌙' },
+    { keys: ['vraylar', 'vralar', 'vrarlay', 'vralar', 'braylar'], name: 'Vraylar 1.5 MG Cap', icon: '✨' },
+    { keys: ['krill oil', 'krill'], name: 'Krill Oil', icon: '🐟' },
+    { keys: ['fiber supplement', 'fiber sup', 'fiber'], name: 'Fiber Sup', icon: '🌾' },
+    { keys: ['vitamin d', 'vitamin d3', 'vit d'], name: 'Vitamin D', icon: '🌞' },
   ];
   const med = medMap.find(m => m.keys.some(k => t.includes(k)));
   if (med) {
-    return { category: 'medication', medName: med.name, label: med.icon + ' Medication — ' + med.name };
+    const dose = (t.match(/(\d+)\s*(?:pill|pills|tablet|tablets|dose)/) || [])[1] || 1;
+    return { category: 'medication', medName: med.name, dose: parseInt(dose),
+      label: med.icon + ' Medication — ' + med.name + (dose > 1 ? ' ×' + dose : '') };
   }
 
   // ── Food / Meal ───────────────────────────────────────────
-  if (/(food|ate|eat|meal|breakfast|lunch|dinner|snack|fed|feeding)/.test(t)) {
-    const foodNote = t.replace(/food|ate|eat|meal|breakfast|lunch|dinner|snack|fed|feeding/gi, '').replace(/^\W+|\W+$/g, '').trim();
+  if (/(food|ate|eat|eating|meal|breakfast|lunch|dinner|snack|fed|feeding|drank|drink|juice|water|milk|fruit|gave him|gave her|had)/.test(t)) {
+    const strip = ['food','ate','eat','eating','meal','breakfast','lunch','dinner','snack','fed','feeding','drank','drink','gave him','gave her','had'];
+    let foodNote = t;
+    strip.forEach(w => { foodNote = foodNote.replace(new RegExp('\\b' + w + '\\b', 'gi'), ''); });
+    foodNote = foodNote.replace(/^\W+|\W+$/g, '').trim();
     return { category: 'food', foodNote,
-      label: '🍽️ Food Log' + (foodNote ? ' — ' + foodNote : '') };
+      label: '🍽️ Food — ' + (foodNote || 'meal logged') };
+  }
+
+  // ── Notes (general) ──────────────────────────────────────
+  if (/(note|notes|add note|write|record|log that|reminder|remember)/.test(t)) {
+    const noteText = t.replace(/\b(note|notes|add note|add a note|write|write a note|record|log that|reminder|remember)\b/gi, '').replace(/^\W+|\W+$/g, '').trim();
+    if (noteText) return { category: 'note', noteText, label: '📝 Note — ' + noteText };
+  }
+
+  // ── Supplies ─────────────────────────────────────────────
+  if (/(need|needs|order|buy|request|we need|running low|out of|low on|supply|supplies|get more|pick up|purchase)/.test(t)) {
+    const item = t.replace(/\b(need|needs|order|buy|request|we need|running low on|out of|low on|supply|supplies|get more|pick up|purchase|more)\b/gi, '').replace(/^\W+|\W+$/g, '').trim();
+    if (item) return { category: 'supply', item, label: '🛒 Supply Request — ' + item };
   }
 
   return null;
@@ -4752,47 +4781,47 @@ async function voiceConfirm() {
   const p = voiceParsed;
   if (!p) return;
   voiceCancel();
+  const uid  = currentUser.uid;
+  const who  = currentData?.name || currentUser.email;
+  const fac  = currentData?.facility || FACILITY;
+  const ts   = firebase.firestore.FieldValue.serverTimestamp;
+  const base = { userId: uid, userName: who, facility: fac, date: localDateStr(), timestamp: ts() };
   try {
     if (p.category === 'sib') {
-      await db.collection('sib').add({
-        type: p.type, typeLabel: p.typeLabel,
-        duration: p.duration || null, notes: '(voice)',
-        userId: currentUser.uid, userName: currentData?.name || currentUser.email,
-        facility: currentData?.facility || FACILITY,
-        date: localDateStr(),
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
+      await db.collection('sib').add({ ...base, type: p.type, typeLabel: p.typeLabel, duration: p.duration || null, notes: '(voice)' });
       showToast(p.typeLabel + ' logged');
       loadSib();
 
     } else if (p.category === 'laundry') {
-      await db.collection('laundry').add({
-        type: p.laundryType, category: p.laundryCatKey,
-        typeLabel: p.typeLabel, catLabel: p.catLabel,
-        userId: currentUser.uid, userName: currentData?.name || currentUser.email,
-        facility: currentData?.facility || FACILITY,
-        date: localDateStr(),
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
+      await db.collection('laundry').add({ ...base, type: p.laundryType, category: p.laundryCatKey, typeLabel: p.typeLabel, catLabel: p.catLabel });
       showToast('Laundry — ' + p.catLabel + ' ' + p.typeLabel + ' logged');
       loadLaundryLog();
 
     } else if (p.category === 'medication') {
-      await db.collection('medications').add({
-        name: p.medName, dose: 1, notes: '(voice)',
-        userId: currentUser.uid, userName: currentData?.name || currentUser.email,
-        facility: currentData?.facility || FACILITY,
-        date: localDateStr(),
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
+      await db.collection('medications').add({ ...base, name: p.medName, dose: p.dose || 1, notes: '(voice)' });
       showToast(p.medName + ' logged');
       if (currentData?.role === 'admin') loadMedications();
 
     } else if (p.category === 'food') {
-      const foodEl = document.getElementById('food-item');
-      if (foodEl && p.foodNote) foodEl.value = p.foodNote;
-      scrollToSection('sec-food');
-      showToast('Food section open — tap Log Meal to save');
+      await db.collection('foodlog').add({ ...base, meal: p.foodNote || 'Meal', qty: 1, notes: '(voice)' });
+      showToast('🍽️ ' + (p.foodNote || 'Meal') + ' logged');
+      loadFoodLog();
+
+    } else if (p.category === 'incident') {
+      const labels = { poop: '💩 Poop', accident: '💧 Accident', other: '📌 Other' };
+      await db.collection('incidents').add({ ...base, type: p.incType, typeLabel: labels[p.incType], notes: p.notes || '(voice)' });
+      showToast(labels[p.incType] + ' logged');
+      if (currentData?.role === 'admin') loadIncidents();
+
+    } else if (p.category === 'note') {
+      await db.collection('notes').add({ ...base, text: p.noteText, imageUrl: null });
+      showToast('📝 Note saved');
+      loadNotes();
+
+    } else if (p.category === 'supply') {
+      await db.collection('supplies').add({ ...base, item: p.item, qty: 1, status: 'pending' });
+      showToast('🛒 Supply request saved — ' + p.item);
+      loadSupplies();
     }
   } catch(e) { showToast(e.message, true); }
 }
