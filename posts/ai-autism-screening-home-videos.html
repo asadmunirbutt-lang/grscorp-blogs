@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Researchers are training AI to spot autism signs in short home videos of toddlers. What has actually been built, what parents can use today, and why no app can diagnose your child.">
+    <meta name="author" content="GRSCorp">
+    <title>AI Autism Screening from Home Videos: What Is Real in 2026 | GRSCorp Blog</title>
+    <link rel="canonical" href="https://blogs.grscorp.us/posts/ai-autism-screening-home-videos.html">
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-54ZW6ZTYHB"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-54ZW6ZTYHB');
+    </script>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <style>
+        .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 30px 0; }
+        .stat-box { background: linear-gradient(135deg, #00695c 0%, #26a69a 100%); color: white; padding: 22px; border-radius: 8px; text-align: center; box-shadow: 0 4px 12px rgba(0,105,92,0.28); }
+        .stat-number { font-size: 2.1em; font-weight: bold; display: block; margin-bottom: 6px; line-height: 1.15; }
+        .stat-label { font-size: 0.9em; opacity: 0.95; }
+        .feature-card { background: #fff; border: 1px solid #d9efe9; padding: 20px; border-radius: 8px; border-left: 5px solid #26a69a; margin: 16px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .feature-title { color: #00695c; font-weight: bold; font-size: 1.1em; margin-bottom: 8px; }
+        .highlight-box { background: linear-gradient(135deg, #e0f2f1 0%, #e8f5e9 100%); padding: 22px; border-radius: 8px; margin: 22px 0; border-left: 5px solid #26a69a; }
+        .highlight-box h3 { color: #00695c; margin-top: 0; }
+        .tip-box { background: #e0f2f1; padding: 20px; border-radius: 8px; border-left: 5px solid #00897b; margin: 18px 0; }
+        .warning-box { background: #fff8e1; padding: 20px; border-radius: 8px; border-left: 5px solid #ff9800; margin: 20px 0; }
+        .danger-box { background: #fdecea; padding: 20px; border-radius: 8px; border-left: 5px solid #c62828; margin: 22px 0; }
+        .danger-box strong { color: #8e1c1c; }
+        h2 { color: #00695c; border-bottom: 3px solid #26a69a; padding-bottom: 10px; margin-top: 35px; }
+        h3 { color: #00695c; }
+        .check-list { list-style: none; padding: 0; }
+        .check-list li { padding: 10px 12px; margin: 7px 0; background: rgba(38,166,154,0.08); border-left: 4px solid #26a69a; border-radius: 4px; }
+        .check-list li:before { content: "✓ "; color: #00897b; font-weight: bold; }
+        .x-list { list-style: none; padding: 0; }
+        .x-list li { padding: 10px 12px; margin: 7px 0; background: rgba(198,40,40,0.06); border-left: 4px solid #c62828; border-radius: 4px; }
+        .x-list li:before { content: "✕ "; color: #c62828; font-weight: bold; }
+        .compare-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .compare-table th { background: #00695c; color: white; padding: 12px 14px; text-align: left; }
+        .compare-table td { padding: 11px 14px; border-bottom: 1px solid #d9efe9; vertical-align: top; font-size: 0.95em; }
+        .compare-table tr:nth-child(even) td { background: rgba(38,166,154,0.05); }
+        .overflow-wrap { overflow-x: auto; }
+        .step-card { background: #fff; border: 1px solid #d9efe9; border-radius: 8px; padding: 18px; margin: 12px 0; display: flex; gap: 15px; align-items: flex-start; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+        .step-num { background: #00695c; color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; font-size: 1.05em; }
+        .step-card h4 { margin: 0 0 6px 0; color: #00695c; font-size: 1.05em; }
+        .age-card { background: linear-gradient(135deg, #e0f2f1 0%, #f1f8f6 100%); padding: 20px; border-radius: 8px; border-top: 4px solid #26a69a; margin: 18px 0; }
+        .age-title { color: #00695c; font-weight: bold; font-size: 1.08em; margin-bottom: 10px; }
+        .quote-box { background: #f1f8f6; border-left: 5px solid #80cbc4; padding: 18px 22px; margin: 22px 0; border-radius: 0 8px 8px 0; font-size: 1.03em; color: #26413d; }
+        .related-posts { background: #f1f8f6; padding: 20px; border-radius: 8px; margin: 25px 0; border-left: 4px solid #26a69a; }
+        .related-posts h3 { color: #00695c; margin-top: 0; }
+        .ny-box { background: linear-gradient(135deg, #e0f2f1 0%, #e3f2fd 100%); padding: 22px; border-radius: 8px; margin: 22px 0; border: 1px solid #a7d9d2; }
+        .ny-box h3 { color: #00584c; margin-top: 0; }
+    </style>
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://blogs.grscorp.us/posts/newly-diagnosed-autism-first-steps.html">
+    <meta property="og:title" content="Newly Diagnosed with Autism: A Parent's First Steps Guide">
+    <meta property="og:description" content="A calm, practical guide for families in the first weeks after an autism diagnosis: what to do first, how to read the report, a 30-day checklist, New York services and insurance, and what the future actually looks like.">
+    <meta property="og:site_name" content="GRSCorp Blog">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Newly Diagnosed with Autism: A Parent's First Steps Guide">
+    <meta name="twitter:description" content="What to do in the first days, weeks, and months after an autism diagnosis — services, insurance, evidence-based therapies, and hope grounded in reality.">
+    <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Newly Diagnosed with Autism: A Parent's First Steps Guide",
+  "description": "A calm, practical guide for families in the first weeks after an autism diagnosis: what to do first, how to read the evaluation report, a 30-day action checklist, New York services and insurance, evidence-based versus unproven treatments, and what the future actually looks like.",
+  "author": { "@type": "Organization", "name": "Global Relief And Support Corporation", "url": "https://grscorp.us" },
+  "publisher": { "@type": "Organization", "name": "GRSCorp Blog", "url": "https://blogs.grscorp.us" },
+  "datePublished": "2026-09-13",
+  "dateModified": "2026-09-13",
+  "mainEntityOfPage": "https://blogs.grscorp.us/posts/newly-diagnosed-autism-first-steps.html"
+}
+    </script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="site-header-inner">
+            <a href="/" class="site-logo"><span class="logo-mark">GRS</span> Corp <span class="logo-sub">Blog</span></a>
+            <nav class="site-nav" id="siteNav">
+                <a href="/">Home</a>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-toggle" type="button">Blog <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 7l5 5 5-5"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="/">All Posts</a>
+                        <a href="/posts/10-best-sensory-toys-autism.html">Sensory Resources</a>
+                        <a href="/posts/autism-iep-guide.html">School &amp; IEP Advocacy</a>
+                        <a href="/posts/signs-of-autism-in-adults.html">Diagnosis &amp; Signs</a>
+                        <a href="/posts/nys-autism-school-resources.html">NYS Family Resources</a>
+                    </div>
+                </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-toggle" type="button">What is Autism? <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 7l5 5 5-5"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="https://grscorp.us/what-causes-autism/" target="_blank" rel="noopener">What Causes Autism</a>
+                        <a href="https://grscorp.us/learn-the-sign-of-autism/" target="_blank" rel="noopener">Learn the Signs</a>
+                        <a href="https://grscorp.us/what-are-symptoms-of-autism/" target="_blank" rel="noopener">Symptoms of Autism</a>
+                        <a href="https://grscorp.us/sensory-issues/" target="_blank" rel="noopener">Sensory Issues</a>
+                        <a href="https://grscorp.us/autism-diagnosis-criteria/" target="_blank" rel="noopener">Diagnosis Criteria</a>
+                    </div>
+                </div>
+                <a href="/autism-screening-test.html">Free Screening Tool</a>
+                <div class="nav-dropdown">
+                    <button class="nav-dropdown-toggle" type="button">About GRS Corp <svg viewBox="0 0 20 20" fill="currentColor"><path d="M5 7l5 5 5-5"/></svg></button>
+                    <div class="nav-dropdown-menu">
+                        <a href="https://grscorp.us/" target="_blank" rel="noopener">Our Mission &amp; Vision</a>
+                        <a href="https://grscorp.us/core-values/" target="_blank" rel="noopener">Core Values</a>
+                        <a href="https://grscorp.us/board-members/" target="_blank" rel="noopener">Board Members</a>
+                    </div>
+                </div>
+                <a href="https://grscorp.us/donate/" class="nav-donate-btn" target="_blank" rel="noopener">Donate</a>
+            </nav>
+            <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu">&#9776;</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="back-link">
+            <a href="/">← Back to Blog Home</a>
+        </div>
+
+        <article class="post-container">
+            <div class="post-header">
+                <h1 class="post-title">AI Autism Screening from Home Videos: What Is Real in 2026</h1>
+                <div class="post-meta">
+                    <div class="post-meta-item"><strong>Published:</strong> September 30, 2026</div>
+                    <div class="post-meta-item"><strong>By:</strong> GRSCorp</div>
+                    <div class="post-meta-item"><strong>Category:</strong> Diagnosis &amp; Screening</div>
+                    <div class="post-meta-item"><strong>Read time:</strong> 10 min</div>
+                </div>
+            </div>
+
+            <div class="post-content">
+<p>There is a gap at the centre of autism care that nobody disputes. Autism can be reliably identified in many children by around age two. The median age at diagnosis in the United States is still <strong>over four years old</strong>.</p>
+
+<p>Those two years matter. They are the years when intervention has the most effect, and for many families they are spent on waiting lists, in referral loops, or being told to come back later.</p>
+
+<p>AI screening is aimed squarely at that gap. The pitch is straightforward: a parent records a few minutes of their toddler at home, software analyses the behaviour, and children who need a full evaluation are flagged sooner. In 2026 this moved from concept to working research systems. It has not yet moved to anything you can use.</p>
+
+<div class="info-box">
+<h3>The one-line answer</h3>
+<p>There is no app that can diagnose your child, and there will not be one soon. What exists is promising research aimed at <em>triage</em> — deciding who needs a specialist sooner. Anything marketed to you today as AI autism diagnosis is overselling.</p>
+</div>
+
+<h2>What researchers have actually built</h2>
+
+<p>The most significant 2026 work took a general-purpose multimodal AI model — Gemini 2.5 Pro — and fine-tuned it on <strong>400 clinician-rated home videos</strong>. Rather than asking the model to produce a diagnosis, the researchers trained it to score <strong>30 specific behavioural features</strong> that had already been validated as predictive when scored by humans.</p>
+
+<p>That design choice is the interesting part. The model is not being asked "is this child autistic?" It is being asked "does this child respond to their name? is there joint attention here? what is the quality of eye contact?" — the same observations a clinician makes, at a speed and scale humans cannot match.</p>
+
+<p>This matters because the bottleneck in video-based screening was never the video. It was that scoring those videos by hand takes trained clinicians a long time, which is exactly the resource that is scarce.</p>
+
+<div class="cause-card">
+<h3>Why earlier attempts fell short</h3>
+<p>General vision-language models like CLIP and Flamingo could describe what was happening in a video in plain language. What they could not do was the specialised clinical reasoning — distinguishing a child absorbed in play from a child who does not orient to their name, or repetitive play from focused play. Describing a scene and assessing development are different tasks.</p>
+</div>
+
+<h2>What you can actually use today</h2>
+
+<p>This is the part that gets buried under the excitement.</p>
+
+<div class="cause-card">
+<h3>M-CHAT-R/F — free, validated, available now</h3>
+<p>The Modified Checklist for Autism in Toddlers is a 20-question screener for children aged 16 to 30 months. It is free, takes a few minutes, and is the tool your paediatrician most likely uses. The follow-up interview component is what makes it accurate — a positive screen alone produces a lot of false positives, which is why the "F" part matters. Ask your paediatrician to administer it properly rather than self-scoring online.</p>
+</div>
+
+<div class="cause-card">
+<h3>Research-grade digital screeners</h3>
+<p>Tools developed with NIH support use a tablet to show a child short videos while the front camera measures their attention, expressions and head movement. These have performed well in studies. They are deployed in research settings and some clinics — they are not a consumer download.</p>
+</div>
+
+<div class="cause-card">
+<h3>What does not exist</h3>
+<p>A consumer app that takes a video of your child and tells you whether they are autistic. If you find one, it has not been validated against clinical diagnosis in the population you belong to, and it is not regulated as a diagnostic device.</p>
+</div>
+
+<h2>Before you upload a video of your child anywhere</h2>
+
+<p>This deserves more attention than it usually gets. A video of your toddler at home, combined with a developmental concern, is about as sensitive as personal data gets — and it concerns a person who cannot consent.</p>
+
+<p>Before uploading to any service, ask:</p>
+
+<ul>
+<li><strong>Who stores the video, and for how long?</strong> "Deleted after processing" and "retained to improve our model" are very different answers.</li>
+<li><strong>Is it used to train their system?</strong> Buried in terms of service, frequently.</li>
+<li><strong>Is the company covered by health privacy law?</strong> A wellness app generally is not. A clinical service generally is.</li>
+<li><strong>Can you delete it, verifiably?</strong></li>
+<li><strong>Who else sees it?</strong> Contractors reviewing footage for quality is standard and rarely advertised.</li>
+</ul>
+
+<p>A legitimate research study will have ethics approval and a consent form that answers all of this. A consumer app usually answers none of it.</p>
+
+<h2>Warning signs of a product to avoid</h2>
+
+<ul>
+<li>It uses the word <strong>diagnosis</strong> rather than screening</li>
+<li>It charges a significant fee for a result — validated screening tools are free</li>
+<li>It reports a percentage or score with no explanation of what was measured</li>
+<li>It cites AI research without naming a study you can look up</li>
+<li>It discourages or replaces seeing a clinician</li>
+<li>It offers to sell you a treatment programme based on its own result</li>
+</ul>
+
+<h2>What to do if you are worried right now</h2>
+
+<p>None of this research helps you this month. What does:</p>
+
+<p><strong>1. Tell your paediatrician specifically.</strong> Not "I'm worried about development" but "he doesn't respond to his name", "she doesn't point at things to show me", "he lost words he used to have." Specific observations get taken seriously; general worry gets a wait-and-see.</p>
+
+<p><strong>2. Ask for the M-CHAT-R/F by name</strong> if your child is 16 to 30 months and it has not been done.</p>
+
+<p><strong>3. Refer to Early Intervention yourself.</strong> In New York you do not need a doctor's referral and you do not need a diagnosis — parents can self-refer, evaluation is free, and services start from assessed need. Do this in parallel with chasing a diagnostic evaluation rather than after it.</p>
+
+<p><strong>4. Record video for the clinician, not for an algorithm.</strong> A few minutes of your child playing, being called by name, and interacting at home is genuinely useful to an evaluator, especially if your child presents differently in a strange room. Bring it to the appointment.</p>
+
+<p><strong>5. Do not wait for certainty to start.</strong> Early Intervention does not require a diagnosis. The waiting is the thing that costs the most, and it is the part you have some control over.</p>
+
+<div class="info-box">
+<h3>Where this is heading</h3>
+<p>The realistic near future is not AI diagnosis. It is a paediatric clinic where a short home video gets scored in minutes rather than sitting in a queue, so the children who most need a specialist reach one first. That is a triage improvement, not a replacement for evaluation — and it would still be a significant gain over waiting two years.</p>
+</div>
+
+<h2>Sources</h2>
+<ul>
+<li>Fine-tuning a multimodal large language model for clinician-grade autism behavioural scoring from short home videos, 2026 — Gemini 2.5 Pro trained on 400 clinician-rated videos across 30 validated features</li>
+<li>Multimodal LLM vs. human-measured features for AI predictions of autism in home videos, 2026</li>
+<li>National Institute of Mental Health — digital autism screening tool research updates</li>
+<li>CDC — autism affects 1 in 31 US children; median age at diagnosis exceeds four years</li>
+</ul>
+            </div>
+        </article>
+
+        <div style="background: #f0f7ff; padding: 20px; border-radius: 6px; margin-top: 40px; border-left: 4px solid #1e5a96;">
+            <h3 style="color: #0f3a5c; margin-top: 0;">Support GRS Corp's Mission</h3>
+            <p>GRS Corp is a 501(c)(3) nonprofit helping individuals with autism and their families in New York. <a href="https://grscorp.us/donate/">Your donation</a> helps us provide resources, advocacy, and community programs.</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="/" style="color: #1e5a96; font-weight: 600;">← Back to all blog posts</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="site-footer-grid">
+            <div>
+                <h4>GRS Corp</h4>
+                <p>Global Relief And Support Corporation is a 501(c)(3) nonprofit based in Clifton Park, NY, dedicated to improving quality of life for individuals with autism and their families.</p>
+            </div>
+            <div>
+                <h4>Explore</h4>
+                <ul>
+                    <li><a href="/">Blog Home</a></li>
+                    <li><a href="/autism-screening-test.html">Free Screening Tool</a></li>
+                    <li><a href="https://grscorp.us/" target="_blank" rel="noopener">GRSCorp.us</a></li>
+                    <li><a href="https://grscorp.us/donate/" target="_blank" rel="noopener">Donate</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>About Autism</h4>
+                <ul>
+                    <li><a href="https://grscorp.us/learn-the-sign-of-autism/" target="_blank" rel="noopener">Signs of Autism</a></li>
+                    <li><a href="https://grscorp.us/what-are-symptoms-of-autism/" target="_blank" rel="noopener">Symptoms</a></li>
+                    <li><a href="https://grscorp.us/sensory-issues/" target="_blank" rel="noopener">Sensory Issues</a></li>
+                    <li><a href="https://grscorp.us/core-values/" target="_blank" rel="noopener">Our Core Values</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Get Involved</h4>
+                <ul>
+                    <li><a href="https://grscorp.us/volunteer/" target="_blank" rel="noopener">Volunteer</a></li>
+                    <li><a href="https://grscorp.us/contact/" target="_blank" rel="noopener">Contact Us</a></li>
+                    <li><a href="https://grscorp.us/board-members/" target="_blank" rel="noopener">Board Members</a></li>
+                    <li><a href="http://charityshop.grscorp.us/" target="_blank" rel="noopener">Shop Our Cause</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="site-footer-bottom">
+            <p>&copy; 2026 Global Relief And Support Corporation. All rights reserved. GRS Corp is a registered 501(c)(3) nonprofit organization.</p>
+        </div>
+    </footer>
+    <script src="/assets/js/site-nav.js"></script>
+</body>
+</html>
