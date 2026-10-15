@@ -115,7 +115,8 @@ async function callAnthropicAPI(systemPrompt, messages) {
     }
 
     const data = await res.json();
-    return data.content?.[0]?.text || "I'm having trouble responding right now. Please try again.";
+    const textBlock = data.content?.find(b => b.type === 'text');
+    return textBlock?.text || "I'm having trouble responding right now. Please try again.";
 }
 
 // ── Allowed origins ───────────────────────────────────────────────────────────
