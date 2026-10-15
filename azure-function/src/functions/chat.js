@@ -103,7 +103,7 @@ async function callAnthropicAPI(systemPrompt, messages) {
         headers: reqHeaders,
         body: JSON.stringify({
             model,
-            max_tokens: 600,
+            max_tokens: 4096,
             system: systemPrompt,
             messages
         })
