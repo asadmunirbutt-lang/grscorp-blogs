@@ -84,33 +84,35 @@ COMMON TOPICS YOU HELP WITH:
 
 Your tone: warm, empathetic, practical, non-judgmental. Use plain language. Acknowledge the difficulty of caregiving. Celebrate small victories.`;
 
-// ── Helper: call Azure OpenAI ─────────────────────────────────────────────────
+// ── Helper: call Anthropic API ────────────────────────────────────────────────
 
-async function callAzureOpenAI(messages) {
-    const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
-    const key      = process.env.AZURE_OPENAI_KEY;
-    const deploy   = process.env.AZURE_OPENAI_DEPLOYMENT || 'gpt-4o';
+async function callAnthropicAPI(systemPrompt, messages) {
+    const key   = process.env.ANTHROPIC_API_KEY;
+    const model = process.env.ANTHROPIC_MODEL || 'claude-3-5-haiku-20241022';
 
-    const url = `${endpoint}/openai/deployments/${deploy}/chat/completions?api-version=2024-08-01-preview`;
-
-    const res = await fetch(url, {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: { 'api-key': key, 'Content-Type': 'application/json' },
+        headers: {
+            'x-api-key': key,
+            'anthropic-version': '2023-06-01',
+            'content-type': 'application/json'
+        },
         body: JSON.stringify({
-            messages,
+            model,
             max_tokens: 600,
-            temperature: 0.7,
-            stream: false
+            system: systemPrompt,
+            messages,
+            temperature: 0.7
         })
     });
 
     if (!res.ok) {
         const err = await res.text();
-        throw new Error(`Azure OpenAI error ${res.status}: ${err}`);
+        throw new Error(`Anthropic API error ${res.status}: ${err}`);
     }
 
     const data = await res.json();
-    return data.choices?.[0]?.message?.content || "I'm having trouble responding right now. Please try again.";
+    return data.content?.[0]?.text || "I'm having trouble responding right now. Please try again.";
 }
 
 // ── Allowed origins ───────────────────────────────────────────────────────────
@@ -159,12 +161,7 @@ app.http('chat', {
                 ? AUTISM_FAMILY_SYSTEM_PROMPT
                 : NANNY_SYSTEM_PROMPT;
 
-            const fullMessages = [
-                { role: 'system', content: systemPrompt },
-                ...messages.slice(-12) // last 12 turns for context window efficiency
-            ];
-
-            const reply = await callAzureOpenAI(fullMessages);
+            const reply = await callAnthropicAPI(systemPrompt, messages.slice(-12));
             return { status: 200, headers, body: JSON.stringify({ reply }) };
 
         } catch (err) {
