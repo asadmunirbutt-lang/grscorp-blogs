@@ -90,13 +90,17 @@ async function callAnthropicAPI(systemPrompt, messages) {
     const key   = process.env.ANTHROPIC_API_KEY;
     const model = process.env.ANTHROPIC_MODEL || 'claude-3-5-haiku-20241022';
 
+    const reqHeaders = {
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json'
+    };
+    const workspaceId = process.env.ANTHROPIC_WORKSPACE_ID;
+    if (workspaceId) reqHeaders['anthropic-workspace-id'] = workspaceId;
+
     const res = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: {
-            'x-api-key': key,
-            'anthropic-version': '2023-06-01',
-            'content-type': 'application/json'
-        },
+        headers: reqHeaders,
         body: JSON.stringify({
             model,
             max_tokens: 600,
