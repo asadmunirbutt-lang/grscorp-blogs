@@ -105,8 +105,7 @@ async function callAnthropicAPI(systemPrompt, messages) {
             model,
             max_tokens: 600,
             system: systemPrompt,
-            messages,
-            temperature: 0.7
+            messages
         })
     });
 
