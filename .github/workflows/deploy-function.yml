@@ -30,12 +30,43 @@ jobs:
         env:
           PUBLISH_PROFILE: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
         run: |
-          SCM_URL=$(echo "$PUBLISH_PROFILE" | grep -oP 'publishUrl="[^"]+"' | head -1 | grep -oP '"[^"]+"' | tr -d '"')
-          USER=$(echo "$PUBLISH_PROFILE" | grep -oP 'userName="\$[^"]+"' | head -1 | grep -oP '"\$[^"]+"' | tr -d '"')
-          PASS=$(echo "$PUBLISH_PROFILE" | grep -oP 'userPWD="[^"]+"' | head -1 | grep -oP '"[^"]+"' | tr -d '"')
-          curl -X POST "https://${SCM_URL}/api/zipdeploy" \
-            -u "${USER}:${PASS}" \
-            --data-binary @function.zip \
-            -H "Content-Type: application/zip" \
-            -w "\nHTTP Status: %{http_code}\n" \
-            --fail
+          python3 << 'PYEOF'
+          import xml.etree.ElementTree as ET, os, sys, base64
+          from urllib.request import urlopen, Request
+          from urllib.error import HTTPError
+
+          profile = os.environ['PUBLISH_PROFILE']
+          root = ET.fromstring(profile)
+          scm_url = user = pwd = None
+          for p in root.findall('publishProfile'):
+              if p.get('publishMethod') == 'ZipDeploy':
+                  scm_url = p.get('publishUrl').split(':')[0]
+                  user = p.get('userName')
+                  pwd = p.get('userPWD')
+                  break
+
+          if not all([scm_url, user, pwd]):
+              print("ERROR: Could not extract ZipDeploy credentials from publish profile")
+              sys.exit(1)
+
+          print(f"Deploying to: https://{scm_url}/api/zipdeploy")
+          print(f"User: {user[:4]}****")
+
+          auth = base64.b64encode(f"{user}:{pwd}".encode()).decode()
+          with open('function.zip', 'rb') as f:
+              data = f.read()
+          print(f"Zip size: {len(data)} bytes")
+
+          url = f"https://{scm_url}/api/zipdeploy"
+          req = Request(url, data=data, headers={
+              'Authorization': f'Basic {auth}',
+              'Content-Type': 'application/zip'
+          }, method='POST')
+          try:
+              resp = urlopen(req)
+              print(f"Deploy succeeded: HTTP {resp.status}")
+          except HTTPError as e:
+              body = e.read().decode()
+              print(f"Deploy failed: HTTP {e.code}\n{body}")
+              sys.exit(1)
+          PYEOF
