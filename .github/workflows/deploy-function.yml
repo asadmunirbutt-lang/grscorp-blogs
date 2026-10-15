@@ -5,6 +5,7 @@ on:
     branches: [master]
     paths:
       - 'azure-function/**'
+  workflow_dispatch:
 
 jobs:
   deploy:
