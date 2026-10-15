@@ -153,17 +153,20 @@ app.http('chat', {
 
         try {
             const body = await request.json();
-            const { messages, mode } = body;
+            const { messages, mode, logContext } = body;
 
             // messages = [{ role: 'user'|'assistant', content: '...' }, ...]
             if (!messages || !Array.isArray(messages) || messages.length === 0) {
                 return { status: 400, headers, body: JSON.stringify({ error: 'messages array required' }) };
             }
 
-            // Pick system prompt based on mode
-            const systemPrompt = mode === 'autism-family'
+            // Pick base system prompt then append log context if provided
+            const basePrompt = mode === 'autism-family'
                 ? AUTISM_FAMILY_SYSTEM_PROMPT
                 : NANNY_SYSTEM_PROMPT;
+            const systemPrompt = logContext
+                ? basePrompt + '\n\n' + logContext
+                : basePrompt;
 
             const reply = await callAnthropicAPI(systemPrompt, messages.slice(-12));
             return { status: 200, headers, body: JSON.stringify({ reply }) };

@@ -4554,6 +4554,8 @@ const BOT_WELCOME = `👋 Hi! I'm **Spectra**, your Autism Care Companion.\n\nI 
 let botOpen     = false;
 let botGreeted  = false;
 let botHistory  = []; // { role: 'user'|'assistant', content: string }
+let spectraContextText  = null;  // cached log context sent with each message
+let spectraContextReady = false;
 
 function toggleBot() {
   botOpen = !botOpen;
@@ -4567,7 +4569,10 @@ function toggleBot() {
     botHistory = [];
     appendBotMsg(BOT_WELCOME, 'bot');
   }
-  if (botOpen) setTimeout(() => document.getElementById('bot-input')?.focus(), 100);
+  if (botOpen) {
+    initSpectraContext().catch(() => {});
+    setTimeout(() => document.getElementById('bot-input')?.focus(), 100);
+  }
 }
 
 function botInputKeydown(e) {
@@ -4591,7 +4596,7 @@ async function sendBotMessage() {
       const res = await fetch(BOT_AI_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: botHistory, mode: 'nanny' })
+        body: JSON.stringify({ messages: botHistory, mode: 'nanny', logContext: spectraContextText || '' })
       });
       const data = await res.json();
       reply = data.reply || data.error || "I couldn't get a response — please try again.";
@@ -4642,17 +4647,166 @@ function appendBotTyping() {
   return div;
 }
 
-// ── AI INTEGRATION — wire up when ready ──────────────────────────
-// Replace getBotReply() with an async version that calls your AI:
-//
-// Azure OpenAI:
-//   POST https://YOUR_RESOURCE.openai.azure.com/openai/deployments/YOUR_MODEL/chat/completions?api-version=2024-02-01
-//   Headers: { 'api-key': 'YOUR_KEY', 'Content-Type': 'application/json' }
-//   Body: { messages: [{ role:'system', content: BOT_SYSTEM_PROMPT }, { role:'user', content: userMessage }] }
-//
-// Claude API (via Azure Function proxy to keep key server-side):
-//   POST https://YOUR_FUNCTION.azurewebsites.net/api/chat
-//   Body: { message: userMessage, systemPrompt: BOT_SYSTEM_PROMPT }
+// ── Spectra Log Context — IndexedDB incremental cache of Firestore logs ──────
+
+async function initSpectraContext() {
+  if (spectraContextReady) return;
+  try {
+    const idb = await _idbOpen('spectra-context', 1, _idbUpgrade);
+    const meta = await _idbGet(idb, 'meta', 'lastSync');
+    const lastSync = meta?.value || null;
+    await _spectraSyncFirestore(idb, lastSync);
+    spectraContextText  = await _spectraBuildText(idb);
+    spectraContextReady = true;
+  } catch (err) {
+    console.warn('[Spectra] context load failed', err);
+    spectraContextText  = '';
+    spectraContextReady = true;
+  }
+}
+
+function _idbUpgrade(e) {
+  const d = e.target.result;
+  if (!d.objectStoreNames.contains('daily-logs')) d.createObjectStore('daily-logs', { keyPath: 'date' });
+  if (!d.objectStoreNames.contains('meta'))       d.createObjectStore('meta',       { keyPath: 'key'  });
+}
+
+function _idbOpen(name, version, onUpgrade) {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open(name, version);
+    r.onupgradeneeded = onUpgrade;
+    r.onsuccess = e => res(e.target.result);
+    r.onerror   = () => rej(r.error);
+  });
+}
+
+function _idbGet(idb, store, key) {
+  return new Promise((res, rej) => {
+    const r = idb.transaction(store, 'readonly').objectStore(store).get(key);
+    r.onsuccess = () => res(r.result);
+    r.onerror   = () => rej(r.error);
+  });
+}
+
+function _idbGetAll(idb, store) {
+  return new Promise((res, rej) => {
+    const r = idb.transaction(store, 'readonly').objectStore(store).getAll();
+    r.onsuccess = () => res(r.result || []);
+    r.onerror   = () => rej(r.error);
+  });
+}
+
+function _idbPut(idb, store, data) {
+  return new Promise((res, rej) => {
+    const r = idb.transaction(store, 'readwrite').objectStore(store).put(data);
+    r.onsuccess = () => res();
+    r.onerror   = () => rej(r.error);
+  });
+}
+
+async function _spectraSyncFirestore(idb, lastSync) {
+  const today = localDateStr();
+
+  async function fetchByDate(collName) {
+    let q = db.collection(collName);
+    if (lastSync) q = q.where('date', '>=', lastSync);
+    const snap = await q.get();
+    return snap.docs.map(d => d.data());
+  }
+
+  async function fetchNotes() {
+    let q = db.collection('notes');
+    if (lastSync) q = q.where('timestamp', '>=', new Date(lastSync));
+    const snap = await q.get();
+    return snap.docs.map(d => {
+      const data = d.data();
+      const date = data.timestamp?.toDate
+        ? data.timestamp.toDate().toISOString().slice(0, 10)
+        : today;
+      return { ...data, date };
+    });
+  }
+
+  const [subs, meds, meals, sibs, laundry, notes] = await Promise.all([
+    fetchByDate('submissions'),
+    fetchByDate('medications'),
+    fetchByDate('foodlog'),
+    fetchByDate('sib'),
+    fetchByDate('laundry'),
+    fetchNotes()
+  ]);
+
+  const dayMap = {};
+  function ensureDay(date) {
+    if (!dayMap[date]) dayMap[date] = { date, subs: [], meds: [], meals: [], sibs: [], notes: [], laundry: [] };
+    return dayMap[date];
+  }
+
+  for (const x of subs.filter(x => x.facility === FACILITY))
+    ensureDay(x.date).subs.push({ shift: x.shift, room: x.room, user: x.userName, tasks: x.tasks });
+  for (const x of meds.filter(x => x.facility === FACILITY))
+    ensureDay(x.date).meds.push({ name: x.name, dose: x.dose, by: x.userName });
+  for (const x of meals.filter(x => x.facility === FACILITY))
+    ensureDay(x.date).meals.push({ meal: x.meal, qty: x.qty });
+  for (const x of sibs.filter(x => x.facility === FACILITY))
+    ensureDay(x.date).sibs.push({ type: x.typeLabel || x.type, dur: x.duration });
+  for (const x of laundry.filter(x => x.facility === FACILITY))
+    ensureDay(x.date).laundry.push({ type: x.typeLabel || x.type, cat: x.catLabel || x.category });
+  for (const x of notes.filter(x => x.facility === FACILITY))
+    ensureDay(x.date).notes.push({ text: x.text, crit: x.critical });
+
+  for (const [, dayData] of Object.entries(dayMap)) {
+    await _idbPut(idb, 'daily-logs', dayData);
+  }
+
+  await _idbPut(idb, 'meta', { key: 'lastSync', value: today });
+}
+
+async function _spectraBuildText(idb) {
+  const days = await _idbGetAll(idb, 'daily-logs');
+  if (!days.length) return '';
+  days.sort((a, b) => a.date.localeCompare(b.date));
+
+  const lines = ['=== GRSCORP CARE LOGS ==='];
+
+  for (const d of days) {
+    lines.push(`\n[${d.date}]`);
+
+    if (d.subs?.length) {
+      const byShift = {};
+      for (const s of d.subs) {
+        if (!byShift[s.shift]) byShift[s.shift] = { user: s.user, rooms: [] };
+        const yes = s.tasks?.filter(t => t.status === 'yes').length || 0;
+        const co  = s.tasks?.filter(t => t.status === 'carry-over').length || 0;
+        byShift[s.shift].rooms.push(`${s.room}(${yes}✓${co ? ','+co+'CO' : ''})`);
+      }
+      for (const [sh, v] of Object.entries(byShift))
+        lines.push(`  ${sh}(${v.user}): ${v.rooms.join(', ')}`);
+    }
+
+    if (d.meds?.length)
+      lines.push(`  Meds: ${d.meds.map(m => `${m.name}${m.dose ? '('+m.dose+')' : ''}/${m.by}`).join(', ')}`);
+
+    if (d.meals?.length)
+      lines.push(`  Meals: ${d.meals.map(m => `${m.meal}×${m.qty || 1}`).join(', ')}`);
+
+    if (d.sibs?.length)
+      lines.push(`  Behavior: ${d.sibs.map(s => `${s.type}${s.dur ? ' '+s.dur+'min' : ''}`).join(', ')}`);
+
+    if (d.notes?.length) {
+      const crits = d.notes.filter(n => n.crit).map(n => `🚨"${n.text.slice(0, 80)}"`);
+      const norml = d.notes.filter(n => !n.crit).map(n => `"${n.text.slice(0, 60)}"`);
+      const all   = [...crits, ...norml];
+      lines.push(`  Notes: ${all.slice(0, 6).join(' | ')}${all.length > 6 ? ` +(${all.length-6} more)` : ''}`);
+    }
+
+    if (d.laundry?.length)
+      lines.push(`  Laundry: ${d.laundry.map(l => `${l.cat}-${l.type}`).join(', ')}`);
+  }
+
+  return lines.join('\n');
+}
+
 // ────────────────────────────────────────────────────────────────
 
 // ================================================================
