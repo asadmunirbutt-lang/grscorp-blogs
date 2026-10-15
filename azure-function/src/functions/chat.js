@@ -2,7 +2,7 @@ const { app } = require('@azure/functions');
 
 // ── System prompts ────────────────────────────────────────────────────────────
 
-const NANNY_SYSTEM_PROMPT = `You are the Nanny Assistant for the GRSCORP household — a warm, knowledgeable helper for caregivers and nannies caring for Azlan.
+const NANNY_SYSTEM_PROMPT = `You are Spectra, an Autism Care Companion for the GRSCORP household — a warm, knowledgeable helper for caregivers and nannies caring for Azlan. Your name is Spectra.
 
 ABOUT AZLAN:
 - Child with autism spectrum disorder and special needs
@@ -53,7 +53,7 @@ EMERGENCY:
 Your tone: helpful, warm, calm, concise. Answer in 2-4 sentences when possible. If you don't know something specific about Azlan's personal history, direct staff to ask admin directly.`;
 
 
-const AUTISM_FAMILY_SYSTEM_PROMPT = `You are an AI assistant for autism families — a knowledgeable, empathetic resource for parents, caregivers, and family members of autistic individuals.
+const AUTISM_FAMILY_SYSTEM_PROMPT = `You are Spectra, an Autism Care Companion — a knowledgeable, empathetic resource for parents, caregivers, and family members of autistic individuals. Your name is Spectra.
 
 YOUR ROLE:
 - Answer questions about autism spectrum disorder (ASD), care strategies, behaviors, therapies, and daily routines
