@@ -4610,8 +4610,10 @@ async function sendBotMessage() {
   }
 
   typing.remove();
-  appendBotMsg(reply, 'bot');
-  botHistory.push({ role: 'assistant', content: reply });
+  const { cleanReply, action } = parseSpectraAction(reply);
+  appendBotMsg(cleanReply, 'bot');
+  botHistory.push({ role: 'assistant', content: cleanReply });
+  if (action) executeSpectraAction(action);
   // Keep history from growing too large
   if (botHistory.length > 20) botHistory = botHistory.slice(-20);
 }
@@ -4805,6 +4807,105 @@ async function _spectraBuildText(idb) {
   }
 
   return lines.join('\n');
+}
+
+// ── Spectra Action Execution — parse and run logged actions ──────
+
+function parseSpectraAction(reply) {
+  const m = reply.match(/<action\s([^/]+)\/>/s);
+  if (!m) return { cleanReply: reply, action: null };
+  const tagStr = m[1];
+  const action = {};
+  for (const attr of tagStr.matchAll(/(\w+)="([^"]*)"/g)) {
+    action[attr[1]] = attr[2];
+  }
+  const cleanReply = reply.replace(/<action\s[^/]+\/>/s, '').trim();
+  return { cleanReply, action };
+}
+
+async function executeSpectraAction(action) {
+  if (!currentUser || !db) return;
+  const today    = localDateStr();
+  const userName = currentUser.displayName || currentUser.email || 'Spectra';
+  const userId   = currentUser.uid;
+  const base     = { facility: FACILITY, date: today, userName, userId,
+                     timestamp: firebase.firestore.FieldValue.serverTimestamp() };
+  try {
+    switch (action.type) {
+      case 'log_medication':
+        await db.collection('medications').add({
+          ...base, name: action.name || '', dose: action.dose || '', notes: ''
+        });
+        showToast(`Logged med: ${action.name || 'medication'}`);
+        break;
+
+      case 'log_meal': {
+        const mealMap = {
+          breakfast: 'Breakfast', lunch: 'Lunch', dinner: 'Dinner',
+          snack: 'Snack', drink: 'Drink', other: 'Other'
+        };
+        const meal = mealMap[action.meal?.toLowerCase()] || action.meal || 'Meal';
+        await db.collection('foodlog').add({
+          ...base, meal, qty: parseInt(action.qty) || 1, notes: ''
+        });
+        showToast(`Logged meal: ${meal}`);
+        break;
+      }
+
+      case 'log_sib': {
+        const sibLabels = {
+          'minor-sib': 'Minor SIB', 'major-sib': 'Major SIB',
+          tantrum: 'Tantrum', meltdown: 'Meltdown',
+          'elopement-attempt': 'Elopement Attempt',
+          poop: 'Bowel Movement', accident: 'Accident', other: 'Other'
+        };
+        const sibType = action.behavior || 'other';
+        await db.collection('sib').add({
+          ...base,
+          type: sibType,
+          typeLabel: sibLabels[sibType] || sibType,
+          duration: parseInt(action.duration) || 0,
+          notes: ''
+        });
+        showToast(`Logged: ${sibLabels[sibType] || sibType}`);
+        break;
+      }
+
+      case 'log_note':
+        await db.collection('notes').add({
+          ...base,
+          text: action.text || '',
+          critical: action.critical === 'true',
+          imageUrl: null,
+          acknowledged: false
+        });
+        showToast(action.critical === 'true' ? '🚨 Critical note logged' : 'Note logged');
+        break;
+
+      case 'log_laundry': {
+        const catMap = {
+          'wearable': 'Wearable Clothes', 'cleaning-cloths': 'Cleaning Cloths', 'linen': 'Linen & Bed Sheets'
+        };
+        const typeMap = { wash: 'Wash 🫧', dryer: 'Dryer 🌀', fold: 'Fold 👕' };
+        const cat  = action.category  || 'wearable';
+        const type = action.load_type || 'wash';
+        await db.collection('laundry').add({
+          ...base,
+          category: cat, catLabel: catMap[cat] || cat,
+          type, typeLabel: typeMap[type] || type
+        });
+        showToast(`Logged laundry: ${catMap[cat] || cat} — ${typeMap[type] || type}`);
+        break;
+      }
+
+      default:
+        console.warn('[Spectra] Unknown action type:', action.type);
+    }
+    spectraContextReady = false; // force context refresh on next open
+  } catch (err) {
+    console.error('[Spectra] Action failed:', err);
+    showToast('Could not log — please add it manually', true);
+  }
 }
 
 // ────────────────────────────────────────────────────────────────
