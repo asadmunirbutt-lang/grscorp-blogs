@@ -1,72 +1,64 @@
-name: Deploy Azure Function
+name: Build and deploy Node.js project to Azure Function App - grscorp-nanny-ai-func
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
     paths:
       - 'azure-function/**'
   workflow_dispatch:
 
+env:
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: 'azure-function'
+  NODE_VERSION: '22.x'
+
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node ${{ env.NODE_VERSION }} Environment
+        uses: actions/setup-node@v3
         with:
-          node-version: '22'
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Install dependencies
-        working-directory: azure-function
-        run: npm install --omit=dev
-
-      - name: Zip package
+        shell: bash
         run: |
-          cd azure-function
-          zip -r ../function.zip . -x "*.git*"
+          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
+          npm install --omit=dev
+          popd
 
-      - name: Deploy via zip deploy
-        env:
-          PUBLISH_PROFILE: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
-        run: |
-          python3 << 'PYEOF'
-          import xml.etree.ElementTree as ET, os, sys, base64
-          from urllib.request import urlopen, Request
-          from urllib.error import HTTPError
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-app
+          path: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
 
-          profile = os.environ['PUBLISH_PROFILE']
-          root = ET.fromstring(profile)
-          scm_url = user = pwd = None
-          for p in root.findall('publishProfile'):
-              if p.get('publishMethod') == 'ZipDeploy':
-                  scm_url = p.get('publishUrl').split(':')[0]
-                  user = p.get('userName')
-                  pwd = p.get('userPWD')
-                  break
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: node-app
 
-          if not all([scm_url, user, pwd]):
-              print("ERROR: Could not extract ZipDeploy credentials from publish profile")
-              sys.exit(1)
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
 
-          print(f"Deploying to: https://{scm_url}/api/zipdeploy")
-          print(f"User: {user[:4]}****")
-
-          auth = base64.b64encode(f"{user}:{pwd}".encode()).decode()
-          with open('function.zip', 'rb') as f:
-              data = f.read()
-          print(f"Zip size: {len(data)} bytes")
-
-          url = f"https://{scm_url}/api/zipdeploy"
-          req = Request(url, data=data, headers={
-              'Authorization': f'Basic {auth}',
-              'Content-Type': 'application/zip'
-          }, method='POST')
-          try:
-              resp = urlopen(req)
-              print(f"Deploy succeeded: HTTP {resp.status}")
-          except HTTPError as e:
-              body = e.read().decode()
-              print(f"Deploy failed: HTTP {e.code}\n{body}")
-              sys.exit(1)
-          PYEOF
+      - name: Deploy to Azure Functions
+        uses: Azure/functions-action@v1
+        with:
+          app-name: grscorp-nanny-ai-func
+          slot-name: Production
+          package: '.'
