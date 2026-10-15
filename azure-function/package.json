@@ -1,0 +1,15 @@
+{
+  "name": "grscorp-nanny-ai",
+  "version": "1.0.0",
+  "description": "AI proxy for GRSCORP Nanny App and Autism Family Assistant",
+  "main": "src/functions/chat.js",
+  "scripts": {
+    "start": "func start"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

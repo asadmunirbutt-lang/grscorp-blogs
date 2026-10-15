@@ -4544,10 +4544,16 @@ const BOT_KB = [
     a:`Welcome! Here's how to get started:\n1. Select your shift at the top of the checklist tab\n2. Work through each room and mark tasks\n3. Use Notes for anything important\n4. Submit each room when done\n\nCheck the Team Guide and ask your admin for Azlan's personal care details before your first shift. Don't hesitate to ask questions! 👋` },
 ];
 
+// ── AI CONFIGURATION ──────────────────────────────────────────────────────────
+// Set this to your deployed Azure Function URL once you've set it up.
+// Leave empty to use the keyword fallback below.
+const BOT_AI_ENDPOINT = ''; // e.g. 'https://grscorp-nanny-ai.azurewebsites.net/api/chat'
+
 const BOT_WELCOME = `👋 Hi! I'm the **Nanny Assistant**.\n\nI can help with:\n• How to use the app\n• Azlan's routines & care\n• House rules & what to expect\n• Emergency steps\n\nWhat would you like to know?`;
 
-let botOpen    = false;
-let botGreeted = false;
+let botOpen     = false;
+let botGreeted  = false;
+let botHistory  = []; // { role: 'user'|'assistant', content: string }
 
 function toggleBot() {
   botOpen = !botOpen;
@@ -4558,6 +4564,7 @@ function toggleBot() {
   btn.textContent = botOpen ? '✕' : '💬';
   if (botOpen && !botGreeted) {
     botGreeted = true;
+    botHistory = [];
     appendBotMsg(BOT_WELCOME, 'bot');
   }
   if (botOpen) setTimeout(() => document.getElementById('bot-input')?.focus(), 100);
@@ -4574,12 +4581,34 @@ async function sendBotMessage() {
   input.value = '';
   input.style.height = 'auto';
   appendBotMsg(text, 'user');
+  botHistory.push({ role: 'user', content: text });
+
   const typing = appendBotTyping();
-  const delay  = 500 + Math.random() * 500;
-  await new Promise(r => setTimeout(r, delay));
+
+  let reply;
+  if (BOT_AI_ENDPOINT) {
+    try {
+      const res = await fetch(BOT_AI_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: botHistory, mode: 'nanny' })
+      });
+      const data = await res.json();
+      reply = data.reply || data.error || "I couldn't get a response — please try again.";
+    } catch (e) {
+      reply = "I'm having trouble connecting right now. Try again in a moment, or post a Note in the app for your admin.";
+    }
+  } else {
+    // Fallback: keyword lookup until Azure endpoint is configured
+    await new Promise(r => setTimeout(r, 400 + Math.random() * 400));
+    reply = getBotReply(text);
+  }
+
   typing.remove();
-  const reply = getBotReply(text);
   appendBotMsg(reply, 'bot');
+  botHistory.push({ role: 'assistant', content: reply });
+  // Keep history from growing too large
+  if (botHistory.length > 20) botHistory = botHistory.slice(-20);
 }
 
 function getBotReply(msg) {
