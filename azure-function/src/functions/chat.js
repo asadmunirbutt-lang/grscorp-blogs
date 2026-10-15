@@ -88,7 +88,7 @@ Your tone: warm, empathetic, practical, non-judgmental. Use plain language. Ackn
 
 async function callAnthropicAPI(systemPrompt, messages) {
     const key   = process.env.ANTHROPIC_API_KEY;
-    const model = process.env.ANTHROPIC_MODEL || 'claude-3-5-haiku-20241022';
+    const model = process.env.ANTHROPIC_MODEL || 'claude-haiku-5-5';
 
     const reqHeaders = {
         'x-api-key': key,
