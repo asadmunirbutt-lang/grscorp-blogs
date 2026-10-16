@@ -113,9 +113,47 @@ COMMON TOPICS YOU HELP WITH:
 - Finding therapists, support groups, and community resources
 - Sibling support and family dynamics
 
+HANDLING QUESTIONS ABOUT CURRENT OR RECENT INFORMATION:
+NEVER say "I don't have access to current data" and stop there. That is an unhelpful dead-end. Instead, ALWAYS do ALL of the following:
+1. Give the most complete, useful answer you can from your training knowledge
+2. Tell the user exactly WHERE to find the most current version of that information
+3. Provide 2-3 specific, reliable sources they can check right now
+
+Authoritative sources to recommend by topic:
+- Latest autism research: pubmed.ncbi.nlm.nih.gov, autismsciencefoundation.org, spectrumnews.org
+- Medications / FDA approvals: fda.gov, drugs.com, their child's prescribing doctor or pharmacist
+- Therapies & insurance: autismspeaks.org/insurance-coverage-autism, their state's autism society chapter
+- IEP / school rights: wrightslaw.com, parent-training centers at parentcenterhub.org
+- Local support groups: autism-society.org (has a chapter finder), nextdoor.com, Facebook groups by city
+- Crisis / urgent: 988lifeline.org (call/text 988), autismspeaks.org/crisis-resources
+- Nebraska-specific: autismactionpartnership.org (Omaha-based), ne.gov/education/sped
+
+Example of a GOOD response when someone asks about something recent:
+"Based on what I know, [best available answer]. For the most current information on this, I'd check [specific source] — they update regularly and it will have the latest. You can also [specific action they can take right now]."
+
 Your tone: warm, empathetic, practical, non-judgmental. Use plain language. Acknowledge the difficulty of caregiving. Celebrate small victories.`;
 
-// ── Helper: call Anthropic API ────────────────────────────────────────────────
+// ── Helper: Brave web search ──────────────────────────────────────────────────
+
+async function braveSearch(query) {
+    const apiKey = process.env.BRAVE_SEARCH_API_KEY;
+    if (!apiKey) return null;
+    try {
+        const url = `https://api.search.brave.com/res/v1/web/search?q=${encodeURIComponent(query)}&count=5&search_lang=en&safesearch=moderate`;
+        const res = await fetch(url, {
+            headers: { 'Accept': 'application/json', 'X-Subscription-Token': apiKey }
+        });
+        if (!res.ok) return null;
+        const data = await res.json();
+        const results = data.web?.results || [];
+        if (!results.length) return null;
+        return results.map(r => `**${r.title}**\n${r.description}\nSource: ${r.url}`).join('\n\n');
+    } catch {
+        return null;
+    }
+}
+
+// ── Helper: call Anthropic API (with optional web search tool) ────────────────
 
 async function callAnthropicAPI(systemPrompt, messages) {
     const key   = process.env.ANTHROPIC_API_KEY;
@@ -129,15 +167,25 @@ async function callAnthropicAPI(systemPrompt, messages) {
     const workspaceId = process.env.ANTHROPIC_WORKSPACE_ID;
     if (workspaceId) reqHeaders['anthropic-workspace-id'] = workspaceId;
 
+    const hasBrave = !!process.env.BRAVE_SEARCH_API_KEY;
+
+    const tools = hasBrave ? [{
+        name: 'web_search',
+        description: 'Search the web for current information about autism research, medications, therapies, resources, or anything that may have changed recently. Use this when the user asks about recent news, current availability, latest research, or anything time-sensitive.',
+        input_schema: {
+            type: 'object',
+            properties: {
+                query: { type: 'string', description: 'The search query' }
+            },
+            required: ['query']
+        }
+    }] : undefined;
+
+    const body = { model, max_tokens: 4096, system: systemPrompt, messages };
+    if (tools) body.tools = tools;
+
     const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: reqHeaders,
-        body: JSON.stringify({
-            model,
-            max_tokens: 4096,
-            system: systemPrompt,
-            messages
-        })
+        method: 'POST', headers: reqHeaders, body: JSON.stringify(body)
     });
 
     if (!res.ok) {
@@ -145,7 +193,33 @@ async function callAnthropicAPI(systemPrompt, messages) {
         throw new Error(`Anthropic API error ${res.status}: ${err}`);
     }
 
-    const data = await res.json();
+    let data = await res.json();
+
+    // Handle tool use loop (web search)
+    while (data.stop_reason === 'tool_use' && hasBrave) {
+        const toolUse = data.content.find(b => b.type === 'tool_use');
+        if (!toolUse || toolUse.name !== 'web_search') break;
+
+        const searchResults = await braveSearch(toolUse.input.query);
+        const toolResult = searchResults
+            ? `Search results for "${toolUse.input.query}":\n\n${searchResults}`
+            : 'No results found. Please answer from your training knowledge.';
+
+        // Continue conversation with tool result
+        const continueMessages = [
+            ...messages,
+            { role: 'assistant', content: data.content },
+            { role: 'user',      content: [{ type: 'tool_result', tool_use_id: toolUse.id, content: toolResult }] }
+        ];
+
+        const res2 = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST', headers: reqHeaders,
+            body: JSON.stringify({ model, max_tokens: 4096, system: systemPrompt, messages: continueMessages, tools })
+        });
+        if (!res2.ok) break;
+        data = await res2.json();
+    }
+
     const textBlock = data.content?.find(b => b.type === 'text');
     return textBlock?.text || "I'm having trouble responding right now. Please try again.";
 }
