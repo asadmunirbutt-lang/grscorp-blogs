@@ -154,6 +154,7 @@ async function callAnthropicAPI(systemPrompt, messages) {
 
 const ALLOWED_ORIGINS = [
     'https://blogs.grscorp.us',
+    'https://spectra.grscorp.us',
     'http://localhost:3000',
     'http://127.0.0.1:5500'
 ];
