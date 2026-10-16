@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPECTRA — Free AI Autism Care Companion | GRSCorp</title>
+    <meta name="description" content="Free 24/7 AI support for autism families. Ask SPECTRA anything about meltdowns, IEPs, behaviors, medications, and caregiver support. Evidence-based, empathetic, always available.">
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-542W6ZTYH8"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-542W6ZTYH8');
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: #1a2535;
+            background: #f0f4f8;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #1a4d8f 0%, #0088cc 100%);
+            color: white;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .hero-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            opacity: 0.95;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: #e8a020;
+            color: #1a2535;
+            padding: 16px 40px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-radius: 8px;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+
+        .cta-button:hover {
+            background: #d4941a;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .cta-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+        }
+
+        .cta-secondary:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 80px 20px;
+            background: white;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.2em;
+            margin-bottom: 50px;
+            color: #1a4d8f;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .feature-card {
+            background: #f0f4f8;
+            padding: 30px;
+            border-radius: 10px;
+            border-left: 4px solid #0d7a6e;
+        }
+
+        .feature-card h3 {
+            color: #1a4d8f;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .feature-card p {
+            color: #5a6a7a;
+            line-height: 1.8;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e8f4f8 100%);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .step {
+            text-align: center;
+        }
+
+        .step-number {
+            display: inline-block;
+            width: 60px;
+            height: 60px;
+            background: #0d7a6e;
+            color: white;
+            border-radius: 50%;
+            line-height: 60px;
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .step h3 {
+            color: #1a4d8f;
+            margin-bottom: 15px;
+        }
+
+        .step p {
+            color: #5a6a7a;
+        }
+
+        /* Topics Section */
+        .topics-section {
+            padding: 80px 20px;
+            background: white;
+        }
+
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .topic-badge {
+            background: linear-gradient(135deg, #1a4d8f 0%, #0088cc 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* Benefits Section */
+        .benefits-section {
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #e8f4f8 0%, #f0f4f8 100%);
+        }
+
+        .benefits-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .benefit-item {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            border-top: 4px solid #e8a020;
+        }
+
+        .benefit-item h4 {
+            color: #1a4d8f;
+            margin-bottom: 10px;
+        }
+
+        .benefit-item p {
+            color: #5a6a7a;
+        }
+
+        /* FAQ Section */
+        .faq-section {
+            padding: 80px 20px;
+            background: white;
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #dde3ec;
+            padding-bottom: 25px;
+        }
+
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: #1a4d8f;
+            cursor: pointer;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .faq-answer {
+            color: #5a6a7a;
+            line-height: 1.8;
+        }
+
+        /* CTA Section */
+        .final-cta {
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #1a4d8f 0%, #0088cc 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .final-cta h2 {
+            font-size: 2.2em;
+            margin-bottom: 20px;
+        }
+
+        .final-cta p {
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            opacity: 0.95;
+        }
+
+        /* Footer */
+        footer {
+            background: #1a2535;
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        footer p {
+            margin-bottom: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.2em;
+            }
+
+            .section-title {
+                font-size: 1.8em;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <h1>SPECTRA</h1>
+            <p class="hero-subtitle">Free AI Support for Autism Families — 24/7</p>
+            <p style="font-size: 1.1em; margin-bottom: 40px;">Ask anything about meltdowns, behaviors, IEPs, medications, and caregiver support.</p>
+            <a href="#signup" class="cta-button">Get Started Free</a>
+            <a href="#learn-more" class="cta-button cta-secondary">Learn More</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <h2 class="section-title">Why SPECTRA?</h2>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>🕐 Always Available</h3>
+                    <p>Get support 24/7, whenever you need it — 2 AM meltdown? Midnight IEP question? SPECTRA is there.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>📊 Evidence-Based</h3>
+                    <p>Responses grounded in research, best practices, and real-world autism expertise — not generic advice.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>💙 Judgment-Free</h3>
+                    <p>No judgment, no lectures. SPECTRA understands the emotional reality of autism caregiving.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🔍 Real-Time Information</h3>
+                    <p>Web search capability means SPECTRA finds local resources, current laws, and latest research for you.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>💰 Completely Free</h3>
+                    <p>No subscription. No ads. No hidden costs. Funded by a 501(c)(3) nonprofit committed to helping families.</p>
+                </div>
+
+                <div class="feature-card">
+                    <h3>🎯 Personalized Guidance</h3>
+                    <p>Ask about YOUR child, YOUR situation, YOUR school — get specific, actionable advice.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Create Free Account</h3>
+                    <p>Sign up with email. Takes 60 seconds.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Start Chatting</h3>
+                    <p>Ask SPECTRA anything about autism care and support.</p>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <p>Get personalized, evidence-based guidance tailored to your situation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Topics Section -->
+    <section class="topics-section">
+        <div class="container">
+            <h2 class="section-title">What Can You Ask About?</h2>
+
+            <div class="topics-grid">
+                <div class="topic-badge">🌪️ Meltdown Strategies</div>
+                <div class="topic-badge">🎓 IEP & School Advocacy</div>
+                <div class="topic-badge">💊 Medications & Health</div>
+                <div class="topic-badge">🗣️ Communication Tips</div>
+                <div class="topic-badge">👨‍👩‍👧 Family Dynamics</div>
+                <div class="topic-badge">🧠 Behavior Support</div>
+                <div class="topic-badge">🏥 Finding Resources</div>
+                <div class="topic-badge">😓 Caregiver Burnout</div>
+                <div class="topic-badge">🎯 Life Planning</div>
+                <div class="topic-badge">🌈 Acceptance & Identity</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section class="benefits-section">
+        <div class="container">
+            <h2 class="section-title">What Families Are Saying</h2>
+
+            <div class="benefits-list">
+                <div class="benefit-item">
+                    <h4>"Help When I Need It Most"</h4>
+                    <p>"I was having a panic attack during my son's meltdown at 11 PM. SPECTRA gave me concrete strategies within minutes. It literally saved my night."</p>
+                    <p><em>— Jennifer, parent</em></p>
+                </div>
+
+                <div class="benefit-item">
+                    <h4>"Actually Understands Autism"</h4>
+                    <p>"Unlike Google or ChatGPT, SPECTRA speaks the language of autism families. It gets the exhaustion, the worry, the need for real answers."</p>
+                    <p><em>— Marcus, educator</em></p>
+                </div>
+
+                <div class="benefit-item">
+                    <h4>"Found Resources I Didn't Know Existed"</h4>
+                    <p>"SPECTRA helped me find local services and benefits we qualified for. Saved us money and connected us to support we desperately needed."</p>
+                    <p><em>— Sarah, caregiver</em></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-question">Is SPECTRA a replacement for professional help?</div>
+                    <div class="faq-answer">No. SPECTRA is a companion and support tool, not a therapist or doctor. For medical or psychological concerns, always work with qualified professionals. SPECTRA helps bridge gaps and provides 24/7 support between appointments.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">Is my information private?</div>
+                    <div class="faq-answer">Yes. Your conversations are private and secure. We don't sell data. We're a nonprofit, not a tech company monetizing user information. See our privacy policy for details.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">How is SPECTRA different from ChatGPT?</div>
+                    <div class="faq-answer">SPECTRA is specifically trained for autism caregiving. It understands the emotional and practical realities of raising autistic children. It has real-time web search for current resources. And it's backed by a nonprofit mission, not profit incentives.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">Is it really free?</div>
+                    <div class="faq-answer">Completely free. No subscription, no ads, no hidden costs. SPECTRA is funded by GRSCorp, a 501(c)(3) nonprofit dedicated to supporting autistic individuals and families.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">What if I disagree with something SPECTRA says?</div>
+                    <div class="faq-answer">That's okay. SPECTRA is a tool to help you think through situations, not the final word. Always trust your instincts as a parent and consult professionals when needed. We welcome feedback.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta">
+        <div class="container">
+            <h2>You Don't Have to Figure This Out Alone</h2>
+            <p>Get 24/7 support, evidence-based guidance, and a judgment-free space to ask anything.</p>
+            <a href="#signup" class="cta-button">Start Free Now</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p><strong>SPECTRA</strong> — Free AI Autism Care Companion</p>
+        <p>By <strong>GRSCorp</strong> (Global Relief and Support Corporation), a 501(c)(3) nonprofit</p>
+        <p>© 2026 GRSCorp. All rights reserved.</p>
+    </footer>
+</body>
+</html>
