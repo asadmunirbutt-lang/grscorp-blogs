@@ -1663,6 +1663,140 @@
       display: none;
       margin-bottom: 6px;
     }
+/* ── Care Log ─────────────────────────── */
+.cl-top {
+  background: var(--surface);
+  border-bottom: 1px solid rgba(180,78,255,0.2);
+  padding: 14px 16px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.cl-title { font-weight: 700; font-size: 1rem; flex: 1; }
+.cl-date-row { display: flex; align-items: center; gap: 8px; }
+.cl-date-label { font-size: 0.88rem; color: var(--muted); min-width: 110px; text-align: center; }
+
+.cl-warning-banner {
+  background: rgba(255,82,82,0.15);
+  border-bottom: 2px solid var(--coral);
+  color: #ff8a8a;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 10px 16px;
+  line-height: 1.5;
+}
+
+.cl-summary-strip {
+  display: flex;
+  gap: 1px;
+  background: rgba(180,78,255,0.1);
+  border-bottom: 1px solid rgba(180,78,255,0.15);
+  flex-shrink: 0;
+}
+.cl-stat {
+  flex: 1;
+  text-align: center;
+  padding: 10px 4px;
+  background: var(--surface);
+}
+.cl-stat-val { font-size: 1.1rem; font-weight: 700; color: var(--mint); }
+.cl-stat-lbl { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+.cl-calc-box {
+  background: rgba(41,121,255,0.08);
+  border-left: 3px solid var(--blue);
+  margin: 12px 14px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+.cl-calc-title { font-weight: 700; margin-bottom: 4px; color: var(--blue); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.cl-body { padding: 0 14px 100px; overflow-y: auto; flex: 1; }
+
+.cl-section { border: 1px solid rgba(180,78,255,0.15); border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+.cl-sec-hdr {
+  padding: 12px 14px;
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--card);
+  user-select: none;
+}
+.cl-sec-hdr:hover { background: var(--card2); }
+.cl-sec-arrow { margin-left: auto; color: var(--muted); font-size: 0.75rem; }
+.cl-sec-body { padding: 14px; background: var(--surface); }
+.cl-badge { margin-left: 4px; background: var(--coral); color: #fff; border-radius: 10px; padding: 1px 7px; font-size: 0.72rem; }
+
+.cl-add-form { margin-bottom: 14px; }
+.cl-form-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+.cl-fg { display: flex; flex-direction: column; gap: 4px; flex: 1; min-width: 130px; }
+.cl-fg label { font-size: 0.75rem; color: var(--muted); }
+.cl-fg input, .cl-fg select {
+  background: var(--card);
+  border: 1px solid rgba(180,78,255,0.25);
+  border-radius: 7px;
+  color: var(--text);
+  font-size: 0.88rem;
+  padding: 7px 9px;
+  width: 100%;
+  font-family: inherit;
+}
+.cl-fg input:focus, .cl-fg select:focus { outline: none; border-color: var(--mint); }
+
+.cl-btn-primary {
+  background: linear-gradient(135deg, var(--mint), var(--teal));
+  border: none;
+  border-radius: 8px;
+  color: #0a0818;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 9px 20px;
+  margin-top: 4px;
+  transition: opacity 0.2s;
+}
+.cl-btn-primary:hover { opacity: 0.85; }
+.cl-btn-secondary {
+  background: transparent;
+  border: 1px solid var(--mint);
+  border-radius: 8px;
+  color: var(--mint);
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 7px 16px;
+  margin-top: 4px;
+}
+
+.cl-entry-list { display: flex; flex-direction: column; gap: 6px; }
+.cl-entry {
+  background: var(--card);
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-size: 0.84rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.4;
+}
+.cl-entry-main { flex: 1; }
+.cl-entry-time { color: var(--muted); font-size: 0.78rem; white-space: nowrap; }
+.cl-entry-del { color: var(--coral); background: transparent; border: none; cursor: pointer; font-size: 0.9rem; padding: 0 2px; flex-shrink: 0; }
+
+.cl-settings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 12px; }
+.cl-msg { font-size: 0.82rem; color: var(--mint); margin-top: 8px; }
+
+.cl-mini-title { font-size: 0.78rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
+
+.cl-warn-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.cl-warn-list li { font-size: 0.86rem; line-height: 1.5; padding: 8px 10px; background: rgba(255,82,82,0.06); border-radius: 7px; border-left: 2px solid rgba(255,82,82,0.4); }
   </style>
 </head>
 <body>
@@ -1748,6 +1882,9 @@
     </button>
     <button class="tab-btn" id="weekly-tab" data-tab="weekly" onclick="switchTab('weekly')">
       <span class="ti">📊</span> Weekly
+    </button>
+    <button class="tab-btn" data-tab="carelog" onclick="switchTab('carelog')" id="carelog-tab" style="display:none">
+      <span class="ti">🏥</span> Care Log
     </button>
     <div class="tab-spacer"></div>
     <button class="pwa-install-tab" id="pwa-install-tab" onclick="triggerInstall()">📲 Install</button>
@@ -2184,6 +2321,214 @@
       </div>
     </div>
 
+  <!-- ── CARE LOG ── -->
+  <div class="view" id="view-carelog">
+    <div class="cl-top">
+      <div class="cl-title">🏥 Azlan's Care Log</div>
+      <div class="cl-date-row">
+        <button class="date-nav-btn" onclick="stepCareDate(-1)">◀</button>
+        <div class="cl-date-label" id="cl-date-label">—</div>
+        <button class="date-nav-btn" onclick="stepCareDate(1)" id="cl-next-btn">▶</button>
+        <button class="date-nav-today" onclick="jumpCareToday()">Today</button>
+      </div>
+      <input type="hidden" id="cl-date">
+    </div>
+
+    <!-- Warning banner (hidden by default) -->
+    <div id="cl-warning-banner" style="display:none" class="cl-warning-banner"></div>
+
+    <!-- Summary strip -->
+    <div class="cl-summary-strip">
+      <div class="cl-stat" id="cls-kcal"><div class="cl-stat-val">—</div><div class="cl-stat-lbl">kcal eaten</div></div>
+      <div class="cl-stat" id="cls-protein"><div class="cl-stat-val">—</div><div class="cl-stat-lbl">g protein</div></div>
+      <div class="cl-stat" id="cls-fluid"><div class="cl-stat-val">—</div><div class="cl-stat-lbl">mL fluid in</div></div>
+      <div class="cl-stat" id="cls-glucose"><div class="cl-stat-val">—</div><div class="cl-stat-lbl">last glucose</div></div>
+    </div>
+
+    <!-- PediaSure gap calculator -->
+    <div class="cl-calc-box" id="cl-calc-box">
+      <div class="cl-calc-title">📊 Today's gap</div>
+      <div id="cl-calc-text">Log food and feeds to see the calculation.</div>
+    </div>
+
+    <div class="cl-body">
+
+      <!-- Settings (admin) -->
+      <div class="cl-section">
+        <div class="cl-sec-hdr" onclick="toggleCLSection('settings')">
+          ⚙️ Care Settings <span class="cl-sec-arrow" id="cl-arr-settings">▼</span>
+        </div>
+        <div class="cl-sec-body" id="cl-sec-settings">
+          <div class="cl-settings-grid">
+            <div class="cl-fg"><label>Weight (kg)</label><input type="number" id="cs-weight" step="0.1" placeholder="56.6"></div>
+            <div class="cl-fg"><label>Calorie goal (kcal/day)</label><input type="number" id="cs-kcal" placeholder="1800"></div>
+            <div class="cl-fg"><label>Protein goal (g/day)</label><input type="number" id="cs-protein" placeholder="54"></div>
+            <div class="cl-fg"><label>Fluid goal (mL/day)</label><input type="number" id="cs-fluid" placeholder="e.g. 1500"></div>
+            <div class="cl-fg"><label>Max single bolus (mL)</label><input type="number" id="cs-bolus" placeholder="200"></div>
+            <div class="cl-fg"><label>Min daily formula (mL)</label><input type="number" id="cs-min-formula" placeholder="optional"></div>
+            <div class="cl-fg"><label>Feeding access</label>
+              <select id="cs-access"><option value="NG">NG tube</option><option value="PEG">PEG/gastrostomy</option><option value="oral">Oral only</option></select>
+            </div>
+            <div class="cl-fg"><label>Sodium daily limit (mg)</label><input type="number" id="cs-sodium" placeholder="1800"></div>
+          </div>
+          <button class="cl-btn-primary" onclick="saveCareSettings()">Save settings</button>
+          <div class="cl-msg" id="cs-msg"></div>
+        </div>
+      </div>
+
+      <!-- Food by mouth -->
+      <div class="cl-section">
+        <div class="cl-sec-hdr" onclick="toggleCLSection('food')">
+          🍽️ Food by mouth <span id="cl-food-badge" class="cl-badge"></span> <span class="cl-sec-arrow" id="cl-arr-food">▼</span>
+        </div>
+        <div class="cl-sec-body" id="cl-sec-food">
+          <div class="cl-add-form" id="cl-food-form">
+            <div class="cl-form-row">
+              <div class="cl-fg"><label>Food item</label>
+                <select id="cf-item" onchange="clFoodItemChanged()">
+                  <option value="">— choose or type below —</option>
+                </select>
+              </div>
+              <div class="cl-fg"><label>Custom item name</label><input type="text" id="cf-custom" placeholder="or type a custom item"></div>
+            </div>
+            <div class="cl-form-row">
+              <div class="cl-fg"><label>Amount</label><input type="number" id="cf-amount" value="1" min="0.5" step="0.5"></div>
+              <div class="cl-fg"><label>% actually eaten</label>
+                <select id="cf-pct">
+                  <option value="100">100% (all)</option>
+                  <option value="75">75%</option>
+                  <option value="50">50%</option>
+                  <option value="25">25%</option>
+                  <option value="0">0% (none)</option>
+                </select>
+              </div>
+              <div class="cl-fg"><label>Time</label><input type="time" id="cf-time"></div>
+            </div>
+            <button class="cl-btn-primary" onclick="addCLFood()">Log food</button>
+          </div>
+          <div id="cl-food-list" class="cl-entry-list"></div>
+        </div>
+      </div>
+
+      <!-- Tube feeds -->
+      <div class="cl-section">
+        <div class="cl-sec-hdr" onclick="toggleCLSection('feeds')">
+          🧪 Tube feeds <span id="cl-feeds-badge" class="cl-badge"></span> <span class="cl-sec-arrow" id="cl-arr-feeds">▼</span>
+        </div>
+        <div class="cl-sec-body" id="cl-sec-feeds">
+          <div class="cl-add-form">
+            <div class="cl-form-row">
+              <div class="cl-fg"><label>Start time</label><input type="time" id="cfd-start"></div>
+              <div class="cl-fg"><label>End time</label><input type="time" id="cfd-end"></div>
+              <div class="cl-fg"><label>Volume planned (mL)</label><input type="number" id="cfd-planned" placeholder="200"></div>
+            </div>
+            <div class="cl-form-row">
+              <div class="cl-fg"><label>Volume given (mL)</label><input type="number" id="cfd-given" placeholder="200"></div>
+              <div class="cl-fg"><label>Water flush (mL)</label><input type="number" id="cfd-flush" placeholder="30"></div>
+              <div class="cl-fg"><label>Head raised 30-45°?</label>
+                <select id="cfd-head"><option value="yes">Yes</option><option value="no">No</option></select>
+              </div>
+            </div>
+            <div class="cl-fg"><label>Problems</label>
+              <select id="cfd-problems">
+                <option value="none">None</option>
+                <option value="gagging">Gagging</option>
+                <option value="vomit">Vomiting</option>
+                <option value="leak">Tube leak</option>
+                <option value="alarm">Pump alarm</option>
+                <option value="tube-out">Tube came out 🚨</option>
+              </select>
+            </div>
+            <button class="cl-btn-primary" onclick="addCLFeed()">Log feed</button>
+          </div>
+          <div id="cl-feeds-list" class="cl-entry-list"></div>
+        </div>
+      </div>
+
+      <!-- Glucose -->
+      <div class="cl-section">
+        <div class="cl-sec-hdr" onclick="toggleCLSection('glucose')">
+          🩸 Glucose <span id="cl-glucose-badge" class="cl-badge"></span> <span class="cl-sec-arrow" id="cl-arr-glucose">▼</span>
+        </div>
+        <div class="cl-sec-body" id="cl-sec-glucose">
+          <div class="cl-add-form">
+            <div class="cl-form-row">
+              <div class="cl-fg"><label>Value (mg/dL)</label><input type="number" id="cg-value" placeholder="e.g. 95"></div>
+              <div class="cl-fg"><label>Time</label><input type="time" id="cg-time"></div>
+              <div class="cl-fg"><label>Context</label>
+                <select id="cg-context">
+                  <option value="before-feed">Before feed</option>
+                  <option value="2h-after">2 h after feed</option>
+                  <option value="bedtime">Bedtime</option>
+                  <option value="overnight">Overnight</option>
+                  <option value="random">Random</option>
+                </select>
+              </div>
+            </div>
+            <div class="cl-fg"><label>Source</label>
+              <select id="cg-source"><option value="fingerstick">Fingerstick</option><option value="cgm">CGM</option></select>
+            </div>
+            <button class="cl-btn-primary" onclick="addCLGlucose()">Log glucose</button>
+          </div>
+          <div id="cl-glucose-list" class="cl-entry-list"></div>
+        </div>
+      </div>
+
+      <!-- Fluids & Output -->
+      <div class="cl-section">
+        <div class="cl-sec-hdr" onclick="toggleCLSection('output')">
+          💧 Fluids &amp; Output <span class="cl-sec-arrow" id="cl-arr-output">▼</span>
+        </div>
+        <div class="cl-sec-body" id="cl-sec-output">
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <div style="flex:1;min-width:200px">
+              <div class="cl-mini-title">Oral fluid in</div>
+              <div class="cl-form-row">
+                <div class="cl-fg"><label>Amount (mL)</label><input type="number" id="cfl-vol" placeholder="250"></div>
+                <div class="cl-fg"><label>What</label><input type="text" id="cfl-item" placeholder="water, juice…"></div>
+                <div class="cl-fg"><label>Time</label><input type="time" id="cfl-time"></div>
+              </div>
+              <button class="cl-btn-secondary" onclick="addCLFluid()">+ Add</button>
+            </div>
+            <div style="flex:1;min-width:200px">
+              <div class="cl-mini-title">Urine output</div>
+              <div class="cl-form-row">
+                <div class="cl-fg"><label>Amount (mL)</label><input type="number" id="cup-vol" placeholder="150"></div>
+                <div class="cl-fg"><label>Color</label>
+                  <select id="cup-color"><option value="pale">Pale yellow</option><option value="normal">Normal yellow</option><option value="dark">Dark</option><option value="tea">Tea-colored 🚨</option></select>
+                </div>
+                <div class="cl-fg"><label>Time</label><input type="time" id="cup-time"></div>
+              </div>
+              <button class="cl-btn-secondary" onclick="addCLUrine()">+ Add</button>
+            </div>
+          </div>
+          <div id="cl-output-list" class="cl-entry-list" style="margin-top:12px"></div>
+        </div>
+      </div>
+
+      <!-- Warning signs reference -->
+      <div class="cl-section">
+        <div class="cl-sec-hdr" onclick="toggleCLSection('warnings')">
+          🚨 Warning signs — call doctor / go to ER <span class="cl-sec-arrow" id="cl-arr-warnings">▶</span>
+        </div>
+        <div class="cl-sec-body" id="cl-sec-warnings" style="display:none">
+          <ul class="cl-warn-list">
+            <li>🟡 Yellow eyes or skin, dark (tea-colored) urine, pale/clay-colored stools, itching</li>
+            <li>🌡️ Fever 100.4°F or higher</li>
+            <li>🩸 Vomiting blood, coffee-ground material, or green bile — or vomiting every feed</li>
+            <li>🫄 New or worsening belly pain, swollen or hard belly</li>
+            <li>🧪 PEG pulled out — go within hours; site starts to close</li>
+            <li>🩸 Glucose below low alert and not recovering, or repeatedly above high level</li>
+            <li>💧 Very low urine output (under ~700 mL/day or under 0.5 mL/kg/hr)</li>
+            <li>⚖️ Weight loss more than 0.5 kg in a week</li>
+            <li>😴 Unusual sleepiness or hard to wake up</li>
+          </ul>
+        </div>
+      </div>
+
+    </div><!-- cl-body -->
+  </div><!-- view-carelog -->
+
   </div><!-- app-content -->
 
   <!-- ── AI Bot ── -->
@@ -2588,6 +2933,7 @@ async function showAppScreen() {
   document.getElementById('admin-tab').style.display = isAdmin ? 'flex' : 'none';
   document.getElementById('daily-tab').style.display  = isAdmin ? 'flex' : 'none';
   document.getElementById('weekly-tab').style.display = isAdmin ? 'flex' : 'none';
+  document.getElementById('carelog-tab').style.display = isAdmin ? 'flex' : 'none';
   document.getElementById('shift-admin-badge').style.display = isAdmin ? 'inline-block' : 'none';
   ['sec-meds','sec-incidents'].forEach(id => {
     const el = document.getElementById(id);
@@ -2632,6 +2978,7 @@ function switchTab(tab) {
     loadDailyReport();
   }
   if (tab === 'weekly') loadWeeklyReport();
+  if (tab === 'carelog') loadCareLog();
 }
 
 function switchAdminTab(tab) {
@@ -5135,6 +5482,438 @@ document.addEventListener('DOMContentLoaded', () => {
     if (ios)  ios.style.display  = 'block';
   }
 });
+
+// ── Care Log ───────────────────────────────────────────
+
+const FOOD_LIBRARY = [
+  { name: "K&N's chicken nugget",    unit: "nugget",  kcal: 50,  protein: 3.3, fat: 2.3, carbs: 3.7,  sodium: 150  },
+  { name: "Maggi 2-min Masala (75g)", unit: "pack",   kcal: 310, protein: 8,   fat: 11,  carbs: 45,   sodium: 980  },
+  { name: "Maggi Masala large (89g)", unit: "pack",   kcal: 400, protein: 8,   fat: 17,  carbs: 55,   sodium: 1160 },
+  { name: "French fries (small)",     unit: "serving",kcal: 230, protein: 3,   fat: 11,  carbs: 29,   sodium: 180  },
+  { name: "PediaSure Peptide 1.5",    unit: "mL",     kcal: 1.5, protein: 0.045,fat:0.061,carbs:0.17, sodium: 0    },
+];
+
+let careSettings = {
+  weightKg: 56.6, calorieGoal: 1800, proteinGoalG: 54,
+  fluidGoalML: null, maxBolusMl: 200, minFormulaML: null,
+  feedingAccess: 'NG', sodiumLimitMg: 1800
+};
+let careDate = localDateStr();
+let clFoodEntries = [], clFeedEntries = [], clGlucoseEntries = [], clFluidEntries = [], clUrineEntries = [];
+
+async function loadCareLog() {
+  if (!careDate) careDate = localDateStr();
+  renderCLDateLabel();
+  await loadCareSettings();
+  populateFoodLibrarySelect();
+  setDefaultTimes();
+  const [food, feeds, glucose, fluids] = await Promise.all([
+    db.collection('care_food').where('facility','==',FACILITY).where('date','==',careDate).orderBy('time').get().catch(()=>({docs:[]})),
+    db.collection('care_feeds').where('facility','==',FACILITY).where('date','==',careDate).orderBy('startTime').get().catch(()=>({docs:[]})),
+    db.collection('care_glucose').where('facility','==',FACILITY).where('date','==',careDate).orderBy('time').get().catch(()=>({docs:[]})),
+    db.collection('care_fluids').where('facility','==',FACILITY).where('date','==',careDate).orderBy('time').get().catch(()=>({docs:[]})),
+  ]);
+  clFoodEntries    = food.docs.map(d  => ({id:d.id,...d.data()}));
+  clFeedEntries    = feeds.docs.map(d => ({id:d.id,...d.data()}));
+  clGlucoseEntries = glucose.docs.map(d=>({id:d.id,...d.data()}));
+  clFluidEntries   = fluids.docs.filter(d=>d.data().type==='fluid').map(d=>({id:d.id,...d.data()}));
+  clUrineEntries   = fluids.docs.filter(d=>d.data().type==='urine').map(d=>({id:d.id,...d.data()}));
+  renderAllCL();
+}
+
+function renderAllCL() {
+  renderCLFood();
+  renderCLFeeds();
+  renderCLGlucose();
+  renderCLOutput();
+  renderCLSummary();
+}
+
+function renderCLDateLabel() {
+  const el = document.getElementById('cl-date-label');
+  if (!el) return;
+  const d = new Date(careDate + 'T12:00:00');
+  el.textContent = d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+  const nextBtn = document.getElementById('cl-next-btn');
+  if (nextBtn) nextBtn.disabled = careDate >= localDateStr();
+}
+
+function stepCareDate(dir) {
+  const d = new Date(careDate + 'T12:00:00');
+  d.setDate(d.getDate() + dir);
+  const nd = d.toISOString().split('T')[0];
+  if (nd > localDateStr()) return;
+  careDate = nd;
+  loadCareLog();
+}
+
+function jumpCareToday() {
+  careDate = localDateStr();
+  loadCareLog();
+}
+
+function setDefaultTimes() {
+  const now = new Date().toTimeString().slice(0,5);
+  ['cf-time','cfd-start','cfd-end','cg-time','cfl-time','cup-time'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && !el.value) el.value = now;
+  });
+}
+
+function populateFoodLibrarySelect() {
+  const sel = document.getElementById('cf-item');
+  if (!sel || sel.options.length > 1) return;
+  FOOD_LIBRARY.forEach(f => {
+    const o = document.createElement('option');
+    o.value = f.name;
+    o.textContent = `${f.name} (${f.kcal} kcal/${f.unit})`;
+    sel.appendChild(o);
+  });
+}
+
+function clFoodItemChanged() {
+  const sel = document.getElementById('cf-item');
+  const custom = document.getElementById('cf-custom');
+  if (sel.value) custom.value = '';
+}
+
+// ── Food by mouth ──
+
+async function addCLFood() {
+  const itemName = document.getElementById('cf-custom').value.trim() ||
+                   document.getElementById('cf-item').value;
+  const amount   = parseFloat(document.getElementById('cf-amount').value) || 1;
+  const pct      = parseInt(document.getElementById('cf-pct').value);
+  const time     = document.getElementById('cf-time').value || new Date().toTimeString().slice(0,5);
+  if (!itemName) { alert('Please select or type a food item.'); return; }
+
+  const lib = FOOD_LIBRARY.find(f => f.name === itemName) || {};
+  const entry = {
+    facility: FACILITY, date: careDate,
+    item: itemName, amount, pctEaten: pct, time,
+    kcal:    (lib.kcal    || 0) * amount * pct / 100,
+    protein: (lib.protein || 0) * amount * pct / 100,
+    fat:     (lib.fat     || 0) * amount * pct / 100,
+    sodium:  (lib.sodium  || 0) * amount * pct / 100,
+    unit:    lib.unit || '',
+    loggedBy: currentData?.name || 'admin',
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  const ref = await db.collection('care_food').add(entry);
+  clFoodEntries.push({ id: ref.id, ...entry });
+  document.getElementById('cf-item').value = '';
+  document.getElementById('cf-custom').value = '';
+  document.getElementById('cf-amount').value = '1';
+  renderCLFood();
+  renderCLSummary();
+}
+
+function renderCLFood() {
+  const list = document.getElementById('cl-food-list');
+  const badge = document.getElementById('cl-food-badge');
+  if (!list) return;
+  if (!clFoodEntries.length) { list.innerHTML = '<div style="color:var(--muted);font-size:0.84rem">No food logged yet.</div>'; badge.style.display='none'; return; }
+  badge.textContent = clFoodEntries.length;
+  badge.style.display = '';
+  list.innerHTML = clFoodEntries.map(e => `
+    <div class="cl-entry">
+      <div class="cl-entry-main">
+        <strong>${e.item}</strong> × ${e.amount}${e.unit?' '+e.unit:''} — ${e.pctEaten}% eaten
+        <br><span style="color:var(--muted);">${e.kcal.toFixed(0)} kcal · ${e.protein.toFixed(1)}g protein · ${e.sodium.toFixed(0)}mg sodium</span>
+      </div>
+      <span class="cl-entry-time">${e.time}</span>
+      <button class="cl-entry-del" onclick="deleteCLEntry('care_food','${e.id}','food')">✕</button>
+    </div>`).join('');
+}
+
+// ── Tube feeds ──
+
+async function addCLFeed() {
+  const planned  = parseFloat(document.getElementById('cfd-planned').value) || 0;
+  const given    = parseFloat(document.getElementById('cfd-given').value) || 0;
+  const flush    = parseFloat(document.getElementById('cfd-flush').value) || 0;
+  const start    = document.getElementById('cfd-start').value;
+  const end      = document.getElementById('cfd-end').value;
+  const head     = document.getElementById('cfd-head').value;
+  const problems = document.getElementById('cfd-problems').value;
+  if (!given && !planned) { alert('Please enter the feed volume.'); return; }
+
+  const feedKcal    = given * 1.5;
+  const feedProtein = given * 0.045;
+  const entry = {
+    facility: FACILITY, date: careDate,
+    startTime: start, endTime: end,
+    formulaML_planned: planned, formulaML_given: given,
+    flushML: flush, headRaised: head, problems,
+    feedKcal, feedProtein, fluidML: given + flush,
+    loggedBy: currentData?.name || 'admin',
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  if (problems === 'tube-out') {
+    showCLWarning('🚨 TUBE OUT — Tube came out! Log to inform the team and call the nurse or ER immediately.');
+  }
+  const ref = await db.collection('care_feeds').add(entry);
+  clFeedEntries.push({ id: ref.id, ...entry });
+  document.getElementById('cfd-planned').value = '';
+  document.getElementById('cfd-given').value = '';
+  document.getElementById('cfd-flush').value = '';
+  document.getElementById('cfd-problems').value = 'none';
+  renderCLFeeds();
+  renderCLSummary();
+}
+
+function renderCLFeeds() {
+  const list = document.getElementById('cl-feeds-list');
+  const badge = document.getElementById('cl-feeds-badge');
+  if (!list) return;
+  if (!clFeedEntries.length) { list.innerHTML = '<div style="color:var(--muted);font-size:0.84rem">No feeds logged yet.</div>'; badge.style.display='none'; return; }
+  badge.textContent = clFeedEntries.length;
+  badge.style.display = '';
+  list.innerHTML = clFeedEntries.map(e => `
+    <div class="cl-entry" style="${e.problems && e.problems!=='none'?'border-left:3px solid var(--coral)':''}">
+      <div class="cl-entry-main">
+        <strong>${e.formulaML_given} mL given</strong> (${e.formulaML_planned} mL planned) + ${e.flushML} mL flush
+        <br><span style="color:var(--muted);">${e.feedKcal.toFixed(0)} kcal · ${e.feedProtein.toFixed(1)}g protein · head raised: ${e.headRaised}</span>
+        ${e.problems && e.problems!=='none'?`<br><span style="color:var(--coral)">⚠️ ${e.problems}</span>`:''}
+      </div>
+      <span class="cl-entry-time">${e.startTime}–${e.endTime}</span>
+      <button class="cl-entry-del" onclick="deleteCLEntry('care_feeds','${e.id}','feeds')">✕</button>
+    </div>`).join('');
+}
+
+// ── Glucose ──
+
+async function addCLGlucose() {
+  const value   = parseFloat(document.getElementById('cg-value').value);
+  const time    = document.getElementById('cg-time').value || new Date().toTimeString().slice(0,5);
+  const context = document.getElementById('cg-context').value;
+  const source  = document.getElementById('cg-source').value;
+  if (!value) { alert('Please enter a glucose value.'); return; }
+
+  const entry = {
+    facility: FACILITY, date: careDate,
+    value, time, context, source,
+    loggedBy: currentData?.name || 'admin',
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  const ref = await db.collection('care_glucose').add(entry);
+  clGlucoseEntries.push({ id: ref.id, ...entry });
+  document.getElementById('cg-value').value = '';
+  if (value < 70) showCLWarning(`🚨 LOW GLUCOSE: ${value} mg/dL — give fast sugar per the plan, recheck in 15 minutes.`);
+  renderCLGlucose();
+  renderCLSummary();
+}
+
+function renderCLGlucose() {
+  const list = document.getElementById('cl-glucose-list');
+  const badge = document.getElementById('cl-glucose-badge');
+  if (!list) return;
+  if (!clGlucoseEntries.length) { list.innerHTML = '<div style="color:var(--muted);font-size:0.84rem">No readings logged yet.</div>'; badge.style.display='none'; return; }
+  badge.textContent = clGlucoseEntries.length;
+  badge.style.display = '';
+  list.innerHTML = clGlucoseEntries.map(e => {
+    const color = e.value < 70 ? 'var(--coral)' : e.value > 180 ? 'var(--yellow)' : 'var(--mint)';
+    return `<div class="cl-entry">
+      <div class="cl-entry-main">
+        <strong style="color:${color};font-size:1.05rem">${e.value} mg/dL</strong>
+        <span style="color:var(--muted);margin-left:8px">${e.context.replace(/-/g,' ')} · ${e.source}</span>
+        ${e.value < 70 ? '<br><span style="color:var(--coral);font-weight:600">⚠️ LOW — act per plan</span>' : ''}
+      </div>
+      <span class="cl-entry-time">${e.time}</span>
+      <button class="cl-entry-del" onclick="deleteCLEntry('care_glucose','${e.id}','glucose')">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ── Fluids & Output ──
+
+async function addCLFluid() {
+  const vol  = parseFloat(document.getElementById('cfl-vol').value) || 0;
+  const item = document.getElementById('cfl-item').value.trim() || 'water';
+  const time = document.getElementById('cfl-time').value || new Date().toTimeString().slice(0,5);
+  if (!vol) { alert('Please enter a volume.'); return; }
+  const entry = { facility: FACILITY, date: careDate, type: 'fluid', volumeML: vol, item, time, loggedBy: currentData?.name||'admin', timestamp: firebase.firestore.FieldValue.serverTimestamp() };
+  const ref = await db.collection('care_fluids').add(entry);
+  clFluidEntries.push({ id: ref.id, ...entry });
+  document.getElementById('cfl-vol').value = '';
+  document.getElementById('cfl-item').value = '';
+  renderCLOutput();
+  renderCLSummary();
+}
+
+async function addCLUrine() {
+  const vol   = parseFloat(document.getElementById('cup-vol').value) || 0;
+  const color = document.getElementById('cup-color').value;
+  const time  = document.getElementById('cup-time').value || new Date().toTimeString().slice(0,5);
+  if (!vol) { alert('Please enter a volume.'); return; }
+  if (color === 'tea') showCLWarning('🚨 Tea-colored urine — this can mean bile duct involvement. Call the doctor.');
+  const entry = { facility: FACILITY, date: careDate, type: 'urine', volumeML: vol, color, time, loggedBy: currentData?.name||'admin', timestamp: firebase.firestore.FieldValue.serverTimestamp() };
+  const ref = await db.collection('care_fluids').add(entry);
+  clUrineEntries.push({ id: ref.id, ...entry });
+  document.getElementById('cup-vol').value = '';
+  renderCLOutput();
+  renderCLSummary();
+}
+
+function renderCLOutput() {
+  const list = document.getElementById('cl-output-list');
+  if (!list) return;
+  const all = [
+    ...clFluidEntries.map(e => ({...e, label:`💧 ${e.volumeML} mL ${e.item}`, color:'var(--teal)'})),
+    ...clUrineEntries.map(e => ({...e, label:`🚽 ${e.volumeML} mL urine (${e.color})`, color: e.color==='tea'?'var(--coral)':'var(--muted)'}))
+  ].sort((a,b) => a.time.localeCompare(b.time));
+  if (!all.length) { list.innerHTML = '<div style="color:var(--muted);font-size:0.84rem">No fluid entries yet.</div>'; return; }
+  list.innerHTML = all.map(e => `
+    <div class="cl-entry">
+      <div class="cl-entry-main" style="color:${e.color}"><strong>${e.label}</strong></div>
+      <span class="cl-entry-time">${e.time}</span>
+      <button class="cl-entry-del" onclick="deleteCLEntry('care_fluids','${e.id}','output')">✕</button>
+    </div>`).join('');
+}
+
+// ── Summary + Calculator ──
+
+function renderCLSummary() {
+  // Food totals
+  const foodKcal    = clFoodEntries.reduce((s,e)  => s + (e.kcal||0), 0);
+  const foodProtein = clFoodEntries.reduce((s,e)  => s + (e.protein||0), 0);
+  const foodSodium  = clFoodEntries.reduce((s,e)  => s + (e.sodium||0), 0);
+  // Feed totals
+  const feedKcal    = clFeedEntries.reduce((s,e)  => s + (e.feedKcal||0), 0);
+  const feedProtein = clFeedEntries.reduce((s,e)  => s + (e.feedProtein||0), 0);
+  const feedFluid   = clFeedEntries.reduce((s,e)  => s + ((e.formulaML_given||0) + (e.flushML||0)), 0);
+  // Fluid totals
+  const oralFluid   = clFluidEntries.reduce((s,e) => s + (e.volumeML||0), 0);
+  const urineOut    = clUrineEntries.reduce((s,e) => s + (e.volumeML||0), 0);
+  const totalKcal   = foodKcal + feedKcal;
+  const totalProtein= foodProtein + feedProtein;
+  const totalFluidIn= feedFluid + oralFluid;
+  const lastGlucose = clGlucoseEntries.length ? clGlucoseEntries[clGlucoseEntries.length-1] : null;
+
+  // Update summary strip
+  const sv = id => document.querySelector(`#${id} .cl-stat-val`);
+  if (sv('cls-kcal'))    sv('cls-kcal').textContent    = totalKcal.toFixed(0);
+  if (sv('cls-protein')) sv('cls-protein').textContent = totalProtein.toFixed(1);
+  if (sv('cls-fluid'))   sv('cls-fluid').textContent   = totalFluidIn.toFixed(0);
+  if (sv('cls-glucose')) {
+    if (lastGlucose) {
+      sv('cls-glucose').textContent = lastGlucose.value + ' mg/dL';
+      sv('cls-glucose').style.color = lastGlucose.value < 70 ? 'var(--coral)' : 'var(--mint)';
+    } else {
+      sv('cls-glucose').textContent = '—';
+    }
+  }
+
+  // Gap calculator
+  const goal = careSettings;
+  const kcalGap    = (goal.calorieGoal  || 1800) - totalKcal;
+  const proteinGap = (goal.proteinGoalG || 54)   - totalProtein;
+  const pep_kcal   = kcalGap    / 1.5;
+  const pep_prot   = proteinGap / 0.045;
+  const suggestedML= Math.max(pep_kcal, pep_prot, 0);
+  const roundedML  = Math.round(suggestedML / 10) * 10;
+  const maxBolus   = goal.maxBolusMl || 200;
+  const feeds_needed = roundedML > 0 ? Math.ceil(roundedML / maxBolus) : 0;
+
+  const calcEl = document.getElementById('cl-calc-text');
+  if (calcEl) {
+    if (totalKcal === 0 && feedKcal === 0) {
+      calcEl.textContent = 'Log food and feeds to see the calculation.';
+    } else {
+      let txt = `Eaten: <strong>${totalKcal.toFixed(0)} kcal</strong>, <strong>${totalProtein.toFixed(1)}g protein</strong><br>`;
+      txt += `Goal: ${goal.calorieGoal||1800} kcal, ${goal.proteinGoalG||54}g protein<br>`;
+      if (kcalGap > 0 || proteinGap > 0) {
+        txt += `<strong style="color:var(--blue)">Still needed: ~${roundedML} mL PediaSure Peptide`;
+        if (feeds_needed > 1) txt += ` ≈ ${feeds_needed} feeds of ${maxBolus} mL`;
+        txt += `</strong>`;
+      } else {
+        txt += `<span style="color:var(--mint)">✅ Calorie and protein goals met for today.</span>`;
+      }
+      if (goal.sodiumLimitMg && foodSodium > goal.sodiumLimitMg) {
+        txt += `<br><span style="color:var(--yellow)">⚠️ High salt today: ${foodSodium.toFixed(0)} mg sodium (limit ${goal.sodiumLimitMg} mg)</span>`;
+      }
+      calcEl.innerHTML = txt;
+    }
+  }
+
+  // Warnings
+  const warnings = [];
+  if (lastGlucose && lastGlucose.value < 70) warnings.push(`🚨 LOW GLUCOSE: ${lastGlucose.value} mg/dL — give fast sugar per plan, recheck in 15 min.`);
+  if (urineOut > 0 && urineOut < 300) warnings.push(`💧 Low urine today: ${urineOut} mL — monitor closely.`);
+  if (warnings.length) showCLWarning(warnings.join('\n'));
+  else hideCLWarning();
+}
+
+function showCLWarning(msg) {
+  const el = document.getElementById('cl-warning-banner');
+  if (!el) return;
+  el.innerHTML = msg.replace(/\n/g,'<br>');
+  el.style.display = '';
+}
+function hideCLWarning() {
+  const el = document.getElementById('cl-warning-banner');
+  if (el) el.style.display = 'none';
+}
+
+// ── Delete ──
+
+async function deleteCLEntry(collection, id, type) {
+  await db.collection(collection).doc(id).delete();
+  if (type === 'food')    clFoodEntries    = clFoodEntries.filter(e    => e.id !== id);
+  if (type === 'feeds')   clFeedEntries    = clFeedEntries.filter(e    => e.id !== id);
+  if (type === 'glucose') clGlucoseEntries = clGlucoseEntries.filter(e => e.id !== id);
+  if (type === 'output') {
+    clFluidEntries = clFluidEntries.filter(e => e.id !== id);
+    clUrineEntries = clUrineEntries.filter(e => e.id !== id);
+  }
+  renderAllCL();
+}
+
+// ── Settings ──
+
+async function loadCareSettings() {
+  try {
+    const snap = await db.collection('facilities').doc(FACILITY).get();
+    const saved = snap.data()?.careSettings;
+    if (saved) Object.assign(careSettings, saved);
+    // Populate fields
+    ['weightKg','calorieGoal','proteinGoalG','fluidGoalML','maxBolusMl','minFormulaML','sodiumLimitMg'].forEach(k => {
+      const map = { weightKg:'cs-weight', calorieGoal:'cs-kcal', proteinGoalG:'cs-protein', fluidGoalML:'cs-fluid', maxBolusMl:'cs-bolus', minFormulaML:'cs-min-formula', sodiumLimitMg:'cs-sodium' };
+      const el = document.getElementById(map[k]);
+      if (el && careSettings[k] != null) el.value = careSettings[k];
+    });
+    const acc = document.getElementById('cs-access');
+    if (acc) acc.value = careSettings.feedingAccess || 'NG';
+  } catch(e) { console.warn('careSettings load failed', e); }
+}
+
+async function saveCareSettings() {
+  careSettings.weightKg      = parseFloat(document.getElementById('cs-weight').value) || careSettings.weightKg;
+  careSettings.calorieGoal   = parseFloat(document.getElementById('cs-kcal').value)   || careSettings.calorieGoal;
+  careSettings.proteinGoalG  = parseFloat(document.getElementById('cs-protein').value)|| careSettings.proteinGoalG;
+  careSettings.fluidGoalML   = parseFloat(document.getElementById('cs-fluid').value)  || null;
+  careSettings.maxBolusMl    = parseFloat(document.getElementById('cs-bolus').value)  || careSettings.maxBolusMl;
+  careSettings.minFormulaML  = parseFloat(document.getElementById('cs-min-formula').value) || null;
+  careSettings.feedingAccess = document.getElementById('cs-access').value;
+  careSettings.sodiumLimitMg = parseFloat(document.getElementById('cs-sodium').value) || careSettings.sodiumLimitMg;
+  try {
+    await db.collection('facilities').doc(FACILITY).set({ careSettings }, { merge: true });
+    const msg = document.getElementById('cs-msg');
+    if (msg) { msg.textContent = '✓ Saved'; setTimeout(() => msg.textContent='', 3000); }
+    renderCLSummary();
+  } catch(e) { alert('Save failed: ' + e.message); }
+}
+
+// ── Collapsible sections ──
+
+function toggleCLSection(key) {
+  const body  = document.getElementById('cl-sec-' + key);
+  const arrow = document.getElementById('cl-arr-' + key);
+  if (!body) return;
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : '';
+  if (arrow) arrow.textContent = open ? '▶' : '▼';
+}
 </script>
 <!-- Voice Entry FAB -->
 <button id="voice-fab" onclick="startVoice()" title="Voice Entry">🎙️</button>
