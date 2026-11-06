@@ -1715,6 +1715,21 @@
 }
 .cl-calc-title { font-weight: 700; margin-bottom: 4px; color: var(--blue); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; }
 
+.cl-ref-panel { margin: 0 14px 10px; border-radius: 8px; overflow: hidden; font-size: 0.82rem; border: 1px solid rgba(180,78,255,0.25); }
+.cl-ref-header { background: rgba(180,78,255,0.12); padding: 7px 12px; font-weight: 700; color: var(--lavender); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.cl-ref-note { font-weight: 400; text-transform: none; letter-spacing: 0; color: rgba(255,255,255,0.5); font-size: 0.75rem; }
+.cl-ref-grid { display: grid; grid-template-columns: 1fr 1fr; }
+.cl-ref-col { padding: 8px 10px; }
+.cl-ref-col:first-child { border-right: 1px solid rgba(180,78,255,0.15); }
+.cl-ref-col-hdr { font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; }
+.cl-ref-col.cl-ref-medical .cl-ref-col-hdr { color: var(--teal); }
+.cl-ref-col.cl-ref-dietitian .cl-ref-col-hdr { color: var(--mint); }
+.cl-ref-row { display: flex; justify-content: space-between; padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.04); color: rgba(255,255,255,0.75); }
+.cl-ref-row span:last-child { font-weight: 600; color: rgba(255,255,255,0.9); }
+.cl-ref-row.cl-ref-active span:last-child { color: var(--mint); }
+.cl-ref-row.cl-ref-na span:last-child { color: rgba(255,255,255,0.3); }
+.cl-ref-note2 { padding: 5px 10px; font-size: 0.72rem; color: rgba(255,255,255,0.4); border-top: 1px solid rgba(180,78,255,0.1); background: rgba(0,0,0,0.15); }
+
 .cl-body { padding: 0 14px 100px; overflow-y: auto; flex: 1; }
 
 .cl-section { border: 1px solid rgba(180,78,255,0.15); border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
@@ -2351,6 +2366,9 @@
       <div id="cl-calc-text">Log food and feeds to see the calculation.</div>
     </div>
 
+    <!-- Nutrition reference panel -->
+    <div id="cl-ref-panel" class="cl-ref-panel"></div>
+
     <div class="cl-body">
 
       <!-- Settings (admin) -->
@@ -2361,6 +2379,7 @@
         <div class="cl-sec-body" id="cl-sec-settings">
           <div class="cl-settings-grid">
             <div class="cl-fg"><label>Weight (kg)</label><input type="number" id="cs-weight" step="0.1" placeholder="56.6"></div>
+            <div class="cl-fg"><label>Height (cm)</label><input type="number" id="cs-height" step="0.1" placeholder="150"></div>
             <div class="cl-fg"><label>Calorie goal (kcal/day)</label><input type="number" id="cs-kcal" placeholder="1800"></div>
             <div class="cl-fg"><label>Protein goal (g/day)</label><input type="number" id="cs-protein" placeholder="54"></div>
             <div class="cl-fg"><label>Fluid goal (mL/day)</label><input type="number" id="cs-fluid" placeholder="e.g. 1500"></div>
@@ -5494,7 +5513,7 @@ const FOOD_LIBRARY = [
 ];
 
 let careSettings = {
-  weightKg: 56.6, calorieGoal: 1800, proteinGoalG: 54,
+  weightKg: 56.6, heightCm: 150, calorieGoal: 1800, proteinGoalG: 54,
   fluidGoalML: null, maxBolusMl: 200, minFormulaML: null,
   feedingAccess: 'NG', sodiumLimitMg: 1800
 };
@@ -5877,18 +5896,20 @@ async function loadCareSettings() {
     const saved = snap.data()?.careSettings;
     if (saved) Object.assign(careSettings, saved);
     // Populate fields
-    ['weightKg','calorieGoal','proteinGoalG','fluidGoalML','maxBolusMl','minFormulaML','sodiumLimitMg'].forEach(k => {
-      const map = { weightKg:'cs-weight', calorieGoal:'cs-kcal', proteinGoalG:'cs-protein', fluidGoalML:'cs-fluid', maxBolusMl:'cs-bolus', minFormulaML:'cs-min-formula', sodiumLimitMg:'cs-sodium' };
+    ['weightKg','heightCm','calorieGoal','proteinGoalG','fluidGoalML','maxBolusMl','minFormulaML','sodiumLimitMg'].forEach(k => {
+      const map = { weightKg:'cs-weight', heightCm:'cs-height', calorieGoal:'cs-kcal', proteinGoalG:'cs-protein', fluidGoalML:'cs-fluid', maxBolusMl:'cs-bolus', minFormulaML:'cs-min-formula', sodiumLimitMg:'cs-sodium' };
       const el = document.getElementById(map[k]);
       if (el && careSettings[k] != null) el.value = careSettings[k];
     });
     const acc = document.getElementById('cs-access');
     if (acc) acc.value = careSettings.feedingAccess || 'NG';
+    renderNutritionRef();
   } catch(e) { console.warn('careSettings load failed', e); }
 }
 
 async function saveCareSettings() {
   careSettings.weightKg      = parseFloat(document.getElementById('cs-weight').value) || careSettings.weightKg;
+  careSettings.heightCm      = parseFloat(document.getElementById('cs-height').value) || careSettings.heightCm;
   careSettings.calorieGoal   = parseFloat(document.getElementById('cs-kcal').value)   || careSettings.calorieGoal;
   careSettings.proteinGoalG  = parseFloat(document.getElementById('cs-protein').value)|| careSettings.proteinGoalG;
   careSettings.fluidGoalML   = parseFloat(document.getElementById('cs-fluid').value)  || null;
@@ -5901,7 +5922,69 @@ async function saveCareSettings() {
     const msg = document.getElementById('cs-msg');
     if (msg) { msg.textContent = '✓ Saved'; setTimeout(() => msg.textContent='', 3000); }
     renderCLSummary();
+    renderNutritionRef();
   } catch(e) { alert('Save failed: ' + e.message); }
+}
+
+// ── Nutrition reference panel ──
+
+function cmToFtIn(cm) {
+  const totalIn = cm / 2.54;
+  const ft = Math.floor(totalIn / 12);
+  const inch = Math.round(totalIn % 12);
+  return `${ft}′${inch}″`;
+}
+
+function renderNutritionRef() {
+  const el = document.getElementById('cl-ref-panel');
+  if (!el) return;
+  const w = careSettings.weightKg || 56.6;
+  const hCm = careSettings.heightCm || 150;
+  const hM = hCm / 100;
+  const bmi = (w / (hM * hM)).toFixed(1);
+  // WHO REE male 10–18: 17.5W + 651
+  const reeWho = Math.round(17.5 * w + 651);
+  // Schofield REE male 10–18: 16.6W + 77H(m) + 572
+  const reeSch = Math.round(16.6 * w + 77 * hM + 572);
+  const tdeeLow  = Math.round(reeWho * 1.2);
+  const tdeeHigh = Math.round(reeWho * 1.4);
+  const protLow  = (0.85 * w).toFixed(0);
+  const protHigh = (1.5  * w).toFixed(0);
+  // Holliday-Segar fluid: 1500 + 20 mL/kg over 20 kg
+  const fluidRef = Math.round(1500 + 20 * Math.max(0, w - 20));
+  const dKcal   = careSettings.calorieGoal  || 1800;
+  const dProt   = careSettings.proteinGoalG || 54;
+  const dFluid  = careSettings.fluidGoalML;
+
+  el.innerHTML = `
+    <div class="cl-ref-header" onclick="toggleCLSection('ref')">
+      📐 Nutrition Reference <span class="cl-ref-note">Medical estimates vs dietitian plan</span>
+      <span class="cl-sec-arrow" id="cl-arr-ref" style="margin-left:auto">▼</span>
+    </div>
+    <div id="cl-sec-ref">
+      <div class="cl-ref-grid">
+        <div class="cl-ref-col cl-ref-medical">
+          <div class="cl-ref-col-hdr">Medical Reference</div>
+          <div class="cl-ref-row"><span>BMI</span><span>${bmi}</span></div>
+          <div class="cl-ref-row"><span>REE — WHO</span><span>${reeWho} kcal</span></div>
+          <div class="cl-ref-row"><span>REE — Schofield</span><span>${reeSch} kcal</span></div>
+          <div class="cl-ref-row"><span>TDEE (1.2–1.4×)</span><span>${tdeeLow}–${tdeeHigh} kcal</span></div>
+          <div class="cl-ref-row"><span>TCH table 9–13 yrs</span><span>1,400–2,600 kcal</span></div>
+          <div class="cl-ref-row"><span>Protein (0.85–1.5 g/kg)</span><span>${protLow}–${protHigh} g</span></div>
+          <div class="cl-ref-row"><span>Fluid (Holliday-Segar)</span><span>~${fluidRef} mL</span></div>
+        </div>
+        <div class="cl-ref-col cl-ref-dietitian">
+          <div class="cl-ref-col-hdr">Dietitian Prescription ✓</div>
+          <div class="cl-ref-row cl-ref-active"><span>Calories</span><span>${dKcal} kcal/day</span></div>
+          <div class="cl-ref-row cl-ref-active"><span>Protein</span><span>${dProt} g/day</span></div>
+          ${dFluid
+            ? `<div class="cl-ref-row cl-ref-active"><span>Fluid</span><span>${dFluid} mL/day</span></div>`
+            : `<div class="cl-ref-row cl-ref-na"><span>Fluid</span><span>Not set</span></div>`}
+        </div>
+      </div>
+      <div class="cl-ref-note2">Weight: ${w} kg · Height: ${hCm} cm (${cmToFtIn(hCm)}) · Last updated ${careDate}</div>
+    </div>
+  `;
 }
 
 // ── Collapsible sections ──
