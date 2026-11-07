@@ -3052,7 +3052,14 @@ function switchTab(tab) {
     loadDailyReport();
   }
   if (tab === 'weekly') loadWeeklyReport();
-  if (tab === 'carelog') loadCareLog();
+  if (tab === 'carelog') {
+    // Only reload from Firestore when the date changed; otherwise just re-render what's in memory
+    if (careLogLoadedDate !== careDate) {
+      loadCareLog();
+    } else {
+      renderAllCL();
+    }
+  }
 }
 
 function switchAdminTab(tab) {
@@ -5573,6 +5580,7 @@ let careSettings = {
   feedingAccess: 'NG', sodiumLimitMg: 1800
 };
 let careDate = localDateStr();
+let careLogLoadedDate = null; // tracks which date is currently in memory
 let clFoodEntries = [], clFeedEntries = [], clGlucoseEntries = [], clFluidEntries = [], clUrineEntries = [];
 
 async function loadCareLog() {
@@ -5581,17 +5589,24 @@ async function loadCareLog() {
   await loadCareSettings();
   populateFoodLibrarySelect();
   setDefaultTimes();
+  const byTime = (a,b) => (a.time||'').localeCompare(b.time||'');
   const [food, feeds, glucose, fluids] = await Promise.all([
-    db.collection('care_food').where('facility','==',FACILITY).where('date','==',careDate).orderBy('time').get().catch(()=>({docs:[]})),
-    db.collection('care_feeds').where('facility','==',FACILITY).where('date','==',careDate).orderBy('startTime').get().catch(()=>({docs:[]})),
-    db.collection('care_glucose').where('facility','==',FACILITY).where('date','==',careDate).orderBy('time').get().catch(()=>({docs:[]})),
-    db.collection('care_fluids').where('facility','==',FACILITY).where('date','==',careDate).orderBy('time').get().catch(()=>({docs:[]})),
+    db.collection('care_food').where('facility','==',FACILITY).where('date','==',careDate).get()
+      .catch(e=>{console.error('[CareLog] care_food load failed:',e);return{docs:[]}}),
+    db.collection('care_feeds').where('facility','==',FACILITY).where('date','==',careDate).get()
+      .catch(e=>{console.error('[CareLog] care_feeds load failed:',e);return{docs:[]}}),
+    db.collection('care_glucose').where('facility','==',FACILITY).where('date','==',careDate).get()
+      .catch(e=>{console.error('[CareLog] care_glucose load failed:',e);return{docs:[]}}),
+    db.collection('care_fluids').where('facility','==',FACILITY).where('date','==',careDate).get()
+      .catch(e=>{console.error('[CareLog] care_fluids load failed:',e);return{docs:[]}}),
   ]);
-  clFoodEntries    = food.docs.map(d  => ({id:d.id,...d.data()}));
-  clFeedEntries    = feeds.docs.map(d => ({id:d.id,...d.data()}));
-  clGlucoseEntries = glucose.docs.map(d=>({id:d.id,...d.data()}));
-  clFluidEntries   = fluids.docs.filter(d=>d.data().type==='fluid').map(d=>({id:d.id,...d.data()}));
-  clUrineEntries   = fluids.docs.filter(d=>d.data().type==='urine').map(d=>({id:d.id,...d.data()}));
+  clFoodEntries    = food.docs.map(d   => ({id:d.id,...d.data()})).sort(byTime);
+  clFeedEntries    = feeds.docs.map(d  => ({id:d.id,...d.data()})).sort((a,b)=>(a.startTime||'').localeCompare(b.startTime||''));
+  clGlucoseEntries = glucose.docs.map(d=> ({id:d.id,...d.data()})).sort(byTime);
+  const allFluids  = fluids.docs.map(d => ({id:d.id,...d.data()})).sort(byTime);
+  clFluidEntries   = allFluids.filter(d => d.type === 'fluid');
+  clUrineEntries   = allFluids.filter(d => d.type === 'urine');
+  careLogLoadedDate = careDate;
   renderAllCL();
 }
 
@@ -5673,13 +5688,16 @@ async function addCLFood() {
     loggedBy: currentData?.name || 'admin',
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
   };
-  const ref = await db.collection('care_food').add(entry);
-  clFoodEntries.push({ id: ref.id, ...entry });
-  document.getElementById('cf-item').value = '';
-  document.getElementById('cf-custom').value = '';
-  document.getElementById('cf-amount').value = '1';
-  renderCLFood();
-  renderCLSummary();
+  try {
+    const ref = await db.collection('care_food').add(entry);
+    clFoodEntries.push({ id: ref.id, ...entry });
+    clFoodEntries.sort((a,b) => (a.time||'').localeCompare(b.time||''));
+    document.getElementById('cf-item').value = '';
+    document.getElementById('cf-custom').value = '';
+    document.getElementById('cf-amount').value = '1';
+    renderCLFood();
+    renderCLSummary();
+  } catch(e) { alert('Could not save food entry: ' + e.message); console.error(e); }
 }
 
 function renderCLFood() {
@@ -5726,14 +5744,17 @@ async function addCLFeed() {
   if (problems === 'tube-out') {
     showCLWarning('🚨 TUBE OUT — Tube came out! Log to inform the team and call the nurse or ER immediately.');
   }
-  const ref = await db.collection('care_feeds').add(entry);
-  clFeedEntries.push({ id: ref.id, ...entry });
-  document.getElementById('cfd-planned').value = '';
-  document.getElementById('cfd-given').value = '';
-  document.getElementById('cfd-flush').value = '';
-  document.getElementById('cfd-problems').value = 'none';
-  renderCLFeeds();
-  renderCLSummary();
+  try {
+    const ref = await db.collection('care_feeds').add(entry);
+    clFeedEntries.push({ id: ref.id, ...entry });
+    clFeedEntries.sort((a,b) => (a.startTime||'').localeCompare(b.startTime||''));
+    document.getElementById('cfd-planned').value = '';
+    document.getElementById('cfd-given').value = '';
+    document.getElementById('cfd-flush').value = '';
+    document.getElementById('cfd-problems').value = 'none';
+    renderCLFeeds();
+    renderCLSummary();
+  } catch(e) { alert('Could not save feed entry: ' + e.message); console.error(e); }
 }
 
 function renderCLFeeds() {
@@ -5770,12 +5791,15 @@ async function addCLGlucose() {
     loggedBy: currentData?.name || 'admin',
     timestamp: firebase.firestore.FieldValue.serverTimestamp()
   };
-  const ref = await db.collection('care_glucose').add(entry);
-  clGlucoseEntries.push({ id: ref.id, ...entry });
-  document.getElementById('cg-value').value = '';
-  if (value < 70) showCLWarning(`🚨 LOW GLUCOSE: ${value} mg/dL — give fast sugar per the plan, recheck in 15 minutes.`);
-  renderCLGlucose();
-  renderCLSummary();
+  try {
+    const ref = await db.collection('care_glucose').add(entry);
+    clGlucoseEntries.push({ id: ref.id, ...entry });
+    clGlucoseEntries.sort((a,b) => (a.time||'').localeCompare(b.time||''));
+    document.getElementById('cg-value').value = '';
+    if (value < 70) showCLWarning(`🚨 LOW GLUCOSE: ${value} mg/dL — give fast sugar per the plan, recheck in 15 minutes.`);
+    renderCLGlucose();
+    renderCLSummary();
+  } catch(e) { alert('Could not save glucose reading: ' + e.message); console.error(e); }
 }
 
 function renderCLGlucose() {
@@ -5807,12 +5831,14 @@ async function addCLFluid() {
   const time = document.getElementById('cfl-time').value || new Date().toTimeString().slice(0,5);
   if (!vol) { alert('Please enter a volume.'); return; }
   const entry = { facility: FACILITY, date: careDate, type: 'fluid', volumeML: vol, item, time, loggedBy: currentData?.name||'admin', timestamp: firebase.firestore.FieldValue.serverTimestamp() };
-  const ref = await db.collection('care_fluids').add(entry);
-  clFluidEntries.push({ id: ref.id, ...entry });
-  document.getElementById('cfl-vol').value = '';
-  document.getElementById('cfl-item').value = '';
-  renderCLOutput();
-  renderCLSummary();
+  try {
+    const ref = await db.collection('care_fluids').add(entry);
+    clFluidEntries.push({ id: ref.id, ...entry });
+    document.getElementById('cfl-vol').value = '';
+    document.getElementById('cfl-item').value = '';
+    renderCLOutput();
+    renderCLSummary();
+  } catch(e) { alert('Could not save fluid entry: ' + e.message); console.error(e); }
 }
 
 async function addCLUrine() {
@@ -5822,11 +5848,13 @@ async function addCLUrine() {
   if (!vol) { alert('Please enter a volume.'); return; }
   if (color === 'tea') showCLWarning('🚨 Tea-colored urine — this can mean bile duct involvement. Call the doctor.');
   const entry = { facility: FACILITY, date: careDate, type: 'urine', volumeML: vol, color, time, loggedBy: currentData?.name||'admin', timestamp: firebase.firestore.FieldValue.serverTimestamp() };
-  const ref = await db.collection('care_fluids').add(entry);
-  clUrineEntries.push({ id: ref.id, ...entry });
-  document.getElementById('cup-vol').value = '';
-  renderCLOutput();
-  renderCLSummary();
+  try {
+    const ref = await db.collection('care_fluids').add(entry);
+    clUrineEntries.push({ id: ref.id, ...entry });
+    document.getElementById('cup-vol').value = '';
+    renderCLOutput();
+    renderCLSummary();
+  } catch(e) { alert('Could not save urine entry: ' + e.message); console.error(e); }
 }
 
 function renderCLOutput() {
