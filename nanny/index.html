@@ -1715,6 +1715,55 @@
 }
 .cl-calc-title { font-weight: 700; margin-bottom: 4px; color: var(--blue); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; }
 
+/* Sticky live gap bar */
+.cl-gap-bar {
+  position: sticky;
+  bottom: 0;
+  left: 0; right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 16px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  transition: background 0.3s, box-shadow 0.3s;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.5);
+}
+.cl-gap-bar--idle {
+  background: rgba(30,24,70,0.95);
+  color: rgba(255,255,255,0.4);
+  font-weight: 400;
+}
+.cl-gap-bar--needed {
+  background: linear-gradient(90deg, rgba(41,121,255,0.22), rgba(0,188,212,0.18));
+  border-top: 2px solid var(--blue);
+  color: #fff;
+}
+.cl-gap-bar--done {
+  background: linear-gradient(90deg, rgba(0,229,160,0.18), rgba(0,188,212,0.12));
+  border-top: 2px solid var(--mint);
+  color: var(--mint);
+}
+.cl-gap-bar--warn {
+  background: linear-gradient(90deg, rgba(255,140,0,0.22), rgba(255,82,82,0.18));
+  border-top: 2px solid var(--orange);
+  color: var(--orange);
+}
+.cl-gap-bar .gap-ml { font-size: 1.15rem; color: var(--blue); }
+.cl-gap-bar--done .gap-ml { color: var(--mint); }
+.cl-gap-bar .gap-sep { opacity: 0.4; }
+@keyframes cl-gap-flash {
+  0%   { opacity: 1; }
+  30%  { opacity: 0.5; }
+  60%  { opacity: 1; }
+  80%  { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+.cl-gap-bar--flash { animation: cl-gap-flash 0.45s ease; }
+
 .cl-ref-panel { margin: 0 14px 10px; border-radius: 8px; overflow: hidden; font-size: 0.82rem; border: 1px solid rgba(180,78,255,0.25); }
 .cl-ref-header { background: rgba(180,78,255,0.12); padding: 7px 12px; font-weight: 700; color: var(--lavender); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; display: flex; align-items: center; gap: 8px; cursor: pointer; }
 .cl-ref-note { font-weight: 400; text-transform: none; letter-spacing: 0; color: rgba(255,255,255,0.5); font-size: 0.75rem; }
@@ -2546,6 +2595,12 @@
       </div>
 
     </div><!-- cl-body -->
+
+    <!-- Sticky live gap bar -->
+    <div id="cl-gap-bar" class="cl-gap-bar cl-gap-bar--idle">
+      <span id="cl-gap-bar-text">Log food to see remaining feed needed</span>
+    </div>
+
   </div><!-- view-carelog -->
 
   </div><!-- app-content -->
@@ -5855,12 +5910,51 @@ function renderCLSummary() {
     }
   }
 
+  // Sticky gap bar
+  updateGapBar({ totalKcal, totalProtein, kcalGap, proteinGap, roundedML, feeds_needed, maxBolus, goal, foodSodium });
+
   // Warnings
   const warnings = [];
   if (lastGlucose && lastGlucose.value < 70) warnings.push(`🚨 LOW GLUCOSE: ${lastGlucose.value} mg/dL — give fast sugar per plan, recheck in 15 min.`);
   if (urineOut > 0 && urineOut < 300) warnings.push(`💧 Low urine today: ${urineOut} mL — monitor closely.`);
   if (warnings.length) showCLWarning(warnings.join('\n'));
   else hideCLWarning();
+}
+
+function updateGapBar({ totalKcal, totalProtein, kcalGap, proteinGap, roundedML, feeds_needed, maxBolus, goal, foodSodium }) {
+  const bar  = document.getElementById('cl-gap-bar');
+  const text = document.getElementById('cl-gap-bar-text');
+  if (!bar || !text) return;
+
+  // Nothing logged yet
+  if (totalKcal === 0 && totalProtein === 0) {
+    bar.className = 'cl-gap-bar cl-gap-bar--idle';
+    text.textContent = 'Log food or feeds to see remaining formula needed';
+    return;
+  }
+
+  // Flash on update
+  bar.classList.remove('cl-gap-bar--flash');
+  void bar.offsetWidth; // reflow to restart animation
+  bar.classList.add('cl-gap-bar--flash');
+
+  const goalsMetKcal = kcalGap <= 0;
+  const goalsMetProt = proteinGap <= 0;
+
+  if (goalsMetKcal && goalsMetProt) {
+    bar.className = 'cl-gap-bar cl-gap-bar--done cl-gap-bar--flash';
+    text.innerHTML = `✅ Goals met today &nbsp;·&nbsp; ${totalKcal.toFixed(0)} kcal &nbsp;·&nbsp; ${totalProtein.toFixed(1)} g protein`;
+    return;
+  }
+
+  // Build remaining detail
+  const kcalRem  = kcalGap  > 0 ? `${kcalGap.toFixed(0)} kcal` : null;
+  const protRem  = proteinGap > 0 ? `${proteinGap.toFixed(1)} g protein` : null;
+  const remParts = [kcalRem, protRem].filter(Boolean).join(' · ');
+  const feedsStr = feeds_needed > 1 ? ` · ${feeds_needed} feeds of ${maxBolus} mL` : '';
+
+  bar.className = 'cl-gap-bar cl-gap-bar--needed cl-gap-bar--flash';
+  text.innerHTML = `🧪 Still needed: <span class="gap-ml">~${roundedML} mL</span> PediaSure Peptide${feedsStr} <span class="gap-sep">|</span> <span style="font-weight:400;font-size:0.8rem">${remParts} remaining</span>`;
 }
 
 function showCLWarning(msg) {
