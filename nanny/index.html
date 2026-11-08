@@ -5717,6 +5717,12 @@ const FOOD_LIBRARY = [
   { name: "PediaSure Peptide 1.5",    unit: "mL",     kcal: 1.5, protein: 0.045,fat:0.061,carbs:0.17, sodium: 0    },
 ];
 
+function fmt12(t) {
+  if (!t) return '';
+  const [h, m] = t.split(':').map(Number);
+  return `${h % 12 || 12}:${String(m).padStart(2,'0')} ${h < 12 ? 'AM' : 'PM'}`;
+}
+
 let careSettings = {
   weightKg: 56.6, heightCm: 150, calorieGoal: 1800, proteinGoalG: 54,
   fluidGoalML: null, maxBolusMl: 200, minFormulaML: null,
@@ -5867,7 +5873,7 @@ function renderCLFood() {
         <strong>${e.item}</strong> × ${e.amount}${e.unit?' '+e.unit:''} — ${e.pctEaten}% eaten
         <br><span style="color:var(--muted);">${e.kcal.toFixed(0)} kcal · ${e.protein.toFixed(1)}g protein · ${e.sodium.toFixed(0)}mg sodium</span>
       </div>
-      <span class="cl-entry-time">${e.time}</span>
+      <span class="cl-entry-time">${fmt12(e.time)}</span>
       <button class="cl-entry-del" onclick="deleteCLEntry('care_food','${e.id}','food')">✕</button>
     </div>`).join('');
 }
@@ -5925,7 +5931,7 @@ function renderCLFeeds() {
         <br><span style="color:var(--muted);">${e.feedKcal.toFixed(0)} kcal · ${e.feedProtein.toFixed(1)}g protein · head raised: ${e.headRaised}</span>
         ${e.problems && e.problems!=='none'?`<br><span style="color:var(--coral)">⚠️ ${e.problems}</span>`:''}
       </div>
-      <span class="cl-entry-time">${e.startTime}–${e.endTime}</span>
+      <span class="cl-entry-time">${fmt12(e.startTime)}–${fmt12(e.endTime)}</span>
       <button class="cl-entry-del" onclick="deleteCLEntry('care_feeds','${e.id}','feeds')">✕</button>
     </div>`).join('');
 }
@@ -5971,7 +5977,7 @@ function renderCLGlucose() {
         <span style="color:var(--muted);margin-left:8px">${e.context.replace(/-/g,' ')} · ${e.source}</span>
         ${e.value < 70 ? '<br><span style="color:var(--coral);font-weight:600">⚠️ LOW — act per plan</span>' : ''}
       </div>
-      <span class="cl-entry-time">${e.time}</span>
+      <span class="cl-entry-time">${fmt12(e.time)}</span>
       <button class="cl-entry-del" onclick="deleteCLEntry('care_glucose','${e.id}','glucose')">✕</button>
     </div>`;
   }).join('');
@@ -6025,7 +6031,7 @@ function renderCLVitals() {
     if (e.bpsys !== null) parts.push(`BP ${e.bpsys}${e.bpdia!=null?'/'+e.bpdia:''} mmHg`);
     return `<div class="cl-entry">
       <div class="cl-entry-main">${parts.join(' · ')}</div>
-      <span class="cl-entry-time">${e.time}</span>
+      <span class="cl-entry-time">${fmt12(e.time)}</span>
       <button class="cl-entry-del" onclick="deleteCLEntry('care_vitals','${e.id}','vitals')">✕</button>
     </div>`;
   }).join('');
@@ -6076,7 +6082,7 @@ function renderCLOutput() {
   list.innerHTML = all.map(e => `
     <div class="cl-entry">
       <div class="cl-entry-main" style="color:${e.color}"><strong>${e.label}</strong></div>
-      <span class="cl-entry-time">${e.time}</span>
+      <span class="cl-entry-time">${fmt12(e.time)}</span>
       <button class="cl-entry-del" onclick="deleteCLEntry('care_fluids','${e.id}','output')">✕</button>
     </div>`).join('');
 }
@@ -6138,7 +6144,7 @@ function renderCLVomit() {
         <span style="color:var(--muted);margin-left:6px">${contentLabel[e.content]||e.content}${e.feedML>0?' · <span style="color:var(--orange)">'+e.feedML+' mL formula subtracted</span>':''}</span>
         ${e.notes ? `<br><span style="color:var(--muted);font-size:0.8rem">${e.notes}</span>` : ''}
       </div>
-      <span class="cl-entry-time">${e.time}</span>
+      <span class="cl-entry-time">${fmt12(e.time)}</span>
       <button class="cl-entry-del" onclick="deleteCLEntry('care_fluids','${e.id}','vomit')">✕</button>
     </div>`).join('');
 }
@@ -6368,7 +6374,7 @@ function renderCLMeds() {
   if (!clMedEntries.length) { listEl.innerHTML = '<div class="cl-empty">No medications logged yet</div>'; return; }
   listEl.innerHTML = clMedEntries.map(e => `
     <div class="cl-entry-row">
-      <span class="cl-entry-time">${e.time||''}</span>
+      <span class="cl-entry-time">${fmt12(e.time)}</span>
       <span class="cl-entry-main">💊 <strong>${e.name}</strong> — ${e.dose} dose${e.dose!==1?'s':''}${e.notes?' · '+e.notes:''}</span>
       <button class="cl-del-btn" onclick="deleteCLMedEntry('${e.id}')">🗑</button>
     </div>`).join('');
