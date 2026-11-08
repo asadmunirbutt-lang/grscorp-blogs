@@ -2517,6 +2517,27 @@
         </div>
       </div>
 
+      <!-- Vitals -->
+      <div class="cl-section">
+        <div class="cl-sec-hdr" onclick="toggleCLSection('vitals')">
+          📊 Vitals <span id="cl-vitals-badge" class="cl-badge"></span> <span class="cl-sec-arrow" id="cl-arr-vitals">▼</span>
+        </div>
+        <div class="cl-sec-body" id="cl-sec-vitals">
+          <div class="cl-add-form">
+            <div class="cl-form-row">
+              <div class="cl-fg"><label>Temp (°F)</label><input type="number" id="cv2-temp" step="0.1" placeholder="98.6"></div>
+              <div class="cl-fg"><label>SpO2 (%)</label><input type="number" id="cv2-spo2" min="0" max="100" placeholder="98"></div>
+              <div class="cl-fg"><label>Heart Rate (bpm)</label><input type="number" id="cv2-hr" placeholder="80"></div>
+              <div class="cl-fg"><label>BP Systolic</label><input type="number" id="cv2-bpsys" placeholder="110"></div>
+              <div class="cl-fg"><label>BP Diastolic</label><input type="number" id="cv2-bpdia" placeholder="70"></div>
+              <div class="cl-fg"><label>Time</label><input type="time" id="cv2-time"></div>
+            </div>
+            <button class="cl-btn-primary" onclick="addCLVitals()">📊 Log Vitals</button>
+          </div>
+          <div id="cl-vitals-list" class="cl-entry-list" style="margin-top:10px"></div>
+        </div>
+      </div>
+
       <!-- Fluids & Output -->
       <div class="cl-section">
         <div class="cl-sec-hdr" onclick="toggleCLSection('output')">
@@ -2591,9 +2612,15 @@
             <button class="med-type-btn active" onclick="setCLMedType('Famotidine 20 MG',this)">🛡️ Famotidine 20 MG</button>
             <button class="med-type-btn" onclick="setCLMedType('Pantoprazole 40 MG',this)">🌅 Pantoprazole 40 MG</button>
             <button class="med-type-btn" onclick="setCLMedType('Creon 24,000 (pancrelipase)',this)">🧪 Creon 24,000</button>
+            <button class="med-type-btn" onclick="setCLMedType('cloNIDine ER 0.1 MG',this)">🌙 cloNIDine ER</button>
+            <button class="med-type-btn" onclick="setCLMedType('cloNIDine HCl 0.1 MG',this)">🌙 cloNIDine 0.1 (bedtime)</button>
+            <button class="med-type-btn" onclick="setCLMedType('cloNIDine HCl 0.05 MG',this)">🌙 cloNIDine 0.05 (PRN)</button>
+            <button class="med-type-btn" onclick="setCLMedType('diazePAM 20 MG rectal (Diastat)',this)" style="border-color:rgba(255,82,82,0.5)">🚨 diazePAM (seizure)</button>
+            <button class="med-type-btn" onclick="setCLMedType('Ondansetron 4 MG (Zofran)',this)">🤢 Zofran/Ondansetron</button>
+            <button class="med-type-btn" onclick="setCLMedType('Miralax 17g (PEG 3350)',this)">💩 Miralax</button>
+            <button class="med-type-btn" onclick="setCLMedType('Vraylar 1.5 MG',this)">✨ Vraylar 1.5 MG</button>
+            <button class="med-type-btn" onclick="setCLMedType('Vraylar 0.5 MG',this)">✨ Vraylar 0.5 MG</button>
             <button class="med-type-btn" onclick="setCLMedType('Magnesium 400 MG',this)">🧲 Magnesium 400 MG</button>
-            <button class="med-type-btn" onclick="setCLMedType('Clonodine HCL ER .1 MG',this)">🌙 Clonodine</button>
-            <button class="med-type-btn" onclick="setCLMedType('Vraylar 2 MG Cap',this)">✨ Vraylar</button>
             <button class="med-type-btn" onclick="setCLMedType('Krill Oil',this)">🐟 Krill Oil</button>
             <button class="med-type-btn" onclick="setCLMedType('Fiber Sup',this)">🌾 Fiber Sup</button>
             <button class="med-type-btn" onclick="setCLMedType('Vitamin D',this)">🌞 Vitamin D</button>
@@ -2617,20 +2644,53 @@
         </div>
         <div class="cl-sec-body" id="cl-sec-meds-ref" style="display:none">
           <div style="font-size:0.83rem;line-height:1.7">
+            <div style="font-size:0.75rem;color:var(--yellow);font-weight:600;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.04em">📋 Discharge Medication List — Albany Med, Nov 8 2026</div>
             <div class="cl-med-row">
-              <span class="cl-med-name">🛡️ Famotidine 20 MG</span>
+              <span class="cl-med-name">🛡️ Famotidine 20 MG (Pepcid)</span>
               <span class="cl-med-sig">1 tablet by mouth <strong>twice daily</strong></span>
             </div>
             <div class="cl-med-row">
               <span class="cl-med-name">🌅 Pantoprazole 40 MG (Protonix)</span>
-              <span class="cl-med-sig">1 tablet by mouth <strong>every morning</strong> — <span style="color:var(--coral)">do NOT crush, chew, or split</span></span>
+              <span class="cl-med-sig">1 tablet <strong>every morning</strong> — <span style="color:var(--coral)">do NOT crush, chew, or split</span> · <em>Start Nov 9</em></span>
             </div>
             <div class="cl-med-row">
               <span class="cl-med-name">🧪 Creon 24,000 (pancrelipase)</span>
-              <span class="cl-med-sig">Delayed-release capsule — take <strong>with every meal or snack</strong> · Lipase 24,000 / Protease 76,000 / Amylase 120,000 USP — <span style="color:var(--coral)">do NOT crush or chew</span></span>
+              <span class="cl-med-sig"><strong>With every meal &amp; snack</strong> (up to 4×/day) · do NOT crush or chew</span>
+            </div>
+            <div class="cl-med-row">
+              <span class="cl-med-name">🌙 cloNIDine ER 0.1 MG (Kapvay)</span>
+              <span class="cl-med-sig">1 tablet by mouth <strong>twice daily</strong> (sustained-release 12 hr)</span>
+            </div>
+            <div class="cl-med-row">
+              <span class="cl-med-name">🌙 cloNIDine HCl 0.1 MG (Catapres)</span>
+              <span class="cl-med-sig">1 tablet by mouth <strong>daily at bedtime</strong></span>
+            </div>
+            <div class="cl-med-row">
+              <span class="cl-med-name">🌙 cloNIDine HCl 0.05 MG</span>
+              <span class="cl-med-sig">1 tablet by mouth <strong>as needed</strong> for agitation (up to 2×/day)</span>
+            </div>
+            <div class="cl-med-row" style="background:rgba(255,82,82,0.1);border-radius:6px;padding:5px 8px;margin:4px 0">
+              <span class="cl-med-name">🚨 diazePAM 20 MG rectal kit (Diastat)</span>
+              <span class="cl-med-sig"><strong style="color:var(--coral)">Give 12.5 mg for seizure lasting &gt;5 min — CALL 911 immediately</strong></span>
+            </div>
+            <div class="cl-med-row">
+              <span class="cl-med-name">🤢 Ondansetron 4 MG/5 mL (Zofran)</span>
+              <span class="cl-med-sig">5 mL by mouth every 8 hrs <strong>as needed</strong> for nausea/vomiting — up to 7 days</span>
+            </div>
+            <div class="cl-med-row">
+              <span class="cl-med-name">💩 Miralax 17g (PEG 3350)</span>
+              <span class="cl-med-sig">17 g by mouth <strong>as needed</strong> if no BM &gt;24 hrs — up to 3 days</span>
+            </div>
+            <div class="cl-med-row">
+              <span class="cl-med-name">✨ Vraylar 1.5 MG (Cariprazine)</span>
+              <span class="cl-med-sig">1 capsule by mouth <strong>once daily</strong> (morning)</span>
+            </div>
+            <div class="cl-med-row">
+              <span class="cl-med-name">✨ Vraylar 0.5 MG (Cariprazine)</span>
+              <span class="cl-med-sig">1 capsule by mouth <strong>daily at bedtime</strong></span>
             </div>
           </div>
-          <div style="font-size:0.75rem;color:rgba(255,255,255,0.35);margin-top:8px">Log doses in the main Medication Log tab (💊 on checklist screen)</div>
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.35);margin-top:8px">Source: Albany Medical Center discharge paperwork · MRN 1017600095 · Printed 11/8/2026</div>
         </div>
       </div>
 
@@ -2640,16 +2700,37 @@
           🚨 Warning signs — call doctor / go to ER <span class="cl-sec-arrow" id="cl-arr-warnings">▶</span>
         </div>
         <div class="cl-sec-body" id="cl-sec-warnings" style="display:none">
+          <div style="font-size:0.8rem;font-weight:600;color:var(--yellow);margin-bottom:8px">📞 Call care team if any of these:</div>
           <ul class="cl-warn-list">
-            <li>🟡 Yellow eyes or skin, dark (tea-colored) urine, pale/clay-colored stools, itching</li>
-            <li>🌡️ Fever 100.4°F or higher</li>
-            <li>🩸 Vomiting blood, coffee-ground material, or green bile — or vomiting every feed</li>
-            <li>🫄 New or worsening belly pain, swollen or hard belly</li>
-            <li>🧪 PEG pulled out — go within hours; site starts to close</li>
-            <li>🩸 Glucose below low alert and not recovering, or repeatedly above high level</li>
-            <li>💧 Very low urine output (under ~700 mL/day or under 0.5 mL/kg/hr)</li>
-            <li>⚖️ Weight loss more than 0.5 kg in a week</li>
-            <li>😴 Unusual sleepiness or hard to wake up</li>
+            <li>🌡️ Fever 100.4°F (38°C) or higher</li>
+            <li>🫄 Belly pain getting worse or coming back</li>
+            <li>🤢 Nausea, vomiting, or unable to tolerate feeds</li>
+            <li>🔴 Redness, swelling, warmth, pus, bad smell, or bleeding at G-tube site — or formula leaking around tube</li>
+            <li>🔧 G-tube clogged after flushing, or tube moves in/out more than usual</li>
+            <li>💩 Greasy, oily, pale, or very bad-smelling stools — or more diarrhea than usual, or constipation &gt;48 hrs</li>
+            <li>🩸 Signs of high blood sugar: very thirsty, peeing much more than usual, waking at night to pee, tiredness, or weight loss</li>
+            <li>🟡 Yellow skin or eyes, dark urine</li>
+          </ul>
+          <div style="font-size:0.8rem;font-weight:600;color:var(--coral);margin:12px 0 8px">🚨 Go to ER or call 911 if:</div>
+          <ul class="cl-warn-list">
+            <li>🫄 Severe belly pain or a hard, swollen belly</li>
+            <li>🩸 Vomiting blood or green fluid — or black/bloody stools</li>
+            <li>💨 Trouble breathing, fast heartbeat, fainting, or confusion</li>
+            <li>💧 Signs of dehydration: no pee for 8+ hours, very dry mouth, no tears, very sleepy</li>
+            <li style="font-weight:600;color:var(--coral)">🔧 G-tube comes out — go to ER right away</li>
+            <li>🍬 Fruity breath, deep fast breathing, or vomiting along with high blood sugar</li>
+          </ul>
+          <div style="font-size:0.8rem;font-weight:600;color:var(--blue);margin:12px 0 8px">📋 G-tube care reminders:</div>
+          <ul class="cl-warn-list" style="border-left-color:rgba(41,121,255,0.4)">
+            <li>Avoid placing gauze underneath the bumper</li>
+            <li>Do NOT deflate balloon or exchange G-tube until 6 weeks post-op</li>
+          </ul>
+          <div style="font-size:0.8rem;font-weight:600;color:var(--mint);margin:12px 0 8px">📞 Emergency contacts:</div>
+          <ul class="cl-warn-list" style="border-left-color:rgba(0,229,160,0.4)">
+            <li>AMC Endocrinology: <strong>518-489-4704</strong></li>
+            <li>AMC Pediatric Gastroenterology: <strong>(518) 262-8831</strong></li>
+            <li>AMC Pediatric Surgery: <strong>(518) 262-5831</strong></li>
+            <li>⏰ Call pediatrician within 1–2 days · Endocrinology in 2–3 days · Surgery follow-up in 10 days</li>
           </ul>
         </div>
       </div>
@@ -5645,7 +5726,7 @@ let careSettings = {
 };
 let careDate = localDateStr();
 let careLogLoadedDate = null; // tracks which date is currently in memory
-let clFoodEntries = [], clFeedEntries = [], clGlucoseEntries = [], clFluidEntries = [], clUrineEntries = [], clVomitEntries = [], clMedEntries = [];
+let clFoodEntries = [], clFeedEntries = [], clGlucoseEntries = [], clFluidEntries = [], clUrineEntries = [], clVomitEntries = [], clMedEntries = [], clVitalsEntries = [];
 let selectedCLMedName = 'Famotidine 20 MG';
 
 async function loadCareLog() {
@@ -5655,7 +5736,7 @@ async function loadCareLog() {
   populateFoodLibrarySelect();
   setDefaultTimes();
   const byTime = (a,b) => (a.time||'').localeCompare(b.time||'');
-  const [food, feeds, glucose, fluids, meds] = await Promise.all([
+  const [food, feeds, glucose, fluids, meds, vitals] = await Promise.all([
     db.collection('care_food').where('facility','==',FACILITY).where('date','==',careDate).get()
       .catch(e=>{console.error('[CareLog] care_food load failed:',e);return{docs:[]}}),
     db.collection('care_feeds').where('facility','==',FACILITY).where('date','==',careDate).get()
@@ -5666,6 +5747,8 @@ async function loadCareLog() {
       .catch(e=>{console.error('[CareLog] care_fluids load failed:',e);return{docs:[]}}),
     db.collection('medications').where('facility','==',FACILITY).where('date','==',careDate).get()
       .catch(e=>{console.error('[CareLog] medications load failed:',e);return{docs:[]}}),
+    db.collection('care_vitals').where('facility','==',FACILITY).where('date','==',careDate).get()
+      .catch(e=>{console.error('[CareLog] care_vitals load failed:',e);return{docs:[]}}),
   ]);
   clFoodEntries    = food.docs.map(d   => ({id:d.id,...d.data()})).sort(byTime);
   clFeedEntries    = feeds.docs.map(d  => ({id:d.id,...d.data()})).sort((a,b)=>(a.startTime||'').localeCompare(b.startTime||''));
@@ -5675,6 +5758,7 @@ async function loadCareLog() {
   clUrineEntries   = allFluids.filter(d => d.type === 'urine');
   clVomitEntries   = allFluids.filter(d => d.type === 'vomit');
   clMedEntries     = meds.docs.map(d => ({id:d.id,...d.data()})).sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+  clVitalsEntries  = vitals.docs.map(d => ({id:d.id,...d.data()})).sort(byTime);
   careLogLoadedDate = careDate;
   renderAllCL();
 }
@@ -5683,6 +5767,7 @@ function renderAllCL() {
   renderCLFood();
   renderCLFeeds();
   renderCLGlucose();
+  renderCLVitals();
   renderCLOutput();
   renderCLVomit();
   renderCLMeds();
@@ -5714,7 +5799,7 @@ function jumpCareToday() {
 
 function setDefaultTimes() {
   const now = new Date().toTimeString().slice(0,5);
-  ['cf-time','cfd-start','cfd-end','cg-time','cfl-time','cup-time'].forEach(id => {
+  ['cf-time','cfd-start','cfd-end','cg-time','cv2-time','cfl-time','cup-time'].forEach(id => {
     const el = document.getElementById(id);
     if (el && !el.value) el.value = now;
   });
@@ -5890,6 +5975,60 @@ function renderCLGlucose() {
       </div>
       <span class="cl-entry-time">${e.time}</span>
       <button class="cl-entry-del" onclick="deleteCLEntry('care_glucose','${e.id}','glucose')">✕</button>
+    </div>`;
+  }).join('');
+}
+
+// ── Vitals ──
+
+async function addCLVitals() {
+  const temp  = document.getElementById('cv2-temp').value  ? parseFloat(document.getElementById('cv2-temp').value)  : null;
+  const spo2  = document.getElementById('cv2-spo2').value  ? parseFloat(document.getElementById('cv2-spo2').value)  : null;
+  const hr    = document.getElementById('cv2-hr').value    ? parseFloat(document.getElementById('cv2-hr').value)    : null;
+  const bpsys = document.getElementById('cv2-bpsys').value ? parseFloat(document.getElementById('cv2-bpsys').value) : null;
+  const bpdia = document.getElementById('cv2-bpdia').value ? parseFloat(document.getElementById('cv2-bpdia').value) : null;
+  const time  = document.getElementById('cv2-time').value  || new Date().toTimeString().slice(0,5);
+  if (temp===null && spo2===null && hr===null && bpsys===null) { alert('Please enter at least one vital sign.'); return; }
+  const entry = {
+    facility: FACILITY, date: careDate,
+    temp, spo2, hr, bpsys, bpdia, time,
+    loggedBy: currentData?.name || 'admin',
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  try {
+    const ref = await db.collection('care_vitals').add(entry);
+    clVitalsEntries.push({ id: ref.id, ...entry });
+    clVitalsEntries.sort((a,b) => (a.time||'').localeCompare(b.time||''));
+    ['cv2-temp','cv2-spo2','cv2-hr','cv2-bpsys','cv2-bpdia'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+    if (temp !== null && temp >= 100.4) showCLWarning(`🌡️ FEVER: ${temp}°F — temperature at or above 100.4°F. Notify care team.`);
+    if (spo2 !== null && spo2 < 93)    showCLWarning(`🫁 LOW SpO2: ${spo2}% — below 93%. Check positioning, supplemental O2 per plan.`);
+    else if (spo2 !== null && spo2 < 95) showCLWarning(`⚠️ SpO2 ${spo2}% — below 95%, monitoring closely.`);
+    renderCLVitals();
+  } catch(e) { alert('Could not save vitals: ' + e.message); console.error(e); }
+}
+
+function renderCLVitals() {
+  const list  = document.getElementById('cl-vitals-list');
+  const badge = document.getElementById('cl-vitals-badge');
+  if (!list) return;
+  if (!clVitalsEntries.length) {
+    list.innerHTML = '<div style="color:var(--muted);font-size:0.84rem">No vitals logged yet.</div>';
+    if (badge) badge.style.display = 'none';
+    return;
+  }
+  if (badge) { badge.textContent = clVitalsEntries.length; badge.style.display = ''; }
+  list.innerHTML = clVitalsEntries.map(e => {
+    const tempColor = e.temp !== null && e.temp >= 100.4 ? 'var(--coral)' : 'inherit';
+    const spo2Color = e.spo2 !== null ? (e.spo2 < 93 ? 'var(--coral)' : e.spo2 < 95 ? 'var(--yellow)' : 'var(--mint)') : 'inherit';
+    const parts = [];
+    if (e.temp  !== null) parts.push(`<span style="color:${tempColor}">🌡️ ${e.temp}°F${e.temp>=100.4?' 🚨':''}</span>`);
+    if (e.spo2  !== null) parts.push(`<span style="color:${spo2Color}">O2 ${e.spo2}%${e.spo2<93?' 🚨':''}</span>`);
+    if (e.hr    !== null) parts.push(`❤️ ${e.hr} bpm`);
+    if (e.bpsys !== null) parts.push(`BP ${e.bpsys}${e.bpdia!=null?'/'+e.bpdia:''} mmHg`);
+    return `<div class="cl-entry">
+      <div class="cl-entry-main">${parts.join(' · ')}</div>
+      <span class="cl-entry-time">${e.time}</span>
+      <button class="cl-entry-del" onclick="deleteCLEntry('care_vitals','${e.id}','vitals')">✕</button>
     </div>`;
   }).join('');
 }
@@ -6145,7 +6284,8 @@ async function deleteCLEntry(collection, id, type) {
     clFluidEntries = clFluidEntries.filter(e => e.id !== id);
     clUrineEntries = clUrineEntries.filter(e => e.id !== id);
   }
-  if (type === 'vomit') clVomitEntries = clVomitEntries.filter(e => e.id !== id);
+  if (type === 'vomit')  clVomitEntries  = clVomitEntries.filter(e  => e.id !== id);
+  if (type === 'vitals') clVitalsEntries = clVitalsEntries.filter(e => e.id !== id);
   renderAllCL();
 }
 
