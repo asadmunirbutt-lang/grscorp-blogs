@@ -1778,6 +1778,10 @@
 .cl-ref-row.cl-ref-active span:last-child { color: var(--mint); }
 .cl-ref-row.cl-ref-na span:last-child { color: rgba(255,255,255,0.3); }
 .cl-ref-note2 { padding: 5px 10px; font-size: 0.72rem; color: rgba(255,255,255,0.4); border-top: 1px solid rgba(180,78,255,0.1); background: rgba(0,0,0,0.15); }
+.cl-med-row { display:flex; flex-direction:column; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.cl-med-row:last-child { border-bottom: none; }
+.cl-med-name { font-weight: 700; color: var(--teal); margin-bottom: 2px; }
+.cl-med-sig { color: rgba(255,255,255,0.75); }
 
 .cl-body { padding: 0 14px 100px; overflow-y: auto; flex: 1; }
 
@@ -2181,6 +2185,9 @@
                 <button class="med-type-btn" onclick="setMedType('Krill Oil',this)">🐟 Krill Oil</button>
                 <button class="med-type-btn" onclick="setMedType('Fiber Sup',this)">🌾 Fiber Sup</button>
                 <button class="med-type-btn" onclick="setMedType('Vitamin D',this)">🌞 Vitamin D</button>
+                <button class="med-type-btn" onclick="setMedType('Famotidine 20 MG',this)">🛡️ Famotidine 20 MG</button>
+                <button class="med-type-btn" onclick="setMedType('Pantoprazole 40 MG',this)">🌅 Pantoprazole 40 MG</button>
+                <button class="med-type-btn" onclick="setMedType('Creon 24,000 (pancrelipase)',this)">🧪 Creon 24,000</button>
                 <button class="med-type-btn" id="med-other-btn" onclick="setMedType('other',this)">✏️ Other…</button>
               </div>
               <input type="text" id="med-name-other" placeholder="Medication name" class="fg-input" style="width:100%;display:none;margin-bottom:8px">
@@ -2603,6 +2610,30 @@
           </div>
           <button class="cl-btn-primary" onclick="addCLVomit()">Log vomit episode</button>
           <div id="cl-vomit-list" class="cl-entry-list" style="margin-top:10px"></div>
+        </div>
+      </div>
+
+      <!-- Current Medications reference -->
+      <div class="cl-section">
+        <div class="cl-sec-hdr" onclick="toggleCLSection('meds-ref')">
+          💊 Current Medications <span class="cl-sec-arrow" id="cl-arr-meds-ref">▶</span>
+        </div>
+        <div class="cl-sec-body" id="cl-sec-meds-ref" style="display:none">
+          <div style="font-size:0.83rem;line-height:1.7">
+            <div class="cl-med-row">
+              <span class="cl-med-name">🛡️ Famotidine 20 MG</span>
+              <span class="cl-med-sig">1 tablet by mouth <strong>twice daily</strong></span>
+            </div>
+            <div class="cl-med-row">
+              <span class="cl-med-name">🌅 Pantoprazole 40 MG (Protonix)</span>
+              <span class="cl-med-sig">1 tablet by mouth <strong>every morning</strong> — <span style="color:var(--coral)">do NOT crush, chew, or split</span></span>
+            </div>
+            <div class="cl-med-row">
+              <span class="cl-med-name">🧪 Creon 24,000 (pancrelipase)</span>
+              <span class="cl-med-sig">Delayed-release capsule — take <strong>with every meal or snack</strong> · Lipase 24,000 / Protease 76,000 / Amylase 120,000 USP — <span style="color:var(--coral)">do NOT crush or chew</span></span>
+            </div>
+          </div>
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.35);margin-top:8px">Log doses in the main Medication Log tab (💊 on checklist screen)</div>
         </div>
       </div>
 
