@@ -2574,6 +2574,38 @@
         </div>
       </div>
 
+      <!-- Vomit / Emesis -->
+      <div class="cl-section">
+        <div class="cl-sec-hdr" onclick="toggleCLSection('vomit')">
+          🤢 Vomit / Emesis <span id="cl-vomit-badge" class="cl-badge"></span> <span class="cl-sec-arrow" id="cl-arr-vomit">▼</span>
+        </div>
+        <div class="cl-sec-body" id="cl-sec-vomit">
+          <div class="cl-info-note" style="background:rgba(255,82,82,0.08);border-left:3px solid var(--coral);padding:7px 10px;margin-bottom:10px;font-size:0.82rem;border-radius:4px;">
+            Feed/formula vomit is automatically <strong>subtracted</strong> from today's totals and increases the gap calculator.
+          </div>
+          <div class="cl-form-row">
+            <div class="cl-fg"><label>Time</label><input type="time" id="cv-time"></div>
+            <div class="cl-fg"><label>Total volume (mL)</label><input type="number" id="cv-vol" placeholder="e.g. 100" min="0"></div>
+            <div class="cl-fg"><label>Content</label>
+              <select id="cv-content" onchange="toggleVomitFeedRow()">
+                <option value="feed">Feed / formula</option>
+                <option value="mixed">Mixed (food + feed)</option>
+                <option value="food">Food only</option>
+                <option value="bile">Bile / gastric only</option>
+                <option value="unclear">Unclear</option>
+              </select>
+            </div>
+            <div class="cl-fg" id="cv-feed-ml-row" style="display:none">
+              <label>Feed portion (mL)</label>
+              <input type="number" id="cv-feed-ml" placeholder="how much was formula?">
+            </div>
+            <div class="cl-fg"><label>Notes (optional)</label><input type="text" id="cv-notes" placeholder="e.g. projectile, after feed #2"></div>
+          </div>
+          <button class="cl-btn-primary" onclick="addCLVomit()">Log vomit episode</button>
+          <div id="cl-vomit-list" class="cl-entry-list" style="margin-top:10px"></div>
+        </div>
+      </div>
+
       <!-- Warning signs reference -->
       <div class="cl-section">
         <div class="cl-sec-hdr" onclick="toggleCLSection('warnings')">
@@ -5585,7 +5617,7 @@ let careSettings = {
 };
 let careDate = localDateStr();
 let careLogLoadedDate = null; // tracks which date is currently in memory
-let clFoodEntries = [], clFeedEntries = [], clGlucoseEntries = [], clFluidEntries = [], clUrineEntries = [];
+let clFoodEntries = [], clFeedEntries = [], clGlucoseEntries = [], clFluidEntries = [], clUrineEntries = [], clVomitEntries = [];
 
 async function loadCareLog() {
   if (!careDate) careDate = localDateStr();
@@ -5610,6 +5642,7 @@ async function loadCareLog() {
   const allFluids  = fluids.docs.map(d => ({id:d.id,...d.data()})).sort(byTime);
   clFluidEntries   = allFluids.filter(d => d.type === 'fluid');
   clUrineEntries   = allFluids.filter(d => d.type === 'urine');
+  clVomitEntries   = allFluids.filter(d => d.type === 'vomit');
   careLogLoadedDate = careDate;
   renderAllCL();
 }
@@ -5619,6 +5652,7 @@ function renderAllCL() {
   renderCLFeeds();
   renderCLGlucose();
   renderCLOutput();
+  renderCLVomit();
   renderCLSummary();
 }
 
@@ -5877,6 +5911,68 @@ function renderCLOutput() {
     </div>`).join('');
 }
 
+// ── Vomit / Emesis ──
+
+function toggleVomitFeedRow() {
+  const content = document.getElementById('cv-content')?.value;
+  const row = document.getElementById('cv-feed-ml-row');
+  if (row) row.style.display = content === 'mixed' ? '' : 'none';
+}
+
+async function addCLVomit() {
+  const vol     = parseFloat(document.getElementById('cv-vol').value) || 0;
+  const content = document.getElementById('cv-content').value;
+  const time    = document.getElementById('cv-time').value || new Date().toTimeString().slice(0,5);
+  const notes   = document.getElementById('cv-notes').value.trim();
+  if (!vol) { alert('Please enter the vomit volume.'); return; }
+
+  // Calculate how much of the vomit was feed/formula
+  let feedML = 0;
+  if (content === 'feed')   feedML = vol;
+  else if (content === 'mixed') feedML = parseFloat(document.getElementById('cv-feed-ml').value) || 0;
+
+  const entry = {
+    facility: FACILITY, date: careDate, type: 'vomit',
+    volumeML: vol, content, feedML, notes, time,
+    loggedBy: currentData?.name || 'admin',
+    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  try {
+    const ref = await db.collection('care_fluids').add(entry);
+    clVomitEntries.push({ id: ref.id, ...entry });
+    clVomitEntries.sort((a,b) => (a.time||'').localeCompare(b.time||''));
+    document.getElementById('cv-vol').value   = '';
+    document.getElementById('cv-notes').value = '';
+    if (document.getElementById('cv-feed-ml')) document.getElementById('cv-feed-ml').value = '';
+    if (vol > 150) showCLWarning(`🤢 Large vomit episode: ${vol} mL at ${time}. Monitor for dehydration and notify nurse if continues.`);
+    renderCLVomit();
+    renderCLSummary();
+  } catch(e) { alert('Could not save vomit entry: ' + e.message); console.error(e); }
+}
+
+function renderCLVomit() {
+  const list  = document.getElementById('cl-vomit-list');
+  const badge = document.getElementById('cl-vomit-badge');
+  if (!list) return;
+  if (!clVomitEntries.length) {
+    list.innerHTML = '<div style="color:var(--muted);font-size:0.84rem">No vomit episodes logged today.</div>';
+    if (badge) badge.style.display = 'none';
+    return;
+  }
+  if (badge) { badge.textContent = clVomitEntries.length; badge.style.display = ''; }
+  const contentLabel = { feed:'Feed/formula', mixed:'Mixed', food:'Food only', bile:'Bile/gastric', unclear:'Unclear' };
+  list.innerHTML = clVomitEntries.map(e => `
+    <div class="cl-entry" style="border-left:3px solid var(--coral)">
+      <div class="cl-entry-main">
+        <strong style="color:var(--coral)">🤢 ${e.volumeML} mL</strong>
+        <span style="color:var(--muted);margin-left:6px">${contentLabel[e.content]||e.content}${e.feedML>0?' · <span style="color:var(--orange)">'+e.feedML+' mL formula subtracted</span>':''}</span>
+        ${e.notes ? `<br><span style="color:var(--muted);font-size:0.8rem">${e.notes}</span>` : ''}
+      </div>
+      <span class="cl-entry-time">${e.time}</span>
+      <button class="cl-entry-del" onclick="deleteCLEntry('care_fluids','${e.id}','vomit')">✕</button>
+    </div>`).join('');
+}
+
 // ── Summary + Calculator ──
 
 function renderCLSummary() {
@@ -5891,8 +5987,12 @@ function renderCLSummary() {
   // Fluid totals
   const oralFluid   = clFluidEntries.reduce((s,e) => s + (e.volumeML||0), 0);
   const urineOut    = clUrineEntries.reduce((s,e) => s + (e.volumeML||0), 0);
-  const totalKcal   = foodKcal + feedKcal;
-  const totalProtein= foodProtein + feedProtein;
+  // Vomit — subtract feed lost back to stomach
+  const vomitFeedML   = clVomitEntries.reduce((s,e) => s + (e.feedML||0), 0);
+  const vomitFeedKcal = vomitFeedML * 1.5;
+  const vomitFeedProt = vomitFeedML * 0.045;
+  const totalKcal   = foodKcal + feedKcal - vomitFeedKcal;
+  const totalProtein= foodProtein + feedProtein - vomitFeedProt;
   const totalFluidIn= feedFluid + oralFluid;
   const lastGlucose = clGlucoseEntries.length ? clGlucoseEntries[clGlucoseEntries.length-1] : null;
 
@@ -5926,8 +6026,9 @@ function renderCLSummary() {
     if (totalKcal === 0 && feedKcal === 0) {
       calcEl.textContent = 'Log food and feeds to see the calculation.';
     } else {
-      let txt = `Eaten: <strong>${totalKcal.toFixed(0)} kcal</strong>, <strong>${totalProtein.toFixed(1)}g protein</strong><br>`;
-      txt += `Goal: ${goal.calorieGoal||1800} kcal, ${goal.proteinGoalG||54}g protein<br>`;
+      let txt = `Eaten: <strong>${totalKcal.toFixed(0)} kcal</strong>, <strong>${totalProtein.toFixed(1)}g protein</strong>`;
+      if (vomitFeedML > 0) txt += ` <span style="color:var(--coral);font-size:0.8rem">(−${vomitFeedML} mL vomited feed subtracted)</span>`;
+      txt += `<br>Goal: ${goal.calorieGoal||1800} kcal, ${goal.proteinGoalG||54}g protein<br>`;
       if (kcalGap > 0 || proteinGap > 0) {
         txt += `<strong style="color:var(--blue)">Still needed: ~${roundedML} mL PediaSure Peptide`;
         if (feeds_needed > 1) txt += ` ≈ ${feeds_needed} feeds of ${maxBolus} mL`;
@@ -6011,6 +6112,7 @@ async function deleteCLEntry(collection, id, type) {
     clFluidEntries = clFluidEntries.filter(e => e.id !== id);
     clUrineEntries = clUrineEntries.filter(e => e.id !== id);
   }
+  if (type === 'vomit') clVomitEntries = clVomitEntries.filter(e => e.id !== id);
   renderAllCL();
 }
 
