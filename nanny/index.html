@@ -2029,7 +2029,7 @@
         <button class="qnav-btn" onclick="scrollToSection('sec-supplies')">🛒 Supplies</button>
         <button class="qnav-btn" onclick="scrollToSection('sec-food')">🍽️ Food Log</button>
         <button class="qnav-btn" onclick="scrollToSection('sec-laundry')">🧺 Laundry</button>
-        <button class="qnav-btn" id="qnav-meds"      style="display:none" onclick="scrollToSection('sec-meds')">💊 Meds</button>
+
         <button class="qnav-btn" id="qnav-incidents" style="display:none" onclick="scrollToSection('sec-incidents')">📋 Incidents</button>
         <button class="qnav-btn" onclick="scrollToSection('sec-sib')">🧠 SIB/Elop</button>
       </div>
@@ -2168,39 +2168,7 @@
             </div>
           </div>
 
-          <!-- Medication Log (admin only) -->
-          <div class="laundry-inline" id="sec-meds" style="display:none">
-            <div class="laundry-inline-hdr" style="border-bottom-color:rgba(0,188,212,0.2)">
-              <span style="color:#00bcd4">💊 Medication Log</span>
-              <div style="display:flex;gap:6px">
-                <button class="laundry-log-toggle" id="med-log-toggle" onclick="toggleSection('med');resetMedForm()" style="background:rgba(0,188,212,0.12);border-color:rgba(0,188,212,0.35);color:#00bcd4">+ Log Entry</button>
-                <button class="laundry-hist-toggle" id="med-hist-toggle" onclick="toggleSectionHistory('med')">📋 History</button>
-              </div>
-            </div>
-            <div class="laundry-controls" id="med-controls" style="display:none">
-              <div class="med-type-row">
-                <button class="med-type-btn active" onclick="setMedType('Magnesium 400 MG',this)">🧲 Magnesium 400 MG</button>
-                <button class="med-type-btn" onclick="setMedType('Clonodine HCL ER .1 MG',this)">🌙 Clonodine HCL ER .1 MG</button>
-                <button class="med-type-btn" onclick="setMedType('Vraylar 2 MG Cap',this)">✨ Vraylar 2 MG Cap</button>
-                <button class="med-type-btn" onclick="setMedType('Krill Oil',this)">🐟 Krill Oil</button>
-                <button class="med-type-btn" onclick="setMedType('Fiber Sup',this)">🌾 Fiber Sup</button>
-                <button class="med-type-btn" onclick="setMedType('Vitamin D',this)">🌞 Vitamin D</button>
-                <button class="med-type-btn" onclick="setMedType('Famotidine 20 MG',this)">🛡️ Famotidine 20 MG</button>
-                <button class="med-type-btn" onclick="setMedType('Pantoprazole 40 MG',this)">🌅 Pantoprazole 40 MG</button>
-                <button class="med-type-btn" onclick="setMedType('Creon 24,000 (pancrelipase)',this)">🧪 Creon 24,000</button>
-                <button class="med-type-btn" id="med-other-btn" onclick="setMedType('other',this)">✏️ Other…</button>
-              </div>
-              <input type="text" id="med-name-other" placeholder="Medication name" class="fg-input" style="width:100%;display:none;margin-bottom:8px">
-              <div class="input-row">
-                <div class="fg" style="margin-bottom:0"><input type="number" id="med-dose" placeholder="Pills / dose" min="1" value="1" class="fg-input"></div>
-                <div class="fg" style="margin-bottom:0"><input type="text" id="med-notes" placeholder="Notes (optional)" class="fg-input"></div>
-              </div>
-              <button class="ltype-btn" style="width:100%;justify-content:center;color:#00bcd4;border-color:rgba(0,188,212,0.4);margin-top:8px;margin-bottom:4px" onclick="logMedication()">💊 Log Medication</button>
-            </div>
-            <div class="laundry-hist-panel" id="med-hist-panel" style="display:none">
-              <div id="meds-list"></div>
-            </div>
-          </div>
+
 
           <!-- Incidents Log (admin only) -->
           <div class="laundry-inline" id="sec-incidents" style="display:none">
@@ -2610,6 +2578,35 @@
           </div>
           <button class="cl-btn-primary" onclick="addCLVomit()">Log vomit episode</button>
           <div id="cl-vomit-list" class="cl-entry-list" style="margin-top:10px"></div>
+        </div>
+      </div>
+
+      <!-- Medication Log (Care Log) -->
+      <div class="cl-section">
+        <div class="cl-sec-hdr" onclick="toggleCLSection('cl-meds')">
+          💊 Medication Log <span id="cl-meds-badge" class="cl-badge"></span> <span class="cl-sec-arrow" id="cl-arr-cl-meds">▼</span>
+        </div>
+        <div class="cl-sec-body" id="cl-sec-cl-meds">
+          <div class="med-type-row cl-med-type-row" style="flex-wrap:wrap;gap:6px;margin-bottom:10px">
+            <button class="med-type-btn active" onclick="setCLMedType('Famotidine 20 MG',this)">🛡️ Famotidine 20 MG</button>
+            <button class="med-type-btn" onclick="setCLMedType('Pantoprazole 40 MG',this)">🌅 Pantoprazole 40 MG</button>
+            <button class="med-type-btn" onclick="setCLMedType('Creon 24,000 (pancrelipase)',this)">🧪 Creon 24,000</button>
+            <button class="med-type-btn" onclick="setCLMedType('Magnesium 400 MG',this)">🧲 Magnesium 400 MG</button>
+            <button class="med-type-btn" onclick="setCLMedType('Clonodine HCL ER .1 MG',this)">🌙 Clonodine</button>
+            <button class="med-type-btn" onclick="setCLMedType('Vraylar 2 MG Cap',this)">✨ Vraylar</button>
+            <button class="med-type-btn" onclick="setCLMedType('Krill Oil',this)">🐟 Krill Oil</button>
+            <button class="med-type-btn" onclick="setCLMedType('Fiber Sup',this)">🌾 Fiber Sup</button>
+            <button class="med-type-btn" onclick="setCLMedType('Vitamin D',this)">🌞 Vitamin D</button>
+            <button class="med-type-btn" id="clmed-other-btn" onclick="setCLMedType('other',this)">✏️ Other…</button>
+          </div>
+          <input type="text" id="clmed-name-other" placeholder="Medication name" style="display:none;width:100%;margin-bottom:8px;padding:7px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.07);color:#fff;font-size:0.88rem">
+          <div class="cl-form-row">
+            <div class="cl-fg"><label>Dose / pills</label><input type="number" id="clmed-dose" min="1" value="1"></div>
+            <div class="cl-fg"><label>Time given</label><input type="time" id="clmed-time"></div>
+            <div class="cl-fg"><label>Notes (optional)</label><input type="text" id="clmed-notes" placeholder="e.g. with food, crushed"></div>
+          </div>
+          <button class="cl-btn-primary" onclick="logCLMedication()">💊 Log Medication</button>
+          <div id="cl-meds-list" class="cl-entry-list" style="margin-top:10px"></div>
         </div>
       </div>
 
@@ -3072,11 +3069,11 @@ async function showAppScreen() {
   document.getElementById('weekly-tab').style.display = isAdmin ? 'flex' : 'none';
   document.getElementById('carelog-tab').style.display = isAdmin ? 'flex' : 'none';
   document.getElementById('shift-admin-badge').style.display = isAdmin ? 'inline-block' : 'none';
-  ['sec-meds','sec-incidents'].forEach(id => {
+  ['sec-incidents'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = isAdmin ? 'block' : 'none';
   });
-  ['qnav-meds','qnav-incidents'].forEach(id => {
+  ['qnav-incidents'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = isAdmin ? 'inline-flex' : 'none';
   });
@@ -3102,7 +3099,7 @@ async function showAppScreen() {
   voiceShowFab();
   loadCriticalBanners();
 
-  if (isAdmin) { loadStaffList(); populateAdminRoomSel(); loadMedications(); loadIncidents(); populateCallOutStaffSel(); }
+  if (isAdmin) { loadStaffList(); populateAdminRoomSel(); loadIncidents(); populateCallOutStaffSel(); }
 }
 
 function switchTab(tab) {
@@ -5648,7 +5645,8 @@ let careSettings = {
 };
 let careDate = localDateStr();
 let careLogLoadedDate = null; // tracks which date is currently in memory
-let clFoodEntries = [], clFeedEntries = [], clGlucoseEntries = [], clFluidEntries = [], clUrineEntries = [], clVomitEntries = [];
+let clFoodEntries = [], clFeedEntries = [], clGlucoseEntries = [], clFluidEntries = [], clUrineEntries = [], clVomitEntries = [], clMedEntries = [];
+let selectedCLMedName = 'Famotidine 20 MG';
 
 async function loadCareLog() {
   if (!careDate) careDate = localDateStr();
@@ -5657,7 +5655,7 @@ async function loadCareLog() {
   populateFoodLibrarySelect();
   setDefaultTimes();
   const byTime = (a,b) => (a.time||'').localeCompare(b.time||'');
-  const [food, feeds, glucose, fluids] = await Promise.all([
+  const [food, feeds, glucose, fluids, meds] = await Promise.all([
     db.collection('care_food').where('facility','==',FACILITY).where('date','==',careDate).get()
       .catch(e=>{console.error('[CareLog] care_food load failed:',e);return{docs:[]}}),
     db.collection('care_feeds').where('facility','==',FACILITY).where('date','==',careDate).get()
@@ -5666,6 +5664,8 @@ async function loadCareLog() {
       .catch(e=>{console.error('[CareLog] care_glucose load failed:',e);return{docs:[]}}),
     db.collection('care_fluids').where('facility','==',FACILITY).where('date','==',careDate).get()
       .catch(e=>{console.error('[CareLog] care_fluids load failed:',e);return{docs:[]}}),
+    db.collection('medications').where('facility','==',FACILITY).where('date','==',careDate).get()
+      .catch(e=>{console.error('[CareLog] medications load failed:',e);return{docs:[]}}),
   ]);
   clFoodEntries    = food.docs.map(d   => ({id:d.id,...d.data()})).sort(byTime);
   clFeedEntries    = feeds.docs.map(d  => ({id:d.id,...d.data()})).sort((a,b)=>(a.startTime||'').localeCompare(b.startTime||''));
@@ -5674,6 +5674,7 @@ async function loadCareLog() {
   clFluidEntries   = allFluids.filter(d => d.type === 'fluid');
   clUrineEntries   = allFluids.filter(d => d.type === 'urine');
   clVomitEntries   = allFluids.filter(d => d.type === 'vomit');
+  clMedEntries     = meds.docs.map(d => ({id:d.id,...d.data()})).sort((a,b)=>(a.time||'').localeCompare(b.time||''));
   careLogLoadedDate = careDate;
   renderAllCL();
 }
@@ -5684,6 +5685,7 @@ function renderAllCL() {
   renderCLGlucose();
   renderCLOutput();
   renderCLVomit();
+  renderCLMeds();
   renderCLSummary();
 }
 
@@ -6183,6 +6185,63 @@ async function saveCareSettings() {
     renderCLSummary();
     renderNutritionRef();
   } catch(e) { alert('Save failed: ' + e.message); }
+}
+
+// ── Care Log Medication Log ──
+
+function setCLMedType(name, btn) {
+  selectedCLMedName = name;
+  document.querySelectorAll('.cl-med-type-row .med-type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const otherInput = document.getElementById('clmed-name-other');
+  if (otherInput) otherInput.style.display = (name === 'other') ? 'block' : 'none';
+}
+
+async function logCLMedication() {
+  const name = selectedCLMedName === 'other'
+    ? (document.getElementById('clmed-name-other').value.trim() || '')
+    : selectedCLMedName;
+  if (!name) { alert('Please enter a medication name.'); return; }
+  const dose  = parseFloat(document.getElementById('clmed-dose').value) || 1;
+  const notes = document.getElementById('clmed-notes').value.trim();
+  const timeEl = document.getElementById('clmed-time');
+  const time  = timeEl.value || localTimeStr();
+  const entry = { facility: FACILITY, date: careDate, name, dose, notes, time, loggedBy: currentUser?.email || '' };
+  try {
+    const ref = await db.collection('medications').add(entry);
+    clMedEntries.push({ id: ref.id, ...entry });
+    clMedEntries.sort((a,b) => (a.time||'').localeCompare(b.time||''));
+    document.getElementById('clmed-dose').value = '1';
+    document.getElementById('clmed-notes').value = '';
+    document.getElementById('clmed-time').value = '';
+    if (selectedCLMedName === 'other') {
+      document.getElementById('clmed-name-other').value = '';
+      document.getElementById('clmed-name-other').style.display = 'none';
+    }
+    renderCLMeds();
+  } catch(e) { alert('Could not save medication: ' + e.message); console.error(e); }
+}
+
+function renderCLMeds() {
+  const listEl  = document.getElementById('cl-meds-list');
+  const badgeEl = document.getElementById('cl-meds-badge');
+  if (!listEl) return;
+  if (badgeEl) badgeEl.textContent = clMedEntries.length ? clMedEntries.length : '';
+  if (!clMedEntries.length) { listEl.innerHTML = '<div class="cl-empty">No medications logged yet</div>'; return; }
+  listEl.innerHTML = clMedEntries.map(e => `
+    <div class="cl-entry-row">
+      <span class="cl-entry-time">${e.time||''}</span>
+      <span class="cl-entry-main">💊 <strong>${e.name}</strong> — ${e.dose} dose${e.dose!==1?'s':''}${e.notes?' · '+e.notes:''}</span>
+      <button class="cl-del-btn" onclick="deleteCLMedEntry('${e.id}')">🗑</button>
+    </div>`).join('');
+}
+
+async function deleteCLMedEntry(id) {
+  try {
+    await db.collection('medications').doc(id).delete();
+    clMedEntries = clMedEntries.filter(e => e.id !== id);
+    renderCLMeds();
+  } catch(e) { alert('Delete failed: ' + e.message); }
 }
 
 // ── Nutrition reference panel ──
