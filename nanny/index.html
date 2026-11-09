@@ -5926,7 +5926,7 @@ function updateNextFeedBanner() {
   const refTime = last.endTime || last.startTime;
   if (!refTime) { banner.style.display = 'none'; return; }
   const [h, m] = refTime.split(':').map(Number);
-  const nextTotalMins = h * 60 + m + 240; // +4 hours
+  const nextTotalMins = h * 60 + m + 120; // +2 hours after end = 4-hourly from start
   const nextH = Math.floor(nextTotalMins / 60) % 24;
   const nextM = nextTotalMins % 60;
   const nextStr = `${String(nextH).padStart(2,'0')}:${String(nextM).padStart(2,'0')}`;
