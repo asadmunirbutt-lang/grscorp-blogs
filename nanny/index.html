@@ -2485,6 +2485,7 @@
             <button class="cl-btn-primary" onclick="addCLFeed()">Log feed</button>
           </div>
           <div id="cl-feeds-list" class="cl-entry-list"></div>
+          <div id="cl-next-feed-banner" style="display:none;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:0.88rem;font-weight:600;text-align:center;transition:background 0.3s"></div>
         </div>
       </div>
 
@@ -5917,11 +5918,42 @@ async function addCLFeed() {
   } catch(e) { alert('Could not save feed entry: ' + e.message); console.error(e); }
 }
 
+function updateNextFeedBanner() {
+  const banner = document.getElementById('cl-next-feed-banner');
+  if (!banner) return;
+  if (!clFeedEntries.length) { banner.style.display = 'none'; return; }
+  const last = clFeedEntries[clFeedEntries.length - 1];
+  const refTime = last.endTime || last.startTime;
+  if (!refTime) { banner.style.display = 'none'; return; }
+  const [h, m] = refTime.split(':').map(Number);
+  const nextTotalMins = h * 60 + m + 240; // +4 hours
+  const nextH = Math.floor(nextTotalMins / 60) % 24;
+  const nextM = nextTotalMins % 60;
+  const nextStr = `${String(nextH).padStart(2,'0')}:${String(nextM).padStart(2,'0')}`;
+  const now = new Date();
+  const diff = (nextH * 60 + nextM) - (now.getHours() * 60 + now.getMinutes());
+  let bg, color, icon, note;
+  if (diff < 0) {
+    bg = 'rgba(255,82,82,0.18)'; color = 'var(--coral)'; icon = '🚨';
+    note = ` <span style="font-weight:400;font-size:0.8rem">(${Math.abs(diff)} min overdue)</span>`;
+  } else if (diff <= 30) {
+    bg = 'rgba(255,140,0,0.18)'; color = 'var(--orange)'; icon = '⚠️';
+    note = ` <span style="font-weight:400;font-size:0.8rem">(in ${diff} min)</span>`;
+  } else {
+    bg = 'rgba(0,229,160,0.1)'; color = 'var(--mint)'; icon = '⏰';
+    note = diff <= 120 ? ` <span style="font-weight:400;font-size:0.8rem">(in ${diff} min)</span>` : '';
+  }
+  banner.style.display = '';
+  banner.style.background = bg;
+  banner.style.color = color;
+  banner.innerHTML = `${icon} Next tube feed due: <strong>${fmt12(nextStr)}</strong>${note}`;
+}
+
 function renderCLFeeds() {
   const list = document.getElementById('cl-feeds-list');
   const badge = document.getElementById('cl-feeds-badge');
   if (!list) return;
-  if (!clFeedEntries.length) { list.innerHTML = '<div style="color:var(--muted);font-size:0.84rem">No feeds logged yet.</div>'; badge.style.display='none'; return; }
+  if (!clFeedEntries.length) { list.innerHTML = '<div style="color:var(--muted);font-size:0.84rem">No feeds logged yet.</div>'; badge.style.display='none'; updateNextFeedBanner(); return; }
   badge.textContent = clFeedEntries.length;
   badge.style.display = '';
   list.innerHTML = clFeedEntries.map(e => `
@@ -5934,6 +5966,7 @@ function renderCLFeeds() {
       <span class="cl-entry-time">${fmt12(e.startTime)}–${fmt12(e.endTime)}</span>
       <button class="cl-entry-del" onclick="deleteCLEntry('care_feeds','${e.id}','feeds')">✕</button>
     </div>`).join('');
+  updateNextFeedBanner();
 }
 
 // ── Glucose ──
