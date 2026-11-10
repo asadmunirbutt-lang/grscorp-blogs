@@ -1865,6 +1865,15 @@
 
 .cl-warn-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .cl-warn-list li { font-size: 0.86rem; line-height: 1.5; padding: 8px 10px; background: rgba(255,82,82,0.06); border-radius: 7px; border-left: 2px solid rgba(255,82,82,0.4); }
+.cl-hist-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.cl-hist-table th { text-align: left; padding: 6px 8px; color: var(--muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.cl-hist-table td { padding: 7px 8px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
+.cl-hist-table tr:last-child td { border-bottom: none; }
+.cl-hist-row:hover td { background: rgba(255,255,255,0.04); cursor: pointer; }
+.cl-hist-date { color: var(--blue); font-weight: 600; white-space: nowrap; }
+.cl-hist-goal-met { color: var(--mint); font-weight: 700; }
+.cl-hist-goal-miss { color: var(--coral); font-weight: 700; }
+.cl-hist-goal-part { color: var(--yellow); font-weight: 700; }
   </style>
 </head>
 <body>
@@ -2394,6 +2403,16 @@
     <div id="cl-ref-panel" class="cl-ref-panel"></div>
 
     <div class="cl-body">
+
+      <!-- Care History (admin) -->
+      <div class="cl-section">
+        <div class="cl-sec-hdr" onclick="toggleCLSection('history'); loadCareHistoryOnce()">
+          📊 Care History <span class="cl-sec-arrow" id="cl-arr-history">▶</span>
+        </div>
+        <div class="cl-sec-body" id="cl-sec-history" style="display:none">
+          <div id="cl-history-content" style="color:var(--muted);font-size:0.84rem">Tap header to load…</div>
+        </div>
+      </div>
 
       <!-- Settings (admin) -->
       <div class="cl-section">
@@ -5724,6 +5743,102 @@ function fmt12(t) {
   return `${h % 12 || 12}:${String(m).padStart(2,'0')} ${h < 12 ? 'AM' : 'PM'}`;
 }
 
+// ── Care History ──
+
+let careHistoryLoaded = false;
+
+function loadCareHistoryOnce() {
+  if (careHistoryLoaded) return;
+  careHistoryLoaded = true;
+  const el = document.getElementById('cl-history-content');
+  if (el) el.innerHTML = '<div style="color:var(--muted);font-size:0.84rem">Loading history…</div>';
+  Promise.all([
+    db.collection('care_feeds').where('facility','==',FACILITY).get()
+      .catch(()=>({docs:[]})),
+    db.collection('care_food').where('facility','==',FACILITY).get()
+      .catch(()=>({docs:[]})),
+    db.collection('care_fluids').where('facility','==',FACILITY).get()
+      .catch(()=>({docs:[]})),
+  ]).then(([feeds, food, fluids]) => {
+    const days = {};
+    const getDay = date => {
+      if (!days[date]) days[date] = { feedML:0, feedKcal:0, feedProtein:0, foodKcal:0, foodProtein:0, vomitML:0, vomitFeedML:0 };
+      return days[date];
+    };
+    feeds.docs.forEach(d => {
+      const r = d.data(); if (!r.date) return;
+      const day = getDay(r.date);
+      day.feedML      += r.formulaML_given || 0;
+      day.feedKcal    += r.feedKcal        || 0;
+      day.feedProtein += r.feedProtein     || 0;
+    });
+    food.docs.forEach(d => {
+      const r = d.data(); if (!r.date) return;
+      const day = getDay(r.date);
+      day.foodKcal    += (r.kcal    || 0);
+      day.foodProtein += (r.protein || 0);
+    });
+    fluids.docs.forEach(d => {
+      const r = d.data(); if (!r.date || r.type !== 'vomit') return;
+      const day = getDay(r.date);
+      day.vomitML     += r.volumeML  || 0;
+      day.vomitFeedML += r.feedML    || 0;
+    });
+    renderCareHistory(days);
+  }).catch(e => {
+    const el = document.getElementById('cl-history-content');
+    if (el) el.innerHTML = `<div style="color:var(--coral)">Could not load history: ${e.message}</div>`;
+  });
+}
+
+function renderCareHistory(days) {
+  const el = document.getElementById('cl-history-content');
+  if (!el) return;
+  const sorted = Object.keys(days).sort((a,b) => b.localeCompare(a)).slice(0, 60);
+  if (!sorted.length) { el.innerHTML = '<div style="color:var(--muted);font-size:0.84rem">No care data logged yet.</div>'; return; }
+  const goal = careSettings.calorieGoal || 1800;
+  const pGoal = careSettings.proteinGoalG || 54;
+  const rows = sorted.map(date => {
+    const d = days[date];
+    const vomitKcal = (d.vomitFeedML || 0) * 1.5;
+    const vomitProt = (d.vomitFeedML || 0) * 0.045;
+    const totalKcal = d.feedKcal + d.foodKcal - vomitKcal;
+    const totalProt = d.feedProtein + d.foodProtein - vomitProt;
+    const pct = Math.round(totalKcal / goal * 100);
+    const pctClass = pct >= 90 ? 'cl-hist-goal-met' : pct >= 60 ? 'cl-hist-goal-part' : 'cl-hist-goal-miss';
+    const pctIcon  = pct >= 90 ? '✅' : pct >= 60 ? '⚠️' : '❌';
+    const dateObj = new Date(date + 'T12:00:00');
+    const dateLabel = dateObj.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+    const isToday = date === localDateStr();
+    return `<tr class="cl-hist-row" onclick="jumpToHistoryDate('${date}')">
+      <td class="cl-hist-date">${isToday ? '📍 Today' : dateLabel}</td>
+      <td>${d.feedML ? Math.round(d.feedML)+' mL' : '—'}</td>
+      <td>${Math.round(totalKcal)} kcal</td>
+      <td>${totalProt.toFixed(1)}g</td>
+      <td class="${pctClass}">${pctIcon} ${pct}%</td>
+      ${d.vomitML ? `<td style="color:var(--coral)">🤢 ${Math.round(d.vomitML)} mL</td>` : '<td style="color:var(--muted)">—</td>'}
+    </tr>`;
+  }).join('');
+  el.innerHTML = `
+    <div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">Tap a row to view that day's log · Goal: ${goal} kcal / ${pGoal}g protein</div>
+    <div style="overflow-x:auto">
+    <table class="cl-hist-table">
+      <thead><tr>
+        <th>Date</th><th>Tube Feed</th><th>Total kcal</th><th>Protein</th><th>Goal</th><th>Vomit</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    </div>`;
+}
+
+function jumpToHistoryDate(date) {
+  careDate = date;
+  careLogLoadedDate = null;
+  toggleCLSection('history');
+  loadCareLog();
+  window.scrollTo(0, 0);
+}
+
 let careSettings = {
   weightKg: 56.6, heightCm: 150, calorieGoal: 1800, proteinGoalG: 54,
   fluidGoalML: null, maxBolusMl: 200, minFormulaML: null,
@@ -5765,6 +5880,7 @@ async function loadCareLog() {
   clMedEntries     = meds.docs.map(d => ({id:d.id,...d.data()})).sort((a,b)=>(a.time||'').localeCompare(b.time||''));
   clVitalsEntries  = vitals.docs.map(d => ({id:d.id,...d.data()})).sort(byTime);
   careLogLoadedDate = careDate;
+  careHistoryLoaded = false; // force history refresh next time it's opened
   renderAllCL();
 }
 
