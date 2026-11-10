@@ -5762,7 +5762,7 @@ function loadCareHistoryOnce() {
   ]).then(([feeds, food, fluids]) => {
     const days = {};
     const getDay = date => {
-      if (!days[date]) days[date] = { feedML:0, feedKcal:0, feedProtein:0, foodKcal:0, foodProtein:0, vomitML:0, vomitFeedML:0 };
+      if (!days[date]) days[date] = { feedML:0, feedKcal:0, feedProtein:0, foodKcal:0, foodProtein:0, vomitML:0, vomitFeedML:0, feedCount:0 };
       return days[date];
     };
     feeds.docs.forEach(d => {
@@ -5771,6 +5771,7 @@ function loadCareHistoryOnce() {
       day.feedML      += r.formulaML_given || 0;
       day.feedKcal    += r.feedKcal        || 0;
       day.feedProtein += r.feedProtein     || 0;
+      day.feedCount   += 1;
     });
     food.docs.forEach(d => {
       const r = d.data(); if (!r.date) return;
@@ -5796,8 +5797,36 @@ function renderCareHistory(days) {
   if (!el) return;
   const sorted = Object.keys(days).sort((a,b) => b.localeCompare(a)).slice(0, 60);
   if (!sorted.length) { el.innerHTML = '<div style="color:var(--muted);font-size:0.84rem">No care data logged yet.</div>'; return; }
-  const goal = careSettings.calorieGoal || 1800;
+  const goal  = careSettings.calorieGoal  || 1800;
   const pGoal = careSettings.proteinGoalG || 54;
+
+  // ── analysis stats ──
+  const daysWithFeeds = sorted.filter(d => days[d].feedCount > 0);
+  const avgFeeds   = daysWithFeeds.length ? (daysWithFeeds.reduce((s,d)=>s+days[d].feedCount,0)/daysWithFeeds.length).toFixed(1) : 0;
+  const avgFeedML  = daysWithFeeds.length ? Math.round(daysWithFeeds.reduce((s,d)=>s+(days[d].feedML||0),0)/daysWithFeeds.length) : 0;
+  const avgMlPerFeed = daysWithFeeds.length ? Math.round(daysWithFeeds.reduce((s,d)=>s+(days[d].feedCount?days[d].feedML/days[d].feedCount:0),0)/daysWithFeeds.length) : 0;
+  const avgTotalKcal = sorted.length ? Math.round(sorted.reduce((s,date)=>{
+    const d=days[date]; const vk=(d.vomitFeedML||0)*1.5;
+    return s + d.feedKcal + d.foodKcal - vk;
+  },0)/sorted.length) : 0;
+  const mlNeededPerFeed = avgFeeds > 0 ? Math.round(1200 / parseFloat(avgFeeds)) : '—';
+  const shortfall = goal - avgTotalKcal;
+
+  const analysisColor = shortfall > 200 ? 'var(--coral)' : shortfall > 50 ? 'var(--yellow)' : 'var(--mint)';
+  const analysis = `
+    <div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:12px;margin-bottom:12px;font-size:0.83rem;line-height:1.8">
+      <div style="font-weight:700;font-size:0.85rem;margin-bottom:6px;color:var(--yellow)">📊 Feed Analysis (${daysWithFeeds.length} days with tube feeds)</div>
+      <div>Avg feeds/day: <strong>${avgFeeds}</strong> &nbsp;·&nbsp; Avg mL/feed: <strong>${avgMlPerFeed} mL</strong> &nbsp;·&nbsp; Avg total tube mL: <strong>${avgFeedML} mL/day</strong></div>
+      <div>Avg total kcal/day: <strong style="color:${analysisColor}">${avgTotalKcal} kcal</strong> vs goal <strong>${goal} kcal</strong>
+        ${shortfall > 0 ? `<span style="color:var(--coral)"> — short by ${shortfall} kcal/day</span>` : '<span style="color:var(--mint)"> ✅</span>'}
+      </div>
+      <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.08)">
+        <span style="color:var(--muted)">To hit 1200 mL/day (1800 kcal) from tube feeds:</span>
+        <span style="color:var(--mint)"> ${avgFeeds} feeds × <strong>${mlNeededPerFeed} mL</strong> per feed</span>
+        ${avgMlPerFeed < mlNeededPerFeed ? `<span style="color:var(--orange)"> (currently ${avgMlPerFeed} mL — increase by ${mlNeededPerFeed-avgMlPerFeed} mL/feed)</span>` : ''}
+      </div>
+    </div>`;
+
   const rows = sorted.map(date => {
     const d = days[date];
     const vomitKcal = (d.vomitFeedML || 0) * 1.5;
@@ -5807,28 +5836,30 @@ function renderCareHistory(days) {
     const pct = Math.round(totalKcal / goal * 100);
     const pctClass = pct >= 90 ? 'cl-hist-goal-met' : pct >= 60 ? 'cl-hist-goal-part' : 'cl-hist-goal-miss';
     const pctIcon  = pct >= 90 ? '✅' : pct >= 60 ? '⚠️' : '❌';
-    const dateObj = new Date(date + 'T12:00:00');
+    const dateObj  = new Date(date + 'T12:00:00');
     const dateLabel = dateObj.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
-    const isToday = date === localDateStr();
+    const isToday  = date === localDateStr();
+    const mlPerFeed = d.feedCount ? Math.round(d.feedML/d.feedCount) : 0;
     return `<tr class="cl-hist-row" onclick="jumpToHistoryDate('${date}')">
       <td class="cl-hist-date">${isToday ? '📍 Today' : dateLabel}</td>
-      <td>${d.feedML ? Math.round(d.feedML)+' mL' : '—'}</td>
+      <td>${d.feedCount ? `${d.feedCount}× · ${Math.round(d.feedML)} mL` : '—'}</td>
+      <td style="color:var(--muted);font-size:0.78rem">${mlPerFeed ? mlPerFeed+' mL/feed' : '—'}</td>
       <td>${Math.round(totalKcal)} kcal</td>
       <td>${totalProt.toFixed(1)}g</td>
       <td class="${pctClass}">${pctIcon} ${pct}%</td>
       ${d.vomitML ? `<td style="color:var(--coral)">🤢 ${Math.round(d.vomitML)} mL</td>` : '<td style="color:var(--muted)">—</td>'}
     </tr>`;
   }).join('');
-  el.innerHTML = `
-    <div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">Tap a row to view that day's log · Goal: ${goal} kcal / ${pGoal}g protein</div>
+  el.innerHTML = analysis + `
     <div style="overflow-x:auto">
     <table class="cl-hist-table">
       <thead><tr>
-        <th>Date</th><th>Tube Feed</th><th>Total kcal</th><th>Protein</th><th>Goal</th><th>Vomit</th>
+        <th>Date</th><th>Feeds · Total mL</th><th>mL/feed</th><th>Total kcal</th><th>Protein</th><th>Goal %</th><th>Vomit</th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>
-    </div>`;
+    </div>
+    <div style="font-size:0.72rem;color:var(--muted);margin-top:8px">Tap any row to view that day · First entry: ${sorted[sorted.length-1]}</div>`;
 }
 
 function jumpToHistoryDate(date) {
