@@ -2432,6 +2432,8 @@
               <select id="cs-access"><option value="NG">NG tube</option><option value="PEG">PEG/gastrostomy</option><option value="oral">Oral only</option></select>
             </div>
             <div class="cl-fg"><label>Sodium daily limit (mg)</label><input type="number" id="cs-sodium" placeholder="1800"></div>
+            <div class="cl-fg"><label>Feed rate (mL/hr)</label><input type="number" id="cs-feed-rate" placeholder="150"></div>
+            <div class="cl-fg"><label>Feed interval (hrs)</label><input type="number" id="cs-feed-interval" step="0.5" placeholder="4"></div>
           </div>
           <button class="cl-btn-primary" onclick="saveCareSettings()">Save settings</button>
           <div class="cl-msg" id="cs-msg"></div>
@@ -2480,9 +2482,10 @@
         <div class="cl-sec-body" id="cl-sec-feeds">
           <div class="cl-add-form">
             <div class="cl-form-row">
-              <div class="cl-fg"><label>Start time</label><input type="time" id="cfd-start"></div>
-              <div class="cl-fg"><label>End time</label><input type="time" id="cfd-end"></div>
-              <div class="cl-fg"><label>Volume planned (mL)</label><input type="number" id="cfd-planned" placeholder="200"></div>
+              <div class="cl-fg"><label>Start time</label><input type="time" id="cfd-start" oninput="calcFeedEndTime()"></div>
+              <div class="cl-fg"><label>Volume planned (mL)</label><input type="number" id="cfd-planned" placeholder="200" oninput="calcFeedEndTime()"></div>
+              <div class="cl-fg"><label>Rate (mL/hr)</label><input type="number" id="cfd-rate" placeholder="150" oninput="calcFeedEndTime()"></div>
+              <div class="cl-fg"><label>End time <span style="font-size:0.72rem;color:var(--muted)">(auto)</span></label><input type="time" id="cfd-end"></div>
             </div>
             <div class="cl-form-row">
               <div class="cl-fg"><label>Volume given (mL)</label><input type="number" id="cfd-given" placeholder="200"></div>
@@ -5873,7 +5876,8 @@ function jumpToHistoryDate(date) {
 let careSettings = {
   weightKg: 56.6, heightCm: 150, calorieGoal: 1800, proteinGoalG: 54,
   fluidGoalML: null, maxBolusMl: 200, minFormulaML: null,
-  feedingAccess: 'NG', sodiumLimitMg: 1800
+  feedingAccess: 'PEG', sodiumLimitMg: 1800,
+  feedRateMlHr: 150, feedIntervalHrs: 4
 };
 let careDate = localDateStr();
 let careLogLoadedDate = null; // tracks which date is currently in memory
@@ -5951,10 +5955,15 @@ function jumpCareToday() {
 
 function setDefaultTimes() {
   const now = new Date().toTimeString().slice(0,5);
-  ['cf-time','cfd-start','cfd-end','cg-time','cv2-time','cfl-time','cup-time'].forEach(id => {
+  ['cf-time','cfd-start','cg-time','cv2-time','cfl-time','cup-time'].forEach(id => {
     const el = document.getElementById(id);
     if (el && !el.value) el.value = now;
   });
+  const rateEl = document.getElementById('cfd-rate');
+  if (rateEl && !rateEl.value) rateEl.value = careSettings.feedRateMlHr || 150;
+  const planEl = document.getElementById('cfd-planned');
+  if (planEl && !planEl.value) planEl.value = careSettings.maxBolusMl || 200;
+  calcFeedEndTime();
 }
 
 function populateFoodLibrarySelect() {
@@ -6032,6 +6041,7 @@ async function addCLFeed() {
   const planned  = parseFloat(document.getElementById('cfd-planned').value) || 0;
   const given    = parseFloat(document.getElementById('cfd-given').value) || 0;
   const flush    = parseFloat(document.getElementById('cfd-flush').value) || 0;
+  const rate     = parseFloat(document.getElementById('cfd-rate').value) || careSettings.feedRateMlHr || 150;
   const start    = document.getElementById('cfd-start').value;
   const end      = document.getElementById('cfd-end').value;
   const head     = document.getElementById('cfd-head').value;
@@ -6042,7 +6052,7 @@ async function addCLFeed() {
   const feedProtein = given * 0.045;
   const entry = {
     facility: FACILITY, date: careDate,
-    startTime: start, endTime: end,
+    startTime: start, endTime: end, rateMlHr: rate,
     formulaML_planned: planned, formulaML_given: given,
     flushML: flush, headRaised: head, problems,
     feedKcal, feedProtein, fluidML: given + flush,
@@ -6056,13 +6066,29 @@ async function addCLFeed() {
     const ref = await db.collection('care_feeds').add(entry);
     clFeedEntries.push({ id: ref.id, ...entry });
     clFeedEntries.sort((a,b) => (a.startTime||'').localeCompare(b.startTime||''));
-    document.getElementById('cfd-planned').value = '';
+    document.getElementById('cfd-planned').value = careSettings.maxBolusMl || 200;
     document.getElementById('cfd-given').value = '';
     document.getElementById('cfd-flush').value = '';
     document.getElementById('cfd-problems').value = 'none';
+    document.getElementById('cfd-end').value = '';
+    calcFeedEndTime();
     renderCLFeeds();
     renderCLSummary();
   } catch(e) { alert('Could not save feed entry: ' + e.message); console.error(e); }
+}
+
+function calcFeedEndTime() {
+  const start   = document.getElementById('cfd-start')?.value;
+  const planned = parseFloat(document.getElementById('cfd-planned')?.value) || 0;
+  const rate    = parseFloat(document.getElementById('cfd-rate')?.value) || careSettings.feedRateMlHr || 150;
+  if (!start || !planned || !rate) return;
+  const [sh, sm] = start.split(':').map(Number);
+  const durationMins = Math.round((planned / rate) * 60);
+  const totalMins = sh * 60 + sm + durationMins;
+  const eh = Math.floor(totalMins / 60) % 24;
+  const em = totalMins % 60;
+  const endEl = document.getElementById('cfd-end');
+  if (endEl) endEl.value = `${String(eh).padStart(2,'0')}:${String(em).padStart(2,'0')}`;
 }
 
 function updateNextFeedBanner() {
@@ -6070,10 +6096,11 @@ function updateNextFeedBanner() {
   if (!banner) return;
   if (!clFeedEntries.length) { banner.style.display = 'none'; return; }
   const last = clFeedEntries[clFeedEntries.length - 1];
-  const refTime = last.endTime || last.startTime;
+  const refTime = last.startTime || last.endTime;
   if (!refTime) { banner.style.display = 'none'; return; }
   const [h, m] = refTime.split(':').map(Number);
-  const nextTotalMins = h * 60 + m + 120; // +2 hours after end = 4-hourly from start
+  const intervalMins = Math.round((careSettings.feedIntervalHrs || 4) * 60);
+  const nextTotalMins = h * 60 + m + intervalMins; // from start time, 4-hourly
   const nextH = Math.floor(nextTotalMins / 60) % 24;
   const nextM = nextTotalMins % 60;
   const nextStr = `${String(nextH).padStart(2,'0')}:${String(nextM).padStart(2,'0')}`;
@@ -6106,7 +6133,7 @@ function renderCLFeeds() {
   list.innerHTML = clFeedEntries.map(e => `
     <div class="cl-entry" style="${e.problems && e.problems!=='none'?'border-left:3px solid var(--coral)':''}">
       <div class="cl-entry-main">
-        <strong>${e.formulaML_given} mL given</strong> (${e.formulaML_planned} mL planned) + ${e.flushML} mL flush
+        <strong>${e.formulaML_given} mL given</strong> (${e.formulaML_planned} mL planned) + ${e.flushML} mL flush${e.rateMlHr ? ` @ ${e.rateMlHr} mL/hr` : ''}
         <br><span style="color:var(--muted);">${e.feedKcal.toFixed(0)} kcal · ${e.feedProtein.toFixed(1)}g protein · head raised: ${e.headRaised}</span>
         ${e.problems && e.problems!=='none'?`<br><span style="color:var(--coral)">⚠️ ${e.problems}</span>`:''}
       </div>
@@ -6481,8 +6508,8 @@ async function loadCareSettings() {
     const saved = snap.data()?.careSettings;
     if (saved) Object.assign(careSettings, saved);
     // Populate fields
-    ['weightKg','heightCm','calorieGoal','proteinGoalG','fluidGoalML','maxBolusMl','minFormulaML','sodiumLimitMg'].forEach(k => {
-      const map = { weightKg:'cs-weight', heightCm:'cs-height', calorieGoal:'cs-kcal', proteinGoalG:'cs-protein', fluidGoalML:'cs-fluid', maxBolusMl:'cs-bolus', minFormulaML:'cs-min-formula', sodiumLimitMg:'cs-sodium' };
+    ['weightKg','heightCm','calorieGoal','proteinGoalG','fluidGoalML','maxBolusMl','minFormulaML','sodiumLimitMg','feedRateMlHr','feedIntervalHrs'].forEach(k => {
+      const map = { weightKg:'cs-weight', heightCm:'cs-height', calorieGoal:'cs-kcal', proteinGoalG:'cs-protein', fluidGoalML:'cs-fluid', maxBolusMl:'cs-bolus', minFormulaML:'cs-min-formula', sodiumLimitMg:'cs-sodium', feedRateMlHr:'cs-feed-rate', feedIntervalHrs:'cs-feed-interval' };
       const el = document.getElementById(map[k]);
       if (el && careSettings[k] != null) el.value = careSettings[k];
     });
@@ -6501,7 +6528,9 @@ async function saveCareSettings() {
   careSettings.maxBolusMl    = parseFloat(document.getElementById('cs-bolus').value)  || careSettings.maxBolusMl;
   careSettings.minFormulaML  = parseFloat(document.getElementById('cs-min-formula').value) || null;
   careSettings.feedingAccess = document.getElementById('cs-access').value;
-  careSettings.sodiumLimitMg = parseFloat(document.getElementById('cs-sodium').value) || careSettings.sodiumLimitMg;
+  careSettings.sodiumLimitMg  = parseFloat(document.getElementById('cs-sodium').value)        || careSettings.sodiumLimitMg;
+  careSettings.feedRateMlHr   = parseFloat(document.getElementById('cs-feed-rate').value)     || careSettings.feedRateMlHr;
+  careSettings.feedIntervalHrs= parseFloat(document.getElementById('cs-feed-interval').value) || careSettings.feedIntervalHrs;
   try {
     await db.collection('facilities').doc(FACILITY).set({ careSettings }, { merge: true });
     const msg = document.getElementById('cs-msg');
