@@ -2480,6 +2480,9 @@
           🧪 Tube feeds <span id="cl-feeds-badge" class="cl-badge"></span> <span class="cl-sec-arrow" id="cl-arr-feeds">▼</span>
         </div>
         <div class="cl-sec-body" id="cl-sec-feeds">
+          <div style="margin-bottom:10px;padding:8px 12px;background:rgba(41,121,255,0.1);border-radius:8px;font-size:0.82rem;color:var(--blue);text-align:center;">
+            📅 Schedule: <strong>9:00 AM</strong> · <strong>1:00 PM</strong> · <strong>5:00 PM</strong> · <strong>9:00 PM</strong> &nbsp;—&nbsp; last feed by 9 PM
+          </div>
           <div class="cl-add-form">
             <div class="cl-form-row">
               <div class="cl-fg"><label>Start time</label><input type="time" id="cfd-start" oninput="calcFeedEndTime()"></div>
@@ -6104,6 +6107,14 @@ function updateNextFeedBanner() {
   const nextH = Math.floor(nextTotalMins / 60) % 24;
   const nextM = nextTotalMins % 60;
   const nextStr = `${String(nextH).padStart(2,'0')}:${String(nextM).padStart(2,'0')}`;
+  // Last feed of the day must start by 9:00 PM (21:00)
+  if (nextTotalMins > 21 * 60) {
+    banner.style.display = '';
+    banner.style.background = 'rgba(0,229,160,0.08)';
+    banner.style.color = 'var(--mint)';
+    banner.innerHTML = `✅ All feeds done for today — last feed starts by <strong>9:00 PM</strong>`;
+    return;
+  }
   const now = new Date();
   const diff = (nextH * 60 + nextM) - (now.getHours() * 60 + now.getMinutes());
   let bg, color, icon, note;
