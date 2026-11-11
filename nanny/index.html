@@ -6026,6 +6026,7 @@ async function addCLFood() {
     document.getElementById('cf-amount').value = '1';
     renderCLFood();
     renderCLSummary();
+    updateNextFeedBanner(); // meal may push next tube feed time
   } catch(e) { alert('Could not save food entry: ' + e.message); console.error(e); }
 }
 
@@ -6139,10 +6140,22 @@ function updateNextFeedBanner() {
   if (!refTime) { banner.style.display = 'none'; return; }
   const [h, m] = refTime.split(':').map(Number);
   const intervalMins = Math.round((careSettings.feedIntervalHrs || 4) * 60);
-  const nextTotalMins = h * 60 + m + intervalMins; // from start time, 4-hourly
-  const nextH = Math.floor(nextTotalMins / 60) % 24;
-  const nextM = nextTotalMins % 60;
-  const nextStr = `${String(nextH).padStart(2,'0')}:${String(nextM).padStart(2,'0')}`;
+  let nextTotalMins = h * 60 + m + intervalMins; // from start time, 4-hourly
+
+  // If a meal was logged after the last feed start, delay next feed by 2 hrs from meal
+  let mealDelayNote = '';
+  if (clFoodEntries.length) {
+    const lastFood = clFoodEntries[clFoodEntries.length - 1];
+    if (lastFood.time) {
+      const [fh, fm] = lastFood.time.split(':').map(Number);
+      const mealBlockMins = fh * 60 + fm + 120; // 2 hrs after last meal
+      if (mealBlockMins > nextTotalMins) {
+        nextTotalMins = mealBlockMins;
+        mealDelayNote = ` <span style="font-weight:400;font-size:0.78rem;opacity:0.75">· 2 hr after meal at ${fmt12(lastFood.time)}</span>`;
+      }
+    }
+  }
+
   // Last feed of the day must start by 9:00 PM (21:00)
   if (nextTotalMins > 21 * 60) {
     banner.style.display = '';
@@ -6151,6 +6164,9 @@ function updateNextFeedBanner() {
     banner.innerHTML = `✅ All feeds done for today — last feed starts by <strong>9:00 PM</strong>`;
     return;
   }
+  const nextH = Math.floor(nextTotalMins / 60) % 24;
+  const nextM = nextTotalMins % 60;
+  const nextStr = `${String(nextH).padStart(2,'0')}:${String(nextM).padStart(2,'0')}`;
   const now = new Date();
   const diff = (nextH * 60 + nextM) - (now.getHours() * 60 + now.getMinutes());
   let bg, color, icon, note;
@@ -6167,7 +6183,7 @@ function updateNextFeedBanner() {
   banner.style.display = '';
   banner.style.background = bg;
   banner.style.color = color;
-  banner.innerHTML = `${icon} Next tube feed due: <strong>${fmt12(nextStr)}</strong>${note}`;
+  banner.innerHTML = `${icon} Next tube feed due: <strong>${fmt12(nextStr)}</strong>${note}${mealDelayNote}`;
 }
 
 function renderCLFeeds() {
