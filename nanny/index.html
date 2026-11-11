@@ -5761,6 +5761,8 @@ function fmt12(t) {
 // ── Care History ──
 
 let careHistoryLoaded = false;
+let feedStartedAt = null;      // { time:'HH:MM', ms:timestamp } when timer running
+let feedTimerInterval = null;
 
 function loadCareHistoryOnce() {
   if (careHistoryLoaded) return;
@@ -5967,10 +5969,13 @@ function jumpCareToday() {
 
 function setDefaultTimes() {
   const now = new Date().toTimeString().slice(0,5);
-  ['cf-time','cfd-start','cg-time','cv2-time','cfl-time','cup-time'].forEach(id => {
+  ['cf-time','cg-time','cv2-time','cfl-time','cup-time'].forEach(id => {
     const el = document.getElementById(id);
     if (el && !el.value) el.value = now;
   });
+  // If feed timer is running use its start time, else current time
+  const startEl = document.getElementById('cfd-start');
+  if (startEl && !startEl.value) startEl.value = feedStartedAt ? feedStartedAt.time : now;
   const rateEl = document.getElementById('cfd-rate');
   if (rateEl && !rateEl.value) rateEl.value = careSettings.feedRateMlHr || 150;
   const planEl = document.getElementById('cfd-planned');
@@ -6102,6 +6107,9 @@ async function addCLFeed() {
       clFeedEntries.push({ id: ref.id, ...entry });
       clFeedEntries.sort((a,b) => (a.startTime||'').localeCompare(b.startTime||''));
     }
+    // Clear feed timer
+    feedStartedAt = null;
+    if (feedTimerInterval) { clearInterval(feedTimerInterval); feedTimerInterval = null; }
     document.getElementById('cfd-planned').value = careSettings.maxBolusMl || 200;
     document.getElementById('cfd-given').value = '';
     document.getElementById('cfd-flush').value = '';
@@ -6131,9 +6139,50 @@ function calcFeedEndTime() {
   if (endEl) endEl.value = `${String(eh).padStart(2,'0')}:${String(em).padStart(2,'0')}`;
 }
 
+function startFeedTimer() {
+  if (feedStartedAt) return; // already running
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  feedStartedAt = { time: `${hh}:${mm}`, ms: now.getTime() };
+  // Pre-fill start time in the feed form
+  const startEl = document.getElementById('cfd-start');
+  if (startEl) { startEl.value = feedStartedAt.time; calcFeedEndTime(); }
+  if (feedTimerInterval) clearInterval(feedTimerInterval);
+  feedTimerInterval = setInterval(updateFeedTimerDisplay, 1000);
+  updateFeedTimerDisplay();
+}
+
+function updateFeedTimerDisplay() {
+  const banner = document.getElementById('cl-next-feed-banner');
+  if (!banner || !feedStartedAt) return;
+  const totalSec = Math.floor((Date.now() - feedStartedAt.ms) / 1000);
+  const hrs  = Math.floor(totalSec / 3600);
+  const mins = Math.floor((totalSec % 3600) / 60);
+  const secs = totalSec % 60;
+  const elapsed = hrs > 0
+    ? `${hrs}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`
+    : `${mins}:${String(secs).padStart(2,'0')}`;
+  banner.style.display = '';
+  banner.style.background = 'rgba(41,121,255,0.15)';
+  banner.style.color = 'var(--blue)';
+  banner.style.cursor = 'default';
+  banner.onclick = null;
+  banner.innerHTML = `🧪 Feed in progress · started <strong>${fmt12(feedStartedAt.time)}</strong> · <strong style="font-variant-numeric:tabular-nums">${elapsed}</strong> &nbsp;<span onclick="cancelFeedTimer()" style="cursor:pointer;font-size:0.8rem;opacity:0.6;font-weight:400;padding:2px 6px;border:1px solid currentColor;border-radius:4px">✕ cancel</span>`;
+}
+
+function cancelFeedTimer() {
+  feedStartedAt = null;
+  if (feedTimerInterval) { clearInterval(feedTimerInterval); feedTimerInterval = null; }
+  const startEl = document.getElementById('cfd-start');
+  if (startEl) startEl.value = '';
+  updateNextFeedBanner();
+}
+
 function updateNextFeedBanner() {
   const banner = document.getElementById('cl-next-feed-banner');
   if (!banner) return;
+  if (feedStartedAt) { updateFeedTimerDisplay(); return; } // timer running — don't override
   if (!clFeedEntries.length) { banner.style.display = 'none'; return; }
   const last = clFeedEntries[clFeedEntries.length - 1];
   const refTime = last.startTime || last.endTime;
@@ -6183,7 +6232,9 @@ function updateNextFeedBanner() {
   banner.style.display = '';
   banner.style.background = bg;
   banner.style.color = color;
-  banner.innerHTML = `${icon} Next tube feed due: <strong>${fmt12(nextStr)}</strong>${note}${mealDelayNote}`;
+  banner.style.cursor = 'pointer';
+  banner.onclick = startFeedTimer;
+  banner.innerHTML = `${icon} Next tube feed due: <strong>${fmt12(nextStr)}</strong>${note}${mealDelayNote} <span style="font-size:0.76rem;opacity:0.5;font-weight:400">· tap to start timer</span>`;
 }
 
 function renderCLFeeds() {
