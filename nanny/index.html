@@ -2485,7 +2485,7 @@
           </div>
           <div class="cl-add-form">
             <div class="cl-form-row">
-              <div class="cl-fg"><label>Start time</label><input type="time" id="cfd-start" oninput="calcFeedEndTime()"></div>
+              <div class="cl-fg"><label>Start time</label><input type="time" id="cfd-start" oninput="calcFeedEndTime();autoDetectFeedDate()"></div>
               <div class="cl-fg"><label>Volume planned (mL)</label><input type="number" id="cfd-planned" placeholder="300" oninput="calcFeedEndTime()"></div>
               <div class="cl-fg"><label>Rate (mL/hr)</label><input type="number" id="cfd-rate" placeholder="150" oninput="calcFeedEndTime()"></div>
               <div class="cl-fg"><label>End time <span style="font-size:0.72rem;color:var(--muted)">(auto)</span></label><input type="time" id="cfd-end"></div>
@@ -2495,6 +2495,12 @@
               <div class="cl-fg"><label>Water flush (mL)</label><input type="number" id="cfd-flush" placeholder="30"></div>
               <div class="cl-fg"><label>Head raised 30-45°?</label>
                 <select id="cfd-head"><option value="yes">Yes</option><option value="no">No</option></select>
+              </div>
+              <div class="cl-fg"><label>Feed date</label>
+                <select id="cfd-date">
+                  <option value="today">Today</option>
+                  <option value="prev">🌙 Previous night</option>
+                </select>
               </div>
             </div>
             <div class="cl-fg"><label>Problems</label>
@@ -6040,6 +6046,18 @@ function renderCLFood() {
 
 // ── Tube feeds ──
 
+function autoDetectFeedDate() {
+  const start = document.getElementById('cfd-start')?.value;
+  const dateEl = document.getElementById('cfd-date');
+  if (!start || !dateEl) return;
+  const [sh, sm] = start.split(':').map(Number);
+  const now = new Date();
+  const startMins = sh * 60 + sm;
+  const nowMins = now.getHours() * 60 + now.getMinutes();
+  // If start time appears > 2 hrs ahead of now (e.g. 9:30 PM entered at 12:30 AM) → yesterday
+  dateEl.value = (startMins > nowMins + 120) ? 'prev' : 'today';
+}
+
 async function addCLFeed() {
   const planned  = parseFloat(document.getElementById('cfd-planned').value) || 0;
   const given    = parseFloat(document.getElementById('cfd-given').value) || 0;
@@ -6051,10 +6069,19 @@ async function addCLFeed() {
   const problems = document.getElementById('cfd-problems').value;
   if (!given && !planned) { alert('Please enter the feed volume.'); return; }
 
+  // Determine which date this feed belongs to
+  const dateShift = document.getElementById('cfd-date').value;
+  let feedDate = careDate;
+  if (dateShift === 'prev') {
+    const d = new Date(careDate + 'T12:00:00');
+    d.setDate(d.getDate() - 1);
+    feedDate = d.toISOString().split('T')[0];
+  }
+
   const feedKcal    = given * 1.5;
   const feedProtein = given * 0.045;
   const entry = {
-    facility: FACILITY, date: careDate,
+    facility: FACILITY, date: feedDate,
     startTime: start, endTime: end, rateMlHr: rate,
     formulaML_planned: planned, formulaML_given: given,
     flushML: flush, headRaised: head, problems,
@@ -6067,16 +6094,22 @@ async function addCLFeed() {
   }
   try {
     const ref = await db.collection('care_feeds').add(entry);
-    clFeedEntries.push({ id: ref.id, ...entry });
-    clFeedEntries.sort((a,b) => (a.startTime||'').localeCompare(b.startTime||''));
+    if (feedDate === careDate) {
+      clFeedEntries.push({ id: ref.id, ...entry });
+      clFeedEntries.sort((a,b) => (a.startTime||'').localeCompare(b.startTime||''));
+    }
     document.getElementById('cfd-planned').value = careSettings.maxBolusMl || 200;
     document.getElementById('cfd-given').value = '';
     document.getElementById('cfd-flush').value = '';
     document.getElementById('cfd-problems').value = 'none';
     document.getElementById('cfd-end').value = '';
+    document.getElementById('cfd-date').value = 'today';
     calcFeedEndTime();
     renderCLFeeds();
     renderCLSummary();
+    if (feedDate !== careDate) {
+      alert(`✅ Feed saved to ${feedDate} (previous night).\nSwitch to that date in the Care Log to view it.`);
+    }
   } catch(e) { alert('Could not save feed entry: ' + e.message); console.error(e); }
 }
 
