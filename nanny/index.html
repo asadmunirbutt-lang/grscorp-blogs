@@ -2513,7 +2513,10 @@
                 <option value="tube-out">Tube came out 🚨</option>
               </select>
             </div>
-            <button class="cl-btn-primary" onclick="addCLFeed()">Log feed</button>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <button class="cl-btn-primary" onclick="addCLFeed()">Log feed</button>
+              <button id="cfd-timer-btn" onclick="toggleFeedTimer()" style="padding:9px 16px;border-radius:8px;border:2px solid var(--blue);background:transparent;color:var(--blue);font-weight:700;font-size:0.9rem;cursor:pointer">▶ Start feed timer</button>
+            </div>
           </div>
           <div id="cl-feeds-list" class="cl-entry-list"></div>
           <div id="cl-next-feed-banner" style="display:none;margin-top:10px;padding:10px 14px;border-radius:8px;font-size:0.88rem;font-weight:600;text-align:center;transition:background 0.3s"></div>
@@ -6111,6 +6114,8 @@ async function addCLFeed() {
     // Clear feed timer
     feedStartedAt = null;
     if (feedTimerInterval) { clearInterval(feedTimerInterval); feedTimerInterval = null; }
+    const timerBtn = document.getElementById('cfd-timer-btn');
+    if (timerBtn) { timerBtn.textContent = '▶ Start feed timer'; timerBtn.style.borderColor = 'var(--blue)'; timerBtn.style.color = 'var(--blue)'; }
     document.getElementById('cfd-planned').value = careSettings.maxBolusMl || 200;
     document.getElementById('cfd-given').value = '';
     document.getElementById('cfd-flush').value = '';
@@ -6140,6 +6145,10 @@ function calcFeedEndTime() {
   if (endEl) endEl.value = `${String(eh).padStart(2,'0')}:${String(em).padStart(2,'0')}`;
 }
 
+function toggleFeedTimer() {
+  if (feedStartedAt) cancelFeedTimer(); else startFeedTimer();
+}
+
 function startFeedTimer() {
   if (feedStartedAt) return; // already running
   const now = new Date();
@@ -6155,8 +6164,7 @@ function startFeedTimer() {
 }
 
 function updateFeedTimerDisplay() {
-  const banner = document.getElementById('cl-next-feed-banner');
-  if (!banner || !feedStartedAt) return;
+  if (!feedStartedAt) return;
   const totalSec = Math.floor((Date.now() - feedStartedAt.ms) / 1000);
   const hrs  = Math.floor(totalSec / 3600);
   const mins = Math.floor((totalSec % 3600) / 60);
@@ -6164,12 +6172,23 @@ function updateFeedTimerDisplay() {
   const elapsed = hrs > 0
     ? `${hrs}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`
     : `${mins}:${String(secs).padStart(2,'0')}`;
-  banner.style.display = '';
-  banner.style.background = 'rgba(41,121,255,0.15)';
-  banner.style.color = 'var(--blue)';
-  banner.style.cursor = 'default';
-  banner.onclick = null;
-  banner.innerHTML = `🧪 Feed in progress · started <strong>${fmt12(feedStartedAt.time)}</strong> · <strong style="font-variant-numeric:tabular-nums">${elapsed}</strong> &nbsp;<span onclick="cancelFeedTimer()" style="cursor:pointer;font-size:0.8rem;opacity:0.6;font-weight:400;padding:2px 6px;border:1px solid currentColor;border-radius:4px">✕ cancel</span>`;
+  // Update inline button
+  const btn = document.getElementById('cfd-timer-btn');
+  if (btn) {
+    btn.textContent = `⏹ ${elapsed} · cancel`;
+    btn.style.borderColor = 'var(--coral)';
+    btn.style.color = 'var(--coral)';
+  }
+  // Update banner
+  const banner = document.getElementById('cl-next-feed-banner');
+  if (banner) {
+    banner.style.display = '';
+    banner.style.background = 'rgba(41,121,255,0.15)';
+    banner.style.color = 'var(--blue)';
+    banner.style.cursor = 'default';
+    banner.onclick = null;
+    banner.innerHTML = `🧪 Feed in progress · started <strong>${fmt12(feedStartedAt.time)}</strong> · <strong style="font-variant-numeric:tabular-nums">${elapsed}</strong>`;
+  }
 }
 
 function cancelFeedTimer() {
@@ -6177,6 +6196,8 @@ function cancelFeedTimer() {
   if (feedTimerInterval) { clearInterval(feedTimerInterval); feedTimerInterval = null; }
   const startEl = document.getElementById('cfd-start');
   if (startEl) startEl.value = '';
+  const btn = document.getElementById('cfd-timer-btn');
+  if (btn) { btn.textContent = '▶ Start feed timer'; btn.style.borderColor = 'var(--blue)'; btn.style.color = 'var(--blue)'; }
   updateNextFeedBanner();
 }
 
