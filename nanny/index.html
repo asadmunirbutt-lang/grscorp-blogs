@@ -5907,6 +5907,7 @@ let selectedCLMedName = 'Famotidine 20 MG';
 async function loadCareLog() {
   if (!careDate) careDate = localDateStr();
   renderCLDateLabel();
+  restoreFeedTimerFromStorage();
   await loadCareSettings();
   populateFoodLibrarySelect();
   setDefaultTimes();
@@ -6116,6 +6117,7 @@ async function addCLFeed() {
     // Clear feed timer
     feedStartedAt = null;
     if (feedTimerInterval) { clearInterval(feedTimerInterval); feedTimerInterval = null; }
+    try { localStorage.removeItem('nanny_feedTimer'); } catch(e) {}
     const timerBtn = document.getElementById('cfd-timer-btn');
     if (timerBtn) { timerBtn.textContent = '▶ Start feed timer'; timerBtn.style.borderColor = 'var(--blue)'; timerBtn.style.color = 'var(--blue)'; }
     document.getElementById('cfd-planned').value = careSettings.maxBolusMl || 200;
@@ -6157,12 +6159,30 @@ function startFeedTimer() {
   const hh = String(now.getHours()).padStart(2,'0');
   const mm = String(now.getMinutes()).padStart(2,'0');
   feedStartedAt = { time: `${hh}:${mm}`, ms: now.getTime() };
+  try { localStorage.setItem('nanny_feedTimer', JSON.stringify(feedStartedAt)); } catch(e) {}
   // Pre-fill start time in the feed form
   const startEl = document.getElementById('cfd-start');
   if (startEl) { startEl.value = feedStartedAt.time; calcFeedEndTime(); }
   if (feedTimerInterval) clearInterval(feedTimerInterval);
   feedTimerInterval = setInterval(updateFeedTimerDisplay, 1000);
   updateFeedTimerDisplay();
+}
+
+function restoreFeedTimerFromStorage() {
+  try {
+    const saved = localStorage.getItem('nanny_feedTimer');
+    if (!saved) return;
+    const data = JSON.parse(saved);
+    if (!data || !data.time || !data.ms) return;
+    // Only restore if started within the last 12 hours
+    if (Date.now() - data.ms > 12 * 60 * 60 * 1000) {
+      localStorage.removeItem('nanny_feedTimer'); return;
+    }
+    feedStartedAt = data;
+    if (feedTimerInterval) clearInterval(feedTimerInterval);
+    feedTimerInterval = setInterval(updateFeedTimerDisplay, 1000);
+    updateFeedTimerDisplay();
+  } catch(e) {}
 }
 
 function updateFeedTimerDisplay() {
@@ -6196,6 +6216,7 @@ function updateFeedTimerDisplay() {
 function cancelFeedTimer() {
   feedStartedAt = null;
   if (feedTimerInterval) { clearInterval(feedTimerInterval); feedTimerInterval = null; }
+  try { localStorage.removeItem('nanny_feedTimer'); } catch(e) {}
   const startEl = document.getElementById('cfd-start');
   if (startEl) startEl.value = '';
   const btn = document.getElementById('cfd-timer-btn');
