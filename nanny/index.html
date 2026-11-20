@@ -6158,7 +6158,9 @@ function startFeedTimer() {
   const now = new Date();
   const hh = String(now.getHours()).padStart(2,'0');
   const mm = String(now.getMinutes()).padStart(2,'0');
-  feedStartedAt = { time: `${hh}:${mm}`, ms: now.getTime() };
+  const plannedML = parseFloat(document.getElementById('cfd-planned')?.value) || careSettings.maxBolusMl || 300;
+  const rateMlHr  = parseFloat(document.getElementById('cfd-rate')?.value)    || careSettings.feedRateMlHr || 150;
+  feedStartedAt = { time: `${hh}:${mm}`, ms: now.getTime(), plannedML, rateMlHr };
   try { localStorage.setItem('nanny_feedTimer', JSON.stringify(feedStartedAt)); } catch(e) {}
   // Pre-fill start time in the feed form
   const startEl = document.getElementById('cfd-start');
@@ -6187,17 +6189,41 @@ function restoreFeedTimerFromStorage() {
 
 function updateFeedTimerDisplay() {
   if (!feedStartedAt) return;
-  const totalSec = Math.floor((Date.now() - feedStartedAt.ms) / 1000);
+  const totalSec    = Math.floor((Date.now() - feedStartedAt.ms) / 1000);
   const hrs  = Math.floor(totalSec / 3600);
   const mins = Math.floor((totalSec % 3600) / 60);
   const secs = totalSec % 60;
   const elapsed = hrs > 0
     ? `${hrs}:${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`
     : `${mins}:${String(secs).padStart(2,'0')}`;
+
+  // Calculate progress from planned volume + rate
+  const plannedML = feedStartedAt.plannedML || 0;
+  const rateMlHr  = feedStartedAt.rateMlHr  || 0;
+  let givenML = 0, remainML = 0, pct = 0, endStr = '', progressHTML = '';
+  if (plannedML && rateMlHr) {
+    const elapsedHrs = totalSec / 3600;
+    givenML  = Math.min(Math.round(elapsedHrs * rateMlHr), plannedML);
+    remainML = plannedML - givenML;
+    pct      = Math.min(Math.round((givenML / plannedML) * 100), 100);
+    const endMs   = feedStartedAt.ms + (plannedML / rateMlHr) * 3600000;
+    const endDate = new Date(endMs);
+    endStr = fmt12(`${String(endDate.getHours()).padStart(2,'0')}:${String(endDate.getMinutes()).padStart(2,'0')}`);
+    const barColor = pct >= 100 ? 'var(--mint)' : 'var(--blue)';
+    progressHTML = `
+      <div style="margin-top:6px;display:flex;align-items:center;gap:8px;font-size:0.82rem">
+        <span><strong>${givenML}</strong> / ${plannedML} mL</span>
+        <div style="flex:1;height:5px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:${barColor};border-radius:3px;transition:width 1s linear"></div>
+        </div>
+        <span style="opacity:0.75">${remainML > 0 ? remainML + ' mL left · ends ' + endStr : '✅ done'}</span>
+      </div>`;
+  }
+
   // Update inline button
   const btn = document.getElementById('cfd-timer-btn');
   if (btn) {
-    btn.textContent = `⏹ ${elapsed} · cancel`;
+    btn.textContent = plannedML ? `⏹ ${givenML}/${plannedML}mL · cancel` : `⏹ ${elapsed} · cancel`;
     btn.style.borderColor = 'var(--coral)';
     btn.style.color = 'var(--coral)';
   }
@@ -6209,7 +6235,7 @@ function updateFeedTimerDisplay() {
     banner.style.color = 'var(--blue)';
     banner.style.cursor = 'default';
     banner.onclick = null;
-    banner.innerHTML = `🧪 Feed in progress · started <strong>${fmt12(feedStartedAt.time)}</strong> · <strong style="font-variant-numeric:tabular-nums">${elapsed}</strong>`;
+    banner.innerHTML = `🧪 Feed in progress · started <strong>${fmt12(feedStartedAt.time)}</strong> · <strong style="font-variant-numeric:tabular-nums">${elapsed}</strong>${progressHTML}`;
   }
 }
 
