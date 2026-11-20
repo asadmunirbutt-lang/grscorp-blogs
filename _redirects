@@ -1,20 +1,26 @@
-/posts/10-best-sensory-toys-autism.html         https://www.grscorp.us/blogs/10-best-sensory-toys-autism.html    301
-/posts/aba-therapy-guide.html         https://www.grscorp.us/blogs/aba-therapy-guide.html    301
-/posts/aspergers-syndrome-explained.html         https://www.grscorp.us/blogs/aspergers-syndrome-explained.html    301
-/posts/autism-ai-apps-special-needs-families.html         https://www.grscorp.us/blogs/autism-ai-apps-special-needs-families.html    301
-/posts/autism-and-anxiety.html         https://www.grscorp.us/blogs/autism-and-anxiety.html    301
-/posts/autism-assistive-technology.html         https://www.grscorp.us/blogs/autism-assistive-technology.html    301
-/posts/autism-diet-nutrition.html         https://www.grscorp.us/blogs/autism-diet-nutrition.html    301
-/posts/autism-employment-guide.html         https://www.grscorp.us/blogs/autism-employment-guide.html    301
-/posts/autism-in-the-classroom.html         https://www.grscorp.us/blogs/autism-in-the-classroom.html    301
-/posts/autism-meltdown-prevention.html         https://www.grscorp.us/blogs/autism-meltdown-prevention.html    301
-/posts/autism-puberty-guide.html         https://www.grscorp.us/blogs/autism-puberty-guide.html    301
-/posts/autism-siblings-guide.html         https://www.grscorp.us/blogs/autism-siblings-guide.html    301
-/posts/autism-social-skills-activities.html         https://www.grscorp.us/blogs/autism-social-skills-activities.html    301
-/posts/autism-summer-programs-new-york.html         https://www.grscorp.us/blogs/autism-summer-programs-new-york.html    301
-/posts/empowering-families-parent-to-parent-nys.html         https://www.grscorp.us/blogs/empowering-families-parent-to-parent-nys.html    301
-/posts/homeschooling-autism-new-york-state.html         https://www.grscorp.us/blogs/homeschooling-autism-new-york-state.html    301
-/posts/respite-care-autism.html         https://www.grscorp.us/blogs/respite-care-autism.html    301
-/posts/toilet-training-autism.html         https://www.grscorp.us/blogs/toilet-training-autism.html    301
-/posts/understanding-global-development-delay.html         https://www.grscorp.us/blogs/understanding-global-development-delay.html    301
-/posts/understanding-self-injurious-behavior-autism.html         https://www.grscorp.us/blogs/understanding-self-injurious-behavior-autism.html    301
+# Blog consolidation redirects - Point blogs.grscorp.us to grscorp.us WordPress posts
+# Format: /posts/<slug>.html https://grscorp.us/<wordpress-slug> 301
+
+/posts/10-best-sensory-toys-autism.html https://www.grscorp.us/the-ultimate-guide-to-choosing-the-best-sensory-toys-for-your-child-with-autism/ 301
+/posts/aba-therapy-guide.html https://www.grscorp.us/autism-therapy-treatment-options-2024/ 301
+/posts/aspergers-syndrome-explained.html https://www.grscorp.us/autism-women-late-diagnosis-masking/ 301
+/posts/autism-ai-apps-special-needs-families.html https://www.grscorp.us/autism-ai-the-new-apps-every-special-needs-family-needs-to-know-about/ 301
+/posts/autism-and-anxiety.html https://www.grscorp.us/anxiety-autism-different-help/ 301
+/posts/autism-assistive-technology.html https://www.grscorp.us/aac-devices-communication-non-speaking/ 301
+/posts/autism-diet-nutrition.html https://www.grscorp.us/sensory-processing-autism-accommodation/ 301
+/posts/autism-employment-guide.html https://www.grscorp.us/autism-employment-adults/ 301
+/posts/autism-in-the-classroom.html https://www.grscorp.us/the-importance-of-special-education-parent-teacher-associations-septa/ 301
+/posts/autism-meltdown-prevention.html https://www.grscorp.us/autism-meltdown-strategies-evidence-based/ 301
+/posts/autism-puberty-guide.html https://www.grscorp.us/sensory-processing-autism-accommodation/ 301
+/posts/autism-siblings-guide.html https://www.grscorp.us/circles-support-neurodiversity-affirming-relationships/ 301
+/posts/autism-social-skills-activities.html https://www.grscorp.us/aac-devices-communication-non-speaking/ 301
+/posts/autism-summer-programs-new-york.html https://www.grscorp.us/shen-septa/ 301
+/posts/empowering-families-parent-to-parent-nys.html https://www.grscorp.us/navigating-parenting-together-a-guide-to-parent-to-parent-new-york/ 301
+/posts/homeschooling-autism-new-york-state.html https://www.grscorp.us/the-importance-of-special-education-parent-teacher-associations-septa/ 301
+/posts/respite-care-autism.html https://www.grscorp.us/opwdd-support-brokerage-guide/ 301
+/posts/toilet-training-autism.html https://www.grscorp.us/sensory-processing-autism-accommodation/ 301
+/posts/understanding-global-development-delay.html https://www.grscorp.us/understanding-self-injurious-behavior-sib-in-autism-impact-challenges-and-hope/ 301
+/posts/understanding-self-injurious-behavior-autism.html https://www.grscorp.us/understanding-self-injurious-behavior-sib-in-autism-impact-challenges-and-hope/ 301
+
+# Catch all other requests and redirect to homepage
+/* https://www.grscorp.us/:splat 301
